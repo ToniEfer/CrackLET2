@@ -1,4 +1,5 @@
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>CrackLET²</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#fbf3e6">
@@ -41,7 +42,7 @@
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-html,body{height:100%}
+html,body{height:100%;height:100dvh}
 body{
   margin:0;background:var(--paper);color:var(--ink);font-family:var(--ui);
   padding-left:max(16px,env(safe-area-inset-left,0px));
@@ -53,7 +54,7 @@ body{
 .app{
   width:100%;max-width:430px;height:100%;
   display:grid;grid-template-rows:auto auto auto minmax(0,1fr) auto;gap:10px;
-  padding-block:12px 14px;
+  padding-block:calc(12px + env(safe-area-inset-top, 0px)) calc(14px + env(safe-area-inset-bottom, 0px));
 }
 @media (min-width:700px) and (min-height:720px){
   body{background-color:var(--desk);background-image:radial-gradient(rgba(20,20,20,.28) 1.4px,transparent 1.6px);background-size:18px 18px}
@@ -859,7 +860,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number shows the Update bar. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.8.3";
+const APP_VERSION = "0.8.4";
 $("verTxt").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
