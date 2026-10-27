@@ -272,20 +272,32 @@ function poolRange(){
   const upper = Math.pow(2, topExp);
   return { lower: upper / Math.pow(2, POOL_SIZE - 1), upper };
 }
+/* Lingering values: when the pool moves up, smaller values that are still on the board stay in the pool
+   (1 per bag instead of D().bag) until the last ball of that value is gone, so no ball is ever stranded. */
+function lingering(){
+  const { lower } = poolRange(), set = new Set();
+  S.grid.forEach(col => col.forEach(t => { if (t.v < lower) set.add(t.v); }));
+  return [...set].sort((a, b) => a - b);
+}
+function poolCounts(){
+  const { lower, upper } = poolRange(), out = [];
+  for (const v of lingering()) out.push({ v, n: 1, linger: true });
+  for (let v = lower; v <= upper; v *= 2) out.push({ v, n: D().bag });
+  return out;
+}
 function poolWeights(){
-  const { lower, upper } = poolRange(); const vals = [];
-  for (let v = lower; v <= upper; v *= 2) vals.push(v);
-  return vals.map(v => ({ v, p: 1 / vals.length }));
+  const c = poolCounts(), tot = c.reduce((a, o) => a + o.n, 0);
+  return c.map(o => ({ v: o.v, p: o.n / tot, linger: o.linger }));
 }
 const fillRatio = () => S.grid.reduce((a, c) => a + c.length, 0) / (COLS * ROWS);
 const pityChance = () => 0;   // no helper balls (original has none)
 function gen(){
-  const { lower } = poolRange();
-  if (!S.bag || !S.bag.length || S.bagLower !== lower){
-    const vals = poolWeights().map(o => o.v), bag = [];
-    for (const v of vals) for (let k = 0; k < D().bag; k++) bag.push(v);
+  const counts = poolCounts(), key = counts.map(o => o.v + "x" + o.n).join(",");
+  if (!S.bag || !S.bag.length || S.bagLower !== key){
+    const bag = [];
+    for (const o of counts) for (let k = 0; k < o.n; k++) bag.push(o.v);
     for (let i = bag.length - 1; i > 0; i--){ const j = Math.floor(rnd() * (i + 1)); [bag[i], bag[j]] = [bag[j], bag[i]]; }
-    S.bag = bag; S.bagLower = lower;
+    S.bag = bag; S.bagLower = key;
   }
   S.lastSrc = `bag (${S.bag.length - 1} left)`;
   return S.bag.pop();
@@ -296,7 +308,7 @@ const clone = o => JSON.parse(JSON.stringify(o));
 function newGame(seed){
   seed = seed ?? (Date.now() % 1e9);
   S = { grid: Array.from({ length: COLS }, () => []), score: 0, maxEver: 8, seed, rs: seed, cur: 2, nxt: 2,
-        coins: store.get("coins", 100), best: store.get("best", 0), revives: 0, over: false, lastSrc: "random", reached: [], moves: 0, hist: [], lowerPrev: 2, bag: [], bagLower: 0 };
+        coins: store.get("coins", 100), best: store.get("best", 0), revives: 0, over: false, lastSrc: "random", reached: [], moves: 0, hist: [], lowerPrev: 2, bag: [], bagLower: "", linger: [] };
   S.startBest = S.best;
   S.cur = gen(); S.nxt = gen();
   undoSnap = null; hammer = false; shards = []; sparks = [];
@@ -661,7 +673,7 @@ function hud(){
   $("moves").textContent = S.moves || 0; $("kval").textContent = poolK();
   $("seed").textContent = S.seed; $("fill").textContent = Math.round(fillRatio() * 100) + "%";
   $("pity").textContent = Math.round(pityChance() * 100) + "%"; $("lastsrc").textContent = S.lastSrc;
-  $("pool").innerHTML = poolWeights().map(o => `<tr><td>${label(o.v)}</td><td>${Math.round(o.p * 100)}%</td></tr>`).join("");
+  $("pool").innerHTML = poolWeights().map(o => `<tr><td>${label(o.v)}${o.linger ? " · leaving (still on board)" : ""}</td><td>${Math.round(o.p * 100)}%</td></tr>`).join("");
 }
 function floatText(txt){ const f = document.createElement("div"); f.className = "float"; f.textContent = txt; board.appendChild(f); setTimeout(() => f.remove(), 1100); }
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -712,24 +724,19 @@ async function resolve(dirty){
   return chain;
 }
 /* When the pool's lowest value rises, balls below it can never be matched again — shatter them for a small bonus */
+/* Pool shift without a purge: the new top value unlocks at once; a smaller value leaves the pool
+   only after its last ball has left the board (merged up or smashed). */
 async function purgeLocked(){
   const { lower } = poolRange();
-  if (lower <= (S.lowerPrev || 2)){ S.lowerPrev = Math.max(2, Math.min(S.lowerPrev || 2, lower)); return; }
-  S.lowerPrev = lower;
-  const victims = [];
-  S.grid.forEach(col => col.forEach(t => { if (t.v < lower) victims.push(t); }));
-  floatText(`Unlocked ${label(lower)}+`); say("unlock");
-  if (!victims.length){ hud(); return; }
-  await sleep(250);
-  for (const t of victims){ const b = balls.get(t.id); if (b) b.crack = 1; }
-  await sleep(160);
-  crash(4); buzz([20, 20, 20]);
-  let pts = 0;
-  for (const t of victims){ const b = balls.get(t.id); if (b){ shatter(b, .9); coinBurst(1, b.x, b.y); balls.delete(t.id); } t.dead = true; pts += Math.log2(t.v); }
-  S.coins += victims.length; S.score += pts;
-  const moved = compact(); hud();
-  setTimeout(() => floatText(`Cleared ${victims.length} × ball < ${label(lower)}`), 350); say("cleared");
-  await resolve(moved);
+  if (lower > (S.lowerPrev || 2)){ S.lowerPrev = lower; floatText(`Unlocked ${label(lower * Math.pow(2, POOL_SIZE - 1))}`); say("unlock"); }
+  const now = lingering(), before = S.linger || [];
+  const gone = before.filter(v => !now.includes(v));
+  S.linger = now;
+  if (gone.length){
+    setTimeout(() => floatText(`${gone.map(label).join(" · ")} out of play`), 350); say("cleared");
+    S.coins += gone.length * 2;
+  }
+  hud();
 }
 function reachTile(v, b){
   S.maxEver = v;
@@ -862,7 +869,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.9.1";
+const APP_VERSION = "0.9.2";
 $("verTxt").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
