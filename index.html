@@ -53,7 +53,7 @@ body{
 .stage{height:100%;display:grid;place-items:center}
 .app{
   width:100%;max-width:430px;height:100%;
-  display:grid;grid-template-rows:auto auto auto minmax(0,1fr) auto;gap:10px;
+  display:grid;grid-template-rows:auto auto auto minmax(0,1fr);gap:10px;
   padding-block:calc(12px + env(safe-area-inset-top, 0px)) calc(14px + env(safe-area-inset-bottom, 0px));
 }
 @media (min-width:700px) and (min-height:720px){
@@ -81,7 +81,7 @@ body{
 .meta{display:flex;justify-content:space-between;align-items:center;gap:8px;min-width:0}
 .tag{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;display:flex;align-items:center;gap:6px}
 .tag::before{content:"";width:10px;height:10px;background:var(--yellow);border:2px solid var(--ink);box-shadow:4px -4px 0 -2px var(--ink)}
-.metabtns{display:flex;gap:10px}
+.metabtns{display:flex;gap:8px}
 .ico{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;display:block}
 .ibtn{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;border:var(--bw) solid var(--ink);box-shadow:3px 3px 0 var(--ink);color:var(--ink);cursor:pointer;padding:0;transition:transform .08s,box-shadow .08s}
 #bVoice{background:var(--yellow)} #bMute{background:var(--teal)} #bVoice.off,#bMute.off{background:var(--card)} #bTune{background:var(--purple)}
@@ -94,8 +94,9 @@ body{
 .boardwrap{container-type:size;min-height:0;display:grid;place-items:center}
 .board{
   position:relative;container-type:inline-size;
-  width:min(calc(100cqw - 8px), calc((100cqh - 8px) * 5 / 9));aspect-ratio:5/9;
-  background:var(--card);border:var(--bwb) solid var(--ink);border-radius:18px;box-shadow:6px 6px 0 var(--ink);overflow:hidden;
+  width:min(calc(100cqw - 8px), calc((100cqh - 8px) * .6536));      /* 5 / (9 × 0.85) */
+  height:min(calc(100cqh - 8px), calc((100cqw - 8px) * 1.98));       /* 9 × 1.1 / 5 */
+  background:var(--card);border:3.25px solid var(--ink);border-radius:18px;box-shadow:6.5px 6.5px 0 var(--ink);overflow:hidden;
   touch-action:none;cursor:pointer;
 }
 .board canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
@@ -107,14 +108,15 @@ body{
 @keyframes floatUp{0%{opacity:0;transform:translate(-50%,-30%) scale(.7) rotate(-4deg)}15%{opacity:1;transform:translate(-50%,-50%) scale(1.08) rotate(-4deg)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-90%) scale(1) rotate(-4deg)}}
 
 /* Boosters */
-.boosters{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding-right:4px}
-.bst{font:inherit;color:var(--ink);border:var(--bw) solid var(--ink);border-radius:12px;box-shadow:var(--sh);padding:7px 10px 5px;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;align-items:center;column-gap:8px;row-gap:1px;cursor:pointer;transition:transform .08s,box-shadow .08s;min-height:56px}
-.bst b{grid-column:1 / -1;font-size:14px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;line-height:1.15;text-align:center}
+.boosters{display:flex;gap:8px}
+.bst{font:inherit;color:var(--ink);width:64px;height:40px;border:var(--bw) solid var(--ink);border-radius:10px;box-shadow:3px 3px 0 var(--ink);padding:3px 4px 2px;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;align-items:center;column-gap:3px;row-gap:0;cursor:pointer;transition:transform .08s,box-shadow .08s}
+.bst b{grid-column:1 / -1;font-size:10px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;line-height:1.1;text-align:center}
 #bUndo{background:var(--yellow)} #bSwap{background:var(--teal)} #bHammer{background:var(--coral)}
-.bst .ico{width:24px;height:24px}
-.bst span{font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;background:var(--card);border:1.6px solid var(--ink);border-radius:99px;padding:0 8px 0 2px;line-height:1.35}
-.bst span .coin{width:12px;height:12px;border-width:1.4px}
+.bst .ico{width:16px;height:16px;stroke-width:2.2}
+.bst span{font-size:9px;font-weight:700;display:flex;align-items:center;gap:3px;background:var(--card);border:1.15px solid var(--ink);border-radius:99px;padding:0 5px 0 1px;line-height:1.25;justify-self:stretch}
+.bst span .coin{width:9px;height:9px;border-width:1px}
 .bst:disabled{opacity:.45;cursor:not-allowed;box-shadow:2px 2px 0 var(--ink)}
+@media (max-width:399px){ .bst{width:56px} .boosters,.metabtns{gap:6px} .ibtn{width:36px;height:36px} .meta{gap:6px} }
 .bst.on{outline:3px dashed var(--ink);outline-offset:3px}
 
 /* Overlays */
@@ -164,7 +166,11 @@ body{
   <div class="progress" id="prog" title="Progress to your best score"><i></i></div>
 
   <div class="meta">
-    <span class="tag" id="tagline">Drop · Merge · Smash</span>
+    <span class="boosters">
+    <button class="bst" id="bUndo" type="button" aria-label="Back (undo)" title="Back"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg><span><i class="coin"></i>20</span><b>Back</b></button>
+    <button class="bst" id="bSwap" type="button" aria-label="Swap ball" title="Swap ball"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4 3 8l4 4"/><path d="M3 8h14"/><path d="m17 20 4-4-4-4"/><path d="M21 16H7"/></svg><span><i class="coin"></i>10</span><b>Swap</b></button>
+    <button class="bst" id="bHammer" type="button" aria-label="Smash a ball" title="Smash"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 12-8.5 8.5a2.12 2.12 0 0 1-3-3L12 9"/><path d="M17.64 15 22 10.64"/><path d="m20.91 11.7-1.25-1.25c-.6-.6-.93-1.4-.93-2.25v-.86L16.01 4.6a5.56 5.56 0 0 0-3.94-1.64H9l.92.82A6.18 6.18 0 0 1 12 8.4v1.56l2 2h2.47l2.26 1.91"/></svg><span><i class="coin"></i>50</span><b>Smash</b></button>
+    </span>
     <span class="metabtns"><button class="ibtn" id="bVoice" type="button" aria-label="Announcer on" title="Announcer on"><svg class="ico" id="voiceIco" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1"/><path d="M12 18v4"/><path d="M8 22h8"/></svg></button><button class="ibtn" id="bMute" type="button" aria-label="Sound on" title="Sound on"><svg class="ico" id="muteIco" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button><button class="ibtn" id="bTune" type="button" aria-label="Tuning" title="Tuning"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21v-7"/><path d="M4 10V3"/><path d="M12 21v-9"/><path d="M12 8V3"/><path d="M20 21v-5"/><path d="M20 12V3"/><path d="M1 14h6"/><path d="M9 8h6"/><path d="M17 16h6"/></svg></button></span>
   </div>
 
@@ -175,11 +181,6 @@ body{
     </div>
   </div>
 
-  <div class="boosters">
-    <button class="bst" id="bUndo" type="button" aria-label="Back (undo)" title="Back"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg><span><i class="coin"></i>20</span><b>Back</b></button>
-    <button class="bst" id="bSwap" type="button" aria-label="Swap ball" title="Swap ball"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4 3 8l4 4"/><path d="M3 8h14"/><path d="m17 20 4-4-4-4"/><path d="M21 16H7"/></svg><span><i class="coin"></i>10</span><b>Swap</b></button>
-    <button class="bst" id="bHammer" type="button" aria-label="Smash a ball" title="Smash"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 12-8.5 8.5a2.12 2.12 0 0 1-3-3L12 9"/><path d="M17.64 15 22 10.64"/><path d="m20.91 11.7-1.25-1.25c-.6-.6-.93-1.4-.93-2.25v-.86L16.01 4.6a5.56 5.56 0 0 0-3.94-1.64H9l.92.82A6.18 6.18 0 0 1 12 8.4v1.56l2 2h2.47l2.26 1.91"/></svg><span><i class="coin"></i>50</span><b>Smash</b></button>
-  </div>
 
 </div>
 </div>
@@ -246,7 +247,7 @@ const board = $("board"), cv = $("cv"), ctx = cv.getContext("2d");
 let S, undoSnap = null, busy = false, aim = 2, hammer = false, uid = 0;
 const balls = new Map();      // id → visual ball {id,v,x,y,vy,form,crack,sq}
 let shards = [], sparks = [], coinsFx = [];
-let W = 0, Hpx = 0, cell = 1, dpr = 1, time = 0;
+let W = 0, Hpx = 0, cell = 1, cellX = 1, bc = 1, dpr = 1, time = 0;   // cell = vertical unit, cellX = track width, bc = ball unit
 
 /* ---------- storage ---------- */
 const store = {
@@ -332,7 +333,7 @@ const label = v => v >= INF ? "∞" : v >= 4194304 ? (v / 1048576) + "M" : v >= 
 
 /* ---------- drawing ---------- */
 function resize(){
-  const r = board.getBoundingClientRect(); W = r.width; Hpx = r.height; cell = W / COLS;
+  const r = board.getBoundingClientRect(); W = r.width; Hpx = r.height; cellX = W / COLS; cell = Hpx / H; bc = Math.min(cell, cellX);
   dpr = Math.min(2, window.devicePixelRatio || 1);
   cv.width = Math.round(W * dpr); cv.height = Math.round(Hpx * dpr);
 }
@@ -373,23 +374,23 @@ function drawBoard(){
   const g = ctx; g.setTransform(dpr, 0, 0, dpr, 0, 0);
   // paper + dot grid
   g.fillStyle = PAPER; g.fillRect(0, 0, W, Hpx);
-  g.fillStyle = "rgba(20,20,20,.13)"; const step = Math.max(12, cell * .22);
+  g.fillStyle = "rgba(20,20,20,.13)"; const step = Math.max(12, cellX * .22);
   for (let y = step / 2; y < Hpx; y += step) for (let x = step / 2; x < W; x += step){ g.beginPath(); g.arc(x, y, 1.1, 0, Math.PI * 2); g.fill(); }
   // spawn band: hazard stripes under the launcher row
   g.save(); g.beginPath(); g.rect(0, cell * .94, W, cell * .1); g.clip();
   g.fillStyle = "#ffd23f"; g.fillRect(0, cell * .94, W, cell * .1);
-  g.fillStyle = INK; const sw = cell * .14;
-  for (let x = -cell; x < W + cell; x += sw * 2){ g.beginPath(); g.moveTo(x, cell * 1.04); g.lineTo(x + sw, cell * 1.04); g.lineTo(x + sw * 2, cell * .94); g.lineTo(x + sw, cell * .94); g.closePath(); g.fill(); }
+  g.fillStyle = INK; const sw = cellX * .14;
+  for (let x = -cellX; x < W + cellX; x += sw * 2){ g.beginPath(); g.moveTo(x, cell * 1.04); g.lineTo(x + sw, cell * 1.04); g.lineTo(x + sw * 2, cell * .94); g.lineTo(x + sw, cell * .94); g.closePath(); g.fill(); }
   g.restore();
   g.fillStyle = INK; g.fillRect(0, cell * .94 - 1.5, W, 3); g.fillRect(0, cell * 1.04 - 1.5, W, 3);
   // tracks
   for (let c = 0; c < COLS; c++){
-    const x0 = c * cell + cell * .08, w = cell * .84, y0 = cell * 1.12, h = Hpx - y0 - cell * .12;
+    const x0 = c * cellX + cellX * .08, w = cellX * .84, y0 = cell * 1.12, h = Hpx - y0 - cell * .12;
     const full = S.grid[c].length >= ROWS;
     const isAim = c === aim && !S.over;
     roundRect(g, x0 + 3, y0 + 3, w, h, w / 2); g.fillStyle = INK; g.fill();
     roundRect(g, x0, y0, w, h, w / 2); g.fillStyle = full ? "#ffd9d4" : isAim ? "#fff1b8" : "#ffffff"; g.fill();
-    g.lineWidth = 2.5; g.strokeStyle = INK; g.stroke();
+    g.lineWidth = 2.7; g.strokeStyle = INK; g.stroke();
     // glass glint on the tube
     g.fillStyle = full ? "rgba(242,103,92,.35)" : "rgba(20,20,20,.06)";
     roundRect(g, x0 + w * .14, y0 + w * .3, w * .1, h - w * .6, w * .05); g.fill();
@@ -398,7 +399,7 @@ function drawBoard(){
   if (!busy && !S.over){
     const col = S.grid[aim];
     if (col.length < ROWS){
-      const gy = slotY(col.length) * cell, gx = (aim + .5) * cell, rr = BALL_R * cell;
+      const gy = slotY(col.length) * cell, gx = (aim + .5) * cellX, rr = BALL_R * bc;
       g.save(); g.setLineDash([5, 5]); g.lineWidth = 2.5; g.strokeStyle = INK;
       g.beginPath(); g.arc(gx, gy, rr, 0, Math.PI * 2); g.stroke();
       g.setLineDash([2, 7]); g.lineWidth = 2.5; g.lineCap = "round";
@@ -408,26 +409,26 @@ function drawBoard(){
   // balls
   for (const b of balls.values()){
     const s = easeOutBack(Math.min(1, b.form));
-    drawGlass(g, b.x * cell, b.y * cell, BALL_R * cell * s, b.v, { sq: b.sq, crack: b.crack, seed: b.seed });
+    drawGlass(g, b.x * cellX, b.y * cell, BALL_R * bc * s, b.v, { sq: b.sq, crack: b.crack, seed: b.seed });
   }
   // launcher
   if (!busy && !S.over){
     const bob = Math.sin(time * 3) * .04;
-    drawGlass(g, (aim + .5) * cell, (.48 + bob) * cell, BALL_R * cell, S.cur, {});
+    drawGlass(g, (aim + .5) * cellX, (.48 + bob) * cell, BALL_R * bc, S.cur, {});
   }
   // shards (flat, ink outline), dust & coins
   for (const s of shards){
-    g.save(); g.translate(s.x * cell, s.y * cell); g.rotate(s.rot); g.globalAlpha = Math.max(0, Math.min(1, s.life * 1.4));
-    g.beginPath(); g.moveTo(s.p[0] * cell, s.p[1] * cell); g.lineTo(s.p[2] * cell, s.p[3] * cell); g.lineTo(s.p[4] * cell, s.p[5] * cell); g.closePath();
+    g.save(); g.translate(s.x * cellX, s.y * cell); g.rotate(s.rot); g.globalAlpha = Math.max(0, Math.min(1, s.life * 1.4));
+    g.beginPath(); g.moveTo(s.p[0] * bc, s.p[1] * bc); g.lineTo(s.p[2] * bc, s.p[3] * bc); g.lineTo(s.p[4] * bc, s.p[5] * bc); g.closePath();
     g.fillStyle = rgba(s.c, 1); g.fill(); g.strokeStyle = INK; g.lineWidth = 1.6; g.lineJoin = "round"; g.stroke(); g.restore();
   }
   for (const p of sparks){
     g.globalAlpha = Math.max(0, p.life); g.fillStyle = p.dust ? rgba(p.c, 1) : INK;
-    g.fillRect(p.x * cell - p.s / 2, p.y * cell - p.s / 2, p.s, p.s);
+    g.fillRect(p.x * cellX - p.s / 2, p.y * cell - p.s / 2, p.s, p.s);
   }
   for (const p of coinsFx){
     g.globalAlpha = Math.max(0, p.life);
-    g.beginPath(); g.arc(p.x * cell, p.y * cell, 7, 0, Math.PI * 2); g.fillStyle = "#ffd23f"; g.fill();
+    g.beginPath(); g.arc(p.x * cellX, p.y * cell, 7, 0, Math.PI * 2); g.fillStyle = "#ffd23f"; g.fill();
     g.lineWidth = 2; g.strokeStyle = INK; g.stroke();
   }
   g.globalAlpha = 1;
@@ -860,7 +861,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number shows the Update bar. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.8.5";
+const APP_VERSION = "0.9.0";
 $("verTxt").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
