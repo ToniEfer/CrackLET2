@@ -1,5 +1,5 @@
 /* CrackLET 2 — offline cache. Bump VERSION after every change so phones pick up the new build. */
-const VERSION = "cracklet2-v0.8.4";
+const VERSION = "cracklet2-v0.8.5";
 const FILES = [
 "./",
 "index.html",
