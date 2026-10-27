@@ -197,6 +197,9 @@ body{
     <div class="row">
       <label for="dIn"><span>Difficulty</span><select id="dIn" class="chip" style="flex:1"><option value="easy">Easy</option><option value="normal" selected>Normal</option><option value="hard">Hard</option></select></label>
     </div>
+    <div class="row">
+      <label for="vIn"><span>Announcer</span><select id="vIn" class="chip" style="flex:1"><option value="classic">Classic · Noah</option><option value="velvet">Velvet · Harper</option></select></label>
+    </div>
     <div class="row"><span>Move: <b id="moves">0</b></span><span>Values in pool: <b id="kval"></b></span></div>
     <div class="row"><span>Seed: <b id="seed"></b></span><span>Fill: <b id="fill"></b></span><span>Help chance: <b id="pity"></b></span></div>
     <table id="pool"></table>
@@ -322,7 +325,8 @@ function find(id){
   return null;
 }
 const at = (c, i) => (c >= 0 && c < COLS && i >= 0) ? S.grid[c][i] : undefined;
-const slotY = i => H - (i + 0.5);
+const SLOT_LIFT = .04;                              // centres the 8 slots inside the drawn tubes
+const slotY = i => H - (i + 0.5) - SLOT_LIFT;
 function compact(){
   const before = new Map(); S.grid.forEach((col, c) => col.forEach((t, i) => before.set(t.id, c + ":" + i)));
   S.grid = S.grid.map(col => col.filter(t => !t.dead));
@@ -398,7 +402,7 @@ function drawBoard(){
   g.fillStyle = INK; g.fillRect(0, cell * .94 - 1.5, W, 3); g.fillRect(0, cell * 1.04 - 1.5, W, 3);
   // tracks
   for (let c = 0; c < COLS; c++){
-    const x0 = c * cellX + cellX * .08, w = cellX * .84, y0 = cell * 1.12, h = Hpx - y0 - cell * .12;
+    const x0 = c * cellX + cellX * .07, w = cellX * .86, y0 = cell * 1.07, h = Hpx - y0 - cell * .05;   // tube spans the 8 slots (1.07–8.95)
     const full = S.grid[c].length >= ROWS;
     const isAim = c === aim && !S.over;
     roundRect(g, x0 + 3, y0 + 3, w, h, w / 2); g.fillStyle = INK; g.fill();
@@ -458,10 +462,17 @@ function step(dt){
     b.x += (tx - b.x) * Math.min(1, dt * 18);
     if (b.y > ty + 1e-3){ b.y = ty; b.vy = 0; }                    // never sink below its slot
     if (b.y < ty - 1e-4 || b.vy !== 0){
+      // phones play sound 20–150 ms late: start the clink that much before the ball touches down
+      if (b.vy > 0 && !b.pre){
+        const d = ty - b.y, g = PHYS.g, tHit = (-b.vy + Math.sqrt(b.vy * b.vy + 2 * g * d)) / g;
+        if (tHit <= audioLead() + dt){ const v = b.vy + g * tHit; b.pre = true; if (v > 4) clink(v); }
+      }
       b.vy += PHYS.g * dt; b.y += b.vy * dt;
       if (b.y >= ty){
         b.y = ty; const impact = b.vy;
-        if (impact > 2.2){ b.vy = -impact * PHYS.rest; b.sq = Math.min(.22, impact * .018); if (impact > 4) clink(impact); }
+        if (!b.pre && impact > 4) clink(impact);
+        b.pre = false;
+        if (impact > 2.2){ b.vy = -impact * PHYS.rest; b.sq = Math.min(.22, impact * .018); }
         else b.vy = 0;
       }
     }
@@ -531,7 +542,7 @@ let actx = null, master = null, muted = store.get("muted", false);
 const samples = {};
 function audio(){
   if (!actx){
-    try { actx = new (window.AudioContext || window.webkitAudioContext)(); master = actx.createGain(); master.gain.value = SFX.master; master.connect(actx.destination); loadSamples(); }
+    try { actx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: "interactive" }); master = actx.createGain(); master.gain.value = SFX.master; master.connect(actx.destination); loadSamples(); }
     catch(e){ actx = null; }
   }
   loadVoice();
@@ -569,6 +580,7 @@ function tone(f, vol, dur, type = "sine", delay = 0){
   g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
   o.connect(g).connect(master); o.start(t); o.stop(t + dur + .02);
 }
+const audioLead = () => actx ? Math.min(.15, (actx.outputLatency || 0) + (actx.baseLatency || 0)) : 0;
 function clink(impact){
   const c = SFX.clink; if (impact < c.minImpact) return;
   const v = Math.min(c.vol, impact * c.vol / 15);
@@ -597,7 +609,8 @@ function sfx(k){ const c = SFX[k]; if (playSample(k)) return; tone(c.freq, c.vol
    lines raised during a move are spoken one after another in the order they appeared (most important first
    if more than maxQueue pile up). p 9 lines (game over, best, revive, start, mode) cut in immediately. */
 const VOICE = {
-  on: store.get("voice", true), vol: .95, gap: .15, maxQueue: 3,   // pause between queued lines (s), max lines waiting
+  on: store.get("voice", true), vol: .95, gap: .15, maxQueue: 3,
+  pack: store.get("voicePack", "classic"),                     // "classic" | "velvet"   // pause between queued lines (s), max lines waiting
   lines: {
     combo2:  { p: 1, k: ["combo2_nice", "combo2_combo", "combo2_double", "combo2_sweet", "combo2_smooth", "combo2_clean", "combo2_two_for_one", "combo2_nicely_done", "combo2_crack"] },
     combo3:  { p: 2, k: ["combo3_triple", "combo3_keep_going", "combo3_ooh_nice", "combo3_three_in_a_row", "combo3_rolling_now", "combo3_on_fire"] },
@@ -620,16 +633,28 @@ const VOICE = {
     start:   { p: 9, k: ["start_drop_it", "start_lets_smash"] }
   }
 };
-const vbuf = {}, vlast = {}; let vpending = [], vqueue = [], vcur = null, vloaded = false;
+/* Velvet: the same events, each line tagged by "temperature" in its name: _w_ warm (up to 512),
+   _h_ hot (1K–64K), _m_ melting (128K+), _a_ any. Hotter levels also keep the level below in rotation. */
+const VELVET = ["ball_a_back_for_more", "ball_a_remember", "ball_a_there_again", "best_a_favorite", "best_a_impressed", "best_a_never_this_good", "burst_a_shattered", "burst_a_speechless", "combo2_h_fragile", "combo2_h_keep_it_coming", "combo2_h_my_type", "combo2_h_nice_touch", "combo2_m_dont_stop", "combo2_m_making_me_crack", "combo2_m_yes", "combo2_w_again", "combo2_w_i_like_that", "combo2_w_mmm_nice", "combo2_w_oh_cute", "combo2_w_smooth", "combo3_h_hot_in_here", "combo3_h_how_you_do_it", "combo3_h_warming_up", "combo3_m_melting", "combo3_m_spoil_me", "combo3_w_attention", "combo3_w_show_off", "danger_h_getting_close", "danger_h_tiger", "danger_m_not_yet", "danger_w_easy", "great_h_blush", "great_h_chain_id_wear", "great_m_perfect", "great_m_what_i_like", "great_w_impressive", "great_w_look_at_you", "herecomes", "inf_a_breath_away", "inf_a_forever", "inf_a_no_limit", "mega_h_dangerous", "mega_h_felt_that", "mega_h_oh_my", "mega_m_breaking_glass", "mega_m_do_it_again", "mode_easy", "mode_hard", "mode_normal", "newball_h_curious", "newball_h_serious", "newball_m_special", "newball_m_surprising", "newball_w_something_new", "outplay_a_bye_bye", "outplay_a_small_stuff", "outplay_a_you_and_me", "over_h_dont_leave", "over_h_one_more", "over_m_come_back", "over_w_already", "over_w_wanted_more", "revive_a_come_back", "revive_a_one_more_chance", "saved_a_my_hero", "saved_a_smooth_save", "saved_a_worried", "start_a_hey_you", "start_a_those_hands", "start_a_waiting", "unlock_h_heating_up", "unlock_h_higher", "unlock_m_no_turning_back", "unlock_m_take_me_higher", "unlock_w_ready", "unlock_w_turn_it_up"];
+const VELVET_EVENT = { cleared: "outplay", easy: "mode_easy", normal: "mode_normal", hard: "mode_hard" };
+const heat = () => (S && S.maxEver >= 131072) ? "m" : (S && S.maxEver >= 1024) ? "h" : "w";
+function packKeys(ev){
+  if (VOICE.pack !== "velvet") return (VOICE.lines[ev] || {}).k || [];
+  const base = VELVET_EVENT[ev] || ev, h = heat(), ok = { w: ["w", "a"], h: ["w", "h", "a"], m: ["h", "m", "a"] }[h];
+  const all = VELVET.filter(k => k === base || k.startsWith(base + "_"));
+  const lvl = all.filter(k => { const m = k.slice(base.length + 1).split("_")[0]; return k === base || ok.includes(m) || !["w", "h", "m", "a"].includes(m); });
+  return lvl.length ? lvl : all;
+}
+const vbuf = {}, vlast = {}; let vpending = [], vqueue = [], vcur = null, vloaded = "";
 // HTMLAudio (not fetch) so the lines also play when the game is opened straight from disk (file://)
 function loadVoice(){
-  if (vloaded) return; vloaded = true;
-  const keys = new Set(Object.values(VOICE.lines).flatMap(l => l.k));
-  keys.forEach(k => { const a = new Audio("voice/" + k + ".mp3"); a.preload = "auto"; vbuf[k] = a;
+  if (vloaded === VOICE.pack) return; vloaded = VOICE.pack;
+  const keys = VOICE.pack === "velvet" ? VELVET : [...new Set(Object.values(VOICE.lines).flatMap(l => l.k))];
+  keys.forEach(k0 => { const k = VOICE.pack + "/" + k0; if (vbuf[k]) return; const a = new Audio("voice/" + k + ".mp3"); a.preload = "auto"; vbuf[k] = a;
     a.addEventListener("ended", () => { if (vcur === a){ vcur = null; setTimeout(playNextLine, VOICE.gap * 1000); } }); a.load(); });
 }
 function pickLine(ev){
-  const l = VOICE.lines[ev]; if (!l) return null; const opts = l.k;
+  const opts = packKeys(ev).map(k => VOICE.pack + "/" + k); if (!opts.length) return null;
   const pool = opts.length > 1 ? opts.filter(k => k !== vlast[ev]) : opts;
   const k = pool[Math.floor(Math.random() * pool.length)]; vlast[ev] = k; return k;
 }
@@ -842,6 +867,8 @@ $("bNew").onclick = () => { $("over").hidden = true; $("tuneSheet").hidden = tru
 $("bTune").onclick = () => { $("tuneSheet").hidden = false; };
 $("bTuneClose").onclick = () => { $("tuneSheet").hidden = true; };
 $("tuneSheet").addEventListener("click", e => { if (e.target.id === "tuneSheet") $("tuneSheet").hidden = true; });
+$("vIn").value = VOICE.pack;
+$("vIn").addEventListener("change", e => { VOICE.pack = e.target.value; store.set("voicePack", VOICE.pack); VOICE.on = true; store.set("voice", true); audio(); loadVoice(); hud(); setTimeout(() => speakNow("start"), 250); });
 $("bVoice").onclick = () => { VOICE.on = !VOICE.on; store.set("voice", VOICE.on); if (VOICE.on){ audio(); speakNow("start"); } hud(); };
 $("bMute").onclick = () => { muted = !muted; store.set("muted", muted); if (!muted) audio(); hud(); };
 [["gIn", "gOut", "g"], ["eIn", "eOut", "rest"], ["sIn", "sOut", "shards"]].forEach(([inp, out, key]) => {
@@ -870,7 +897,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.9.3";
+const APP_VERSION = "0.10.0";
 $("verTxt").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
