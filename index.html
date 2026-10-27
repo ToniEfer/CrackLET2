@@ -141,6 +141,11 @@ body{
 .tune label span{min-width:96px}
 .tune input[type=range]{flex:1;accent-color:var(--coral)}
 .tune output{min-width:34px;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink);font-weight:700}
+.update{position:absolute;left:10px;right:10px;top:10px;z-index:8;display:flex;align-items:center;gap:10px;background:var(--yellow);border:var(--bw) solid var(--ink);border-radius:12px;box-shadow:4px 4px 0 var(--ink);padding:8px 8px 8px 12px;font-size:13px;font-weight:700;line-height:1.2}
+.update span{flex:1;min-width:0}
+.update .btn{padding:6px 12px;font-size:13px;box-shadow:3px 3px 0 var(--ink);background:var(--ink);color:var(--yellow);text-transform:uppercase}
+.update .x{background:none;border:0;font:inherit;font-size:18px;line-height:1;cursor:pointer;color:var(--ink);padding:4px 6px}
+.ver{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
 .chip{background:var(--card);border:2px solid var(--ink);border-radius:8px;padding:4px 8px;font:inherit;font-weight:700;color:var(--ink)}
 </style>
 
@@ -165,6 +170,7 @@ body{
   <div class="boardwrap">
     <div class="board" id="board" tabindex="0" role="application" aria-label="Board: 5 tracks. Click a track or press 1–5 to drop a ball.">
       <canvas id="cv"></canvas>
+      <div class="update" id="updBar" role="status" hidden><span id="updTxt">New version available</span><button class="btn" id="bUpd" type="button">Update</button><button class="x" id="bUpdX" type="button" aria-label="Later">×</button></div>
     </div>
   </div>
 
@@ -179,7 +185,7 @@ body{
 
 <div class="overlay" id="tuneSheet" hidden>
   <div class="card tune">
-    <div class="head"><b>Tuning (prototype)</b><button class="btn ghost" id="bTuneClose" type="button" style="padding:6px 12px;font-size:12px;box-shadow:3px 3px 0 var(--ink)">Close</button></div>
+    <div class="head"><b>Tuning (prototype)</b><span class="ver">v<span id="verTxt"></span></span><button class="btn ghost" id="bTuneClose" type="button" style="padding:6px 12px;font-size:12px;box-shadow:3px 3px 0 var(--ink)">Close</button></div>
     <div class="row">
       <label for="gIn"><span>Gravity</span><input id="gIn" type="range" min="15" max="140" step="1" value="60"><output id="gOut">60</output></label>
       <label for="eIn"><span>Bounce</span><input id="eIn" type="range" min="0" max="0.7" step="0.02" value="0.34"><output id="eOut">0.34</output></label>
@@ -191,6 +197,7 @@ body{
     <div class="row"><span>Move: <b id="moves">0</b></span><span>Values in pool: <b id="kval"></b></span></div>
     <div class="row"><span>Seed: <b id="seed"></b></span><span>Fill: <b id="fill"></b></span><span>Help chance: <b id="pity"></b></span></div>
     <table id="pool"></table>
+    <div class="row"><span>Version: <b id="verTxt2"></b> · <span id="updState">—</span></span><button class="btn ghost" id="bCheck" type="button" style="padding:6px 10px;font-size:12px;box-shadow:3px 3px 0 var(--ink)">Check for update</button></div>
     <div class="row"><span>Last ball: <b id="lastsrc">random</b></span><button class="btn ghost" id="bNew" type="button" style="padding:6px 10px;font-size:12px;box-shadow:3px 3px 0 var(--ink)">New game</button></div>
   </div>
 </div>
@@ -202,6 +209,7 @@ body{
     <p id="overMsg">No room for the next ball.</p>
     <button class="btn primary" id="bRevive" type="button"><span id="reviveLbl">Revive</span><small id="reviveNote">smashes the top 2 balls in full tracks · rewarded ad goes here</small></button>
     <button class="btn ghost" id="bRestart" type="button">Play again</button>
+    <span class="ver" id="verOver"></span>
   </div>
 </div>
 
@@ -847,9 +855,54 @@ function start(data){
   requestAnimationFrame(t => { last = t; loop(t); });
 }
 window.claude?.hot?.snapshot?.(() => ({ S }));
-if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && !window.claude){
-  try { navigator.serviceWorker.register("sw.js").catch(() => {}); } catch(e){}
+/* ---------- version + updates ----------
+   APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
+   version.json (never cached) at start, every 15 min and when it comes back to the foreground;
+   a newer number shows the Update bar. Update = new service worker + reload (the saved game resumes). */
+const APP_VERSION = "0.8.3";
+$("verTxt").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
+const WEB = /^https?:$/.test(location.protocol) && !window.claude;
+let swReg = null, newVer = null;
+const vnum = v => String(v).split(".").map(n => parseInt(n, 10) || 0);
+const newer = (a, b) => { const x = vnum(a), y = vnum(b); for (let i = 0; i < Math.max(x.length, y.length); i++){ if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) > (y[i] || 0); } return false; };
+function setUpdState(t){ $("updState").textContent = t; }
+async function checkUpdate(manual){
+  if (!WEB){ setUpdState("updates only in the installed web version"); return; }
+  setUpdState("checking…");
+  try {
+    const r = await fetch("version.json?t=" + Date.now(), { cache: "no-store" });
+    const j = await r.json();
+    if (newer(j.version, APP_VERSION)){
+      newVer = j.version; setUpdState("v" + newVer + " available");
+      $("updTxt").textContent = `New version ${newVer} is ready${j.notes ? " · " + j.notes : ""}`;
+      if (manual || store.get("updLater", "") !== newVer) $("updBar").hidden = false;
+      try { swReg && swReg.update(); } catch(e){}
+    } else setUpdState("up to date");
+  } catch(e){ setUpdState(navigator.onLine === false ? "offline" : "could not check"); }
 }
+async function applyUpdate(){
+  $("bUpd").disabled = true; $("updTxt").textContent = "Updating…";
+  save();
+  try {
+    if (swReg){
+      await swReg.update();
+      const w = swReg.waiting || swReg.installing;
+      if (w) w.postMessage("skipWaiting");
+    }
+  } catch(e){}
+  let done = false; const go = () => { if (!done){ done = true; location.reload(); } };
+  navigator.serviceWorker?.addEventListener("controllerchange", go);
+  setTimeout(go, 2500);
+}
+$("bUpd").onclick = applyUpdate;
+$("bUpdX").onclick = () => { $("updBar").hidden = true; if (newVer) store.set("updLater", newVer); };
+$("bCheck").onclick = () => checkUpdate(true);
+if (WEB && "serviceWorker" in navigator){
+  try { navigator.serviceWorker.register("sw.js").then(r => { swReg = r; }).catch(() => {}); } catch(e){}
+  setTimeout(() => checkUpdate(false), 1500);
+  setInterval(() => { if (!document.hidden) checkUpdate(false); }, 15 * 60 * 1000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) checkUpdate(false); });
+} else setUpdState(WEB ? "—" : "updates only in the installed web version");
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
 })();
 </script>

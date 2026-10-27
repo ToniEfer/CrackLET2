@@ -8,10 +8,13 @@ HTML5 prototype, installable on Android as an app (PWA), works offline.
 | Folder | Content |
 |---|---|
 | `index.html` | the whole game (one file) |
-| `manifest.webmanifest`, `sw.js` | app install + offline cache (bump `VERSION` in `sw.js` after every change) |
+| `manifest.webmanifest`, `sw.js` | app install + offline cache |
+| `version.json` | current version; the game checks it and offers **Update** |
 | `icons/` | app icons |
 | `fonts/` | Anton and Kalam (SIL Open Font License) |
 | `voice/` | announcer lines (ElevenLabs v4 via Magnific) |
 | `sfx/` | glass sounds (ElevenLabs SFX via Magnific) |
+
+**Releasing a new version:** set the same number in `APP_VERSION` (index.html), `VERSION` (sw.js) and `version.json`, then push. Installed games show the Update bar within 15 min or on next start.
 
 © Toni — prototype, all rights reserved.

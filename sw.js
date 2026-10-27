@@ -1,5 +1,5 @@
 /* CrackLET 2 — offline cache. Bump VERSION after every change so phones pick up the new build. */
-const VERSION = "cracklet2-v0.8.1";
+const VERSION = "cracklet2-v0.8.3";
 const FILES = [
 "./",
 "index.html",
@@ -75,6 +75,7 @@ const FILES = [
 "sfx/crash_s4.mp3"
 ];
 self.addEventListener("install", e => { e.waitUntil(caches.open(VERSION).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });
+self.addEventListener("message", e => { if (e.data === "skipWaiting") self.skipWaiting(); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== VERSION).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener("fetch", e => {
   if (e.request.method !== "GET") return;
