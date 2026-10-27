@@ -599,20 +599,21 @@ function sfx(k){ const c = SFX[k]; if (playSample(k)) return; tone(c.freq, c.vol
 const VOICE = {
   on: store.get("voice", true), vol: .95, gap: .15, maxQueue: 3,   // pause between queued lines (s), max lines waiting
   lines: {
-    combo2:  { p: 1, k: ["combo2_nice", "combo2_combo", "combo2_double"] },
-    combo3:  { p: 2, k: ["combo3_triple", "combo3_keep_going", "combo3_ooh_nice"] },
-    great:   { p: 4, k: ["great_great", "great_now_talking", "great_chain_reaction"] },
-    mega:    { p: 5, k: ["mega_mega", "mega_unstoppable", "mega_what_a_chain"] },
+    combo2:  { p: 1, k: ["combo2_nice", "combo2_combo", "combo2_double", "combo2_sweet", "combo2_smooth", "combo2_clean", "combo2_two_for_one", "combo2_nicely_done", "combo2_crack"] },
+    combo3:  { p: 2, k: ["combo3_triple", "combo3_keep_going", "combo3_ooh_nice", "combo3_three_in_a_row", "combo3_rolling_now", "combo3_on_fire"] },
+    great:   { p: 4, k: ["great_great", "great_now_talking", "great_chain_reaction", "great_look_at_that", "great_big_chain"] },
+    mega:    { p: 5, k: ["mega_mega", "mega_unstoppable", "mega_what_a_chain", "mega_incredible"] },
     newball: { p: 7, k: ["newball_new_record", "newball_never_seen", "newball_brand_new"] },
-    ball:    { p: 3, k: ["ball_back_again", "ball_there_it_is", "ball_big_one"] },
+    ball:    { p: 3, k: ["ball_back_again", "ball_there_it_is", "ball_big_one", "ball_welcome_back", "ball_heavy_hitter"] },
     inf:     { p: 8, k: ["inf_infinity", "inf_beyond_numbers", "inf_legendary"] },
     burst:   { p: 9, k: ["burst_infinity_burst", "burst_boom_cleared", "burst_jackpot"] },
-    unlock:  { p: 6, k: ["unlock_level_up", "unlock_new_balls", "unlock_stepping_up"] },
+    unlock:  { p: 6, k: ["unlock_level_up", "unlock_new_balls", "unlock_stepping_up", "unlock_moving_on_up"] },
     cleared: { p: 3, k: ["clear_clean_sweep", "clear_small_fry", "clear_fresh_space"] },
+    outplay: { p: 3, k: ["out_last_one_gone", "out_see_you_later", "out_out_of_play", "clear_clean_sweep", "clear_small_fry", "clear_fresh_space"] },
     over:    { p: 9, k: ["over_so_close", "over_almost_had_it", "over_one_more_try"] },
     best:    { p: 9, k: ["best_new_high_score", "best_you_did_it", "best_personal_best"] },
     easy:    { p: 9, k: ["mode_easy"] }, normal: { p: 9, k: ["mode_normal"] }, hard: { p: 9, k: ["mode_hard"] },
-    danger:  { p: 0, k: ["danger_careful", "danger_getting_tight"] },
+    danger:  { p: 0, k: ["danger_careful", "danger_getting_tight", "danger_watch_it"] },
     saved:   { p: 5, k: ["saved_saved", "saved_phew"] },
     herecomes:{ p: 9, k: ["herecomes"] },                      // reserved for the v0.8 director (jackpot)
     revive:  { p: 9, k: ["revive_second_chance", "revive_back_in_game"] },
@@ -733,7 +734,7 @@ async function purgeLocked(){
   const gone = before.filter(v => !now.includes(v));
   S.linger = now;
   if (gone.length){
-    setTimeout(() => floatText(`${gone.map(label).join(" · ")} out of play`), 350); say("cleared");
+    setTimeout(() => floatText(`${gone.map(label).join(" · ")} out of play`), 350); say("outplay");
     S.coins += gone.length * 2;
   }
   hud();
@@ -869,7 +870,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.9.2";
+const APP_VERSION = "0.9.3";
 $("verTxt").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
