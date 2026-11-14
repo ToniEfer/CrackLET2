@@ -53,7 +53,7 @@ body{
 .stage{height:100%;display:grid;place-items:center}
 .app{
   width:100%;max-width:430px;height:100%;
-  display:grid;grid-template-rows:auto auto auto minmax(0,1fr);gap:10px;
+  display:grid;grid-template-rows:auto auto auto auto minmax(0,1fr);gap:10px;
   padding-block:calc(12px + env(safe-area-inset-top, 0px)) calc(14px + env(safe-area-inset-bottom, 0px));
 }
 @media (min-width:700px) and (min-height:720px){
@@ -150,6 +150,49 @@ body{
 .ibtn{position:relative}
 .ibtn.badge::after{content:"";position:absolute;top:-6px;right:-6px;width:12px;height:12px;border-radius:50%;background:var(--coral);border:2px solid var(--ink)}
 .ver{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.progress{position:relative}
+.progress s{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:var(--ink);opacity:.3}
+.progress.pulse{animation:ppulse .8s infinite}
+@keyframes ppulse{50%{box-shadow:3px 3px 0 var(--ink),0 0 0 4px rgba(242,103,92,.55)}}
+.scorebox.gold{background:#fff3b5;border-color:#b8860b;box-shadow:4px 4px 0 #b8860b}
+.strip{display:flex;align-items:center;gap:8px;min-width:0;margin:-2px 0 4px}
+.poolbar{display:flex;gap:4px;align-items:center;flex:1;min-width:0;overflow:hidden;padding:0 3px 3px 0}
+.pc{position:relative;flex:none;min-width:30px;height:22px;padding:0 6px;border-radius:99px;background:var(--c,#ccc);border:1.6px solid var(--ink);box-shadow:2px 2px 0 var(--ink);font-family:var(--display);font-size:12px;line-height:19px;color:#fff;-webkit-text-stroke:.6px var(--ink);text-align:center;transition:opacity .3s}
+.pc i{position:absolute;left:0;right:0;bottom:-1px;font-style:normal;font-size:8px;line-height:6px;color:var(--ink);-webkit-text-stroke:0;letter-spacing:-1px}
+.pc.lg{opacity:.45;border-style:dashed}
+.pc.prism{background:var(--navy);color:var(--yellow);overflow:hidden;padding:0 6px 0 4px}
+.pc.prism u{position:absolute;left:0;bottom:0;height:3px;background:var(--yellow)}
+.next{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;white-space:nowrap}
+.next b{font-family:var(--display);font-weight:400;font-size:13px}
+.nbar{width:54px;height:10px;border:1.6px solid var(--ink);border-radius:99px;background:var(--card);overflow:hidden}
+.nbar i{display:block;height:100%;width:0;background:var(--teal);transition:width .3s}
+.daytag{font-size:10px;font-weight:700;text-transform:uppercase;background:var(--purple);color:#fff;border:1.6px solid var(--ink);border-radius:6px;padding:1px 6px;white-space:nowrap}
+.banner{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);z-index:6;pointer-events:none;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px}
+.banner b{font-family:var(--display);font-weight:400;color:var(--yellow);-webkit-text-stroke:2.5px var(--ink);paint-order:stroke fill;text-shadow:4px 4px 0 var(--ink);white-space:nowrap;line-height:1}
+.banner span{font-family:var(--display);font-size:5.6cqw;line-height:1.15;color:#fff;-webkit-text-stroke:1.4px var(--ink);paint-order:stroke fill;text-shadow:3px 3px 0 var(--ink);max-width:86cqw}
+.banner.l2 b{font-size:12cqw}.banner.l3 b{font-size:13cqw}.banner.l4 b{font-size:13.5cqw;color:#fff}
+.banner.go{animation:ban 1.1s forwards}.banner.l3.go{animation-duration:1.5s}.banner.l4.go{animation-duration:2.1s}
+@keyframes ban{0%{opacity:0;transform:translate(-50%,-50%) scale(.5) rotate(-6deg)}12%{opacity:1;transform:translate(-50%,-50%) scale(1.12) rotate(-3deg)}22%{transform:translate(-50%,-50%) scale(1) rotate(-3deg)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-60%) scale(1) rotate(-3deg)}}
+.board.flash::after{content:"";position:absolute;inset:0;background:#fff;z-index:4;animation:flash .5s forwards;pointer-events:none}
+@keyframes flash{0%{opacity:.9}100%{opacity:0}}
+.board.saved{animation:saved .7s}
+@keyframes saved{30%{box-shadow:6.5px 6.5px 0 var(--ink),0 0 0 6px var(--green)}}
+.tagf{position:absolute;transform:translate(-50%,-120%);font-family:var(--display);font-size:6cqw;color:#fff;-webkit-text-stroke:1.5px var(--ink);paint-order:stroke fill;pointer-events:none;z-index:5;animation:tagUp .9s forwards;white-space:nowrap}
+@keyframes tagUp{0%{opacity:0}20%{opacity:1}100%{opacity:0;transform:translate(-50%,-220%)}}
+.bst span em{font-style:normal}
+.card .sub{color:var(--ink);font-weight:700}
+.card .why{font-size:11px}
+.obtns{display:flex;flex-direction:column;gap:12px}
+.row2{display:flex;gap:8px}.row2 .btn{flex:1}
+.btn.sm{padding:7px 8px;font-size:12px;box-shadow:3px 3px 0 var(--ink)}
+.algrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+.al{background:var(--c);border:2px solid var(--ink);border-radius:10px;box-shadow:2px 2px 0 var(--ink);padding:4px;text-align:center;color:#fff}
+.al b{display:block;font-family:var(--display);font-weight:400;font-size:16px;-webkit-text-stroke:.8px var(--ink)}
+.al small{display:block;font-size:9px;color:var(--ink);background:var(--card);border-radius:5px;margin-top:2px;line-height:1.2}
+.al.no{background:#e9e2d6;color:#b7ae9f}.al.no b{-webkit-text-stroke:0}
+.al.pr{background:var(--navy);color:var(--yellow)}
+.album ul{margin:4px 0 0;padding-left:16px;color:var(--ink)}
+.tune small{color:var(--muted);font-weight:500}
 .chip{background:var(--card);border:2px solid var(--ink);border-radius:8px;padding:4px 8px;font:inherit;font-weight:700;color:var(--ink)}
 </style>
 
@@ -164,13 +207,19 @@ body{
     <div class="coins" title="Coins"><span class="coin"></span><span id="coins">0</span></div>
   </header>
 
-  <div class="progress" id="prog" title="Progress to your best score"><i></i></div>
+  <div class="progress" id="prog" title="Progress to your best score"><i></i><s style="left:25%"></s><s style="left:50%"></s><s style="left:75%"></s></div>
+
+  <div class="strip">
+    <span class="daytag" id="dayTag" hidden></span>
+    <span class="poolbar" id="poolBar" title="Balls in play · Prism at the end"></span>
+    <span class="next" title="Next new ball"><span>Next <b id="nextLbl">16</b></span><span class="nbar" id="nextBar"><i></i></span></span>
+  </div>
 
   <div class="meta">
     <span class="boosters">
-    <button class="bst" id="bUndo" type="button" aria-label="Back (undo)" title="Back"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg><span><i class="coin"></i>20</span><b>Back</b></button>
-    <button class="bst" id="bSwap" type="button" aria-label="Swap ball" title="Swap ball"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4 3 8l4 4"/><path d="M3 8h14"/><path d="m17 20 4-4-4-4"/><path d="M21 16H7"/></svg><span><i class="coin"></i>10</span><b>Swap</b></button>
-    <button class="bst" id="bHammer" type="button" aria-label="Smash a ball" title="Smash"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 12-8.5 8.5a2.12 2.12 0 0 1-3-3L12 9"/><path d="M17.64 15 22 10.64"/><path d="m20.91 11.7-1.25-1.25c-.6-.6-.93-1.4-.93-2.25v-.86L16.01 4.6a5.56 5.56 0 0 0-3.94-1.64H9l.92.82A6.18 6.18 0 0 1 12 8.4v1.56l2 2h2.47l2.26 1.91"/></svg><span><i class="coin"></i>50</span><b>Smash</b></button>
+    <button class="bst" id="bUndo" type="button" aria-label="Back (undo)" title="Back"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg><span><i class="coin"></i><em id="cUndo">20</em></span><b>Back</b></button>
+    <button class="bst" id="bSwap" type="button" aria-label="Swap ball" title="Swap ball"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4 3 8l4 4"/><path d="M3 8h14"/><path d="m17 20 4-4-4-4"/><path d="M21 16H7"/></svg><span><i class="coin"></i><em id="cSwap">15</em></span><b>Swap</b></button>
+    <button class="bst" id="bHammer" type="button" aria-label="Smash a ball" title="Smash"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 12-8.5 8.5a2.12 2.12 0 0 1-3-3L12 9"/><path d="M17.64 15 22 10.64"/><path d="m20.91 11.7-1.25-1.25c-.6-.6-.93-1.4-.93-2.25v-.86L16.01 4.6a5.56 5.56 0 0 0-3.94-1.64H9l.92.82A6.18 6.18 0 0 1 12 8.4v1.56l2 2h2.47l2.26 1.91"/></svg><span><i class="coin"></i><em id="cHammer">60</em></span><b>Smash</b></button>
     </span>
     <span class="metabtns"><button class="ibtn" id="bVoice" type="button" aria-label="Announcer on" title="Announcer on"><svg class="ico" id="voiceIco" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1"/><path d="M12 18v4"/><path d="M8 22h8"/></svg></button><button class="ibtn" id="bMute" type="button" aria-label="Sound on" title="Sound on"><svg class="ico" id="muteIco" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button><button class="ibtn" id="bTune" type="button" aria-label="Tuning" title="Tuning"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21v-7"/><path d="M4 10V3"/><path d="M12 21v-9"/><path d="M12 8V3"/><path d="M20 21v-5"/><path d="M20 12V3"/><path d="M1 14h6"/><path d="M9 8h6"/><path d="M17 16h6"/></svg></button></span>
   </div>
@@ -178,6 +227,7 @@ body{
   <div class="boardwrap">
     <div class="board" id="board" tabindex="0" role="application" aria-label="Board: 5 tracks. Click a track or press 1–5 to drop a ball.">
       <canvas id="cv"></canvas>
+      <div class="banner" id="banner" hidden><b id="banT"></b><span id="banS"></span></div>
     </div>
   </div>
 
@@ -198,6 +248,13 @@ body{
       <label for="dIn"><span>Difficulty</span><select id="dIn" class="chip" style="flex:1"><option value="easy">Easy</option><option value="normal" selected>Normal</option><option value="hard">Hard</option></select></label>
     </div>
     <div class="row">
+      <label for="clIn"><span>Classic</span><input id="clIn" type="checkbox"><small>pure random order, no Director</small></label>
+      <label for="bdIn"><span>Bag dots</span><input id="bdIn" type="checkbox"><small>show balls left in the bag</small></label>
+    </div>
+    <div class="row2"><button class="btn ghost sm" id="bDaily2" type="button">Daily challenge</button><button class="btn ghost sm" id="bAlbum2" type="button">Album</button></div>
+    <div class="row"><span>Director this game: <b id="dirTxt">—</b></span></div>
+    <div class="row"><span>Last games (median): <b id="teleTxt">—</b></span></div>
+    <div class="row">
       <label for="vIn"><span>Announcer</span><select id="vIn" class="chip" style="flex:1"><option value="classic">Classic · Noah</option><option value="velvet">Velvet · Harper</option></select></label>
     </div>
     <div class="row"><span>Move: <b id="moves">0</b></span><span>Values in pool: <b id="kval"></b></span></div>
@@ -213,9 +270,24 @@ body{
     <h2 id="overTitle">Tracks full</h2>
     <div class="big" id="overScore">0</div>
     <p id="overMsg">No room for the next ball.</p>
-    <button class="btn primary" id="bRevive" type="button"><span id="reviveLbl">Revive</span><small id="reviveNote">smashes the top 2 balls in full tracks · rewarded ad goes here</small></button>
-    <button class="btn ghost" id="bRestart" type="button">Play again</button>
+    <p class="sub" id="overSub"></p>
+    <div class="obtns">
+      <button class="btn primary" id="bRevive" type="button"><span id="reviveLbl">Revive</span><small id="reviveNote">smashes the top 2 balls in full tracks</small></button>
+      <button class="btn ghost" id="bRestart" type="button">Play again</button>
+    </div>
+    <button class="btn ghost sm" id="bShare" type="button" hidden>Share</button>
+    <div class="row2"><button class="btn ghost sm" id="bDaily" type="button">Daily challenge</button><button class="btn ghost sm" id="bAlbum" type="button">Album</button></div>
+    <p class="why" id="overWhy"></p>
     <span class="ver" id="verOver"></span>
+  </div>
+</div>
+
+<div class="overlay" id="album" hidden>
+  <div class="card tune album">
+    <div class="head"><b>Album</b><button class="btn ghost" id="bAlbumClose" type="button" style="padding:6px 12px;font-size:12px;box-shadow:3px 3px 0 var(--ink)">Close</button></div>
+    <div class="algrid" id="alGrid"></div>
+    <div class="row"><b>Records</b></div><ul id="alRecs"></ul>
+    <div class="row"><b>Daily · last 7 days</b></div><ul id="alDaily"></ul>
   </div>
 </div>
 
@@ -223,25 +295,23 @@ body{
 (() => {
 const COLS = 5, ROWS = 8, H = ROWS + 1;           // board is 5 × 9 cells: 1 spawn row + 8 rows
 const BALL_R = 0.42;                               // radius in cells
-const COST = { undo: 20, swap: 10, hammer: 50, revive: 40 };
+const COST = { undo: 20, swap: 15, hammer: 60, revive: 60 };   // base prices; every use in a game doubles the next one (up to ×4)
 const MILESTONES = [128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536];
 /* flat candy palette (neo-brutalist): 2 teal · 4 yellow · 8 coral · 16 purple · 32 blue · 64 orange · 128 green · 256 pink · 512 cobalt · 1024 red · 2048 emerald · 4096 lilac · 8K gold · 16K sky · 32K brick · 64K violet */
 const COLORS = ["#3cc5b4","#ffd23f","#f2675c","#9a7cf0","#4aa3f0","#f39a4b","#6cc24a","#f27ab0","#2f5bd9","#e5484d","#1fa37a","#c2a3f7","#f0b429","#7fd3ee","#c2553f","#6d4ff0"];
 const INK = "#141414", PAPER = "#fffaf1";
 const PHYS = { g: 60, rest: 0.34, shards: 16 };     // cells/s², bounce, shards per ball
-/* v0.6 generator, modelled on the original 2048 Shooter (79 observed spawns):
-   - the pool is always 4 neighbouring values, equally likely
-   - values are dealt from a shuffled "bag" (each value twice), so repeats are rarer than pure chance
-   - no helper balls
-   - the pool climbs slowly: top exponent = 4 + floor((L − 8) × rate), L = log2 of the biggest ball so far
-     (rate 0.75 matches the original: biggest 256 → pool 2–16, biggest 2048M → pool up to 2048K) */
+/* v0.11 generator: the v0.6 bag (4 neighbouring values, each twice per bag, the pool climbs with the biggest ball)
+   plus the Director, which only chooses WHICH ball of the current bag comes next – it never adds or removes balls.
+   intro / awk / rescue = Director chances, prism = the ball two of which make a Prism. */
 const PRESETS = {
-  easy:   { name: "Easy",   rate: .60, bag: 2 },
-  normal: { name: "Normal", rate: .75, bag: 2 },
-  hard:   { name: "Hard",   rate: .90, bag: 2 }
+  easy:   { name: "Easy",   rate: .60, bag: 2, intro: .25, awk: .20, rescue: .65, prism: 1024 },
+  normal: { name: "Normal", rate: .75, bag: 2, intro: .15, awk: .30, rescue: .55, prism: 2048 },
+  hard:   { name: "Hard",   rate: .90, bag: 2, intro: .05, awk: .40, rescue: .35, prism: 4096 }
 };
 const POOL_SIZE = 4;
-const INF = Math.pow(2, 32);               // the final ball: 2048M + 2048M = ∞
+const PRISM = Math.pow(2, 48);             // the final ball: two balls of S.thr make a Prism; two Prisms burst
+const BOT = window.__BOT__ || null;        // headless test bot (tools/bot.mjs)
 let diff = "normal";
 const D = () => PRESETS[diff];
 
@@ -270,7 +340,7 @@ function rnd(){
 /* ---------- generator ---------- */
 function poolK(){ return POOL_SIZE; }
 function poolRange(){
-  const L = Math.floor(Math.log2(Math.max(8, Math.min(S.maxEver, INF / 2))));
+  const L = Math.floor(Math.log2(Math.max(8, Math.min(S.maxEver, PRISM / 2))));
   const topExp = Math.max(4, 4 + Math.floor((L - 8) * D().rate));
   const upper = Math.pow(2, topExp);
   return { lower: upper / Math.pow(2, POOL_SIZE - 1), upper };
@@ -293,31 +363,130 @@ function poolWeights(){
   return c.map(o => ({ v: o.v, p: o.n / tot, linger: o.linger }));
 }
 const fillRatio = () => S.grid.reduce((a, c) => a + c.length, 0) / (COLS * ROWS);
-const pityChance = () => 0;   // no helper balls (original has none)
-function gen(){
-  const counts = poolCounts(), key = counts.map(o => o.v + "x" + o.n).join(",");
-  if (!S.bag || !S.bag.length || S.bagLower !== key){
-    const bag = [];
-    for (const o of counts) for (let k = 0; k < o.n; k++) bag.push(o.v);
-    for (let i = bag.length - 1; i > 0; i--){ const j = Math.floor(rnd() * (i + 1)); [bag[i], bag[j]] = [bag[j], bag[i]]; }
-    S.bag = bag; S.bagLower = key;
-  }
-  S.lastSrc = `bag (${S.bag.length - 1} left)`;
-  return S.bag.pop();
+const pityChance = () => S.lastP || 0;
+function poolKey(){ return poolCounts().map(o => o.v + "x" + o.n).join(","); }
+function buildBag(){
+  const bag = [];
+  for (const o of poolCounts()) for (let k = 0; k < o.n; k++) bag.push(o.v);
+  for (let i = bag.length - 1; i > 0; i--){ const j = Math.floor(rnd() * (i + 1)); [bag[i], bag[j]] = [bag[j], bag[i]]; }
+  return bag;
 }
+function refillBag(){ const key = poolKey(); if (!S.bag || !S.bag.length || S.bagLower !== key){ S.bag = buildBag(); S.bagLower = key; } }
+const dirOn = () => !S.daily && !store.get("classic", false) && !(BOT && BOT.classic);
+const costOf = k => COST[k] * Math.pow(2, Math.min(2, (S.used && S.used[k]) || 0));
+const freeTracks = () => S.grid.filter(c => c.length < ROWS).length;
+const mass = (T) => S.grid.reduce((a, c) => a + c.reduce((b, t) => b + (t.v < PRISM && t.v >= T / 8 && t.v < T ? t.v : 0), 0), 0);   // material within 3 merges of target T
+
+/* ---------- merge rules (shared by the game, the Director and the bot) ---------- */
+function locate(g, t){ for (let c = 0; c < COLS; c++){ const i = g[c].indexOf(t); if (i >= 0) return { c, i }; } return null; }
+function mergePlan(g, t){
+  const p = locate(g, t); if (!p) return null;
+  const { c, i } = p, v = t.v;
+  const N = [[c, i - 1], [c - 1, i], [c + 1, i], [c, i + 1]]
+    .map(([cc, ii]) => ({ c: cc, i: ii, t: (cc >= 0 && cc < COLS && ii >= 0) ? g[cc][ii] : undefined })).filter(o => o.t && o.t.v === v);
+  if (!N.length) return null;
+  const group = [{ c, i, t }, ...N];
+  if (v >= PRISM){                     // Prism + Prism: the older one stays, the newer bursts and takes its whole track with it
+    let keep = group[0]; for (const o of group) if ((o.t.pid ?? 1e9) < (keep.t.pid ?? 1e9)) keep = o;
+    const gone = new Set();
+    for (const o of group) if (o !== keep){ gone.add(o.t); for (const x of g[o.c]) if (x !== keep.t) gone.add(x); }
+    return { kind: "burst", group, target: keep, gone: [...gone] };
+  }
+  let target = group[0]; for (const o of group) if (o.i < target.i) target = o;
+  let newV = v * Math.pow(2, N.length); if (newV >= 2 * S.thr) newV = PRISM;
+  return { kind: "merge", group, target, newV, gone: group.filter(o => o !== target).map(o => o.t) };
+}
+function applyPlan(g, pl){
+  const before = new Map(); g.forEach((col, c) => col.forEach((t, i) => before.set(t, c * 16 + i)));
+  for (const t of pl.gone) t.dead = true;
+  if (pl.kind === "merge"){ pl.target.t.v = pl.newV; if (pl.newV >= PRISM && pl.target.t.pid == null) pl.target.t.pid = g === S.grid ? (S.pidSeq = (S.pidSeq || 0) + 1) : 1e9; }
+  const grid = g.map(col => col.filter(t => !t.dead)), moved = [];
+  grid.forEach((col, c) => col.forEach((t, i) => { if (before.get(t) !== c * 16 + i) moved.push(t); }));
+  return { grid, moved };
+}
+function nextDirty(pl, moved, dirty){
+  const lead = pl.kind === "merge" ? [pl.target.t] : [];
+  return [...lead, ...moved.filter(m => !lead.includes(m)), ...dirty.filter(d => !lead.includes(d) && !moved.includes(d) && !d.dead)];
+}
+/* chain length if ball v drops into track c now (−1 = no room); runs on a copy, no animation */
+function simChain(c, v, grid = S.grid){
+  let g = grid.map(col => col.map(t => ({ v: t.v, id: t.id, pid: t.pid })));
+  if (g[c].length >= ROWS && g[c][ROWS - 1].v !== v) return -1;
+  const o = { v, id: 1e15 }; g[c].push(o);
+  let dirty = [o], chain = 0, n = 0;
+  while (dirty.length && n++ < 400){
+    const t = dirty.shift(); if (t.dead) continue;
+    const pl = mergePlan(g, t); if (!pl) continue;
+    chain++; const r = applyPlan(g, pl); g = r.grid; dirty = nextDirty(pl, r.moved, dirty);
+  }
+  return chain;
+}
+
+/* ---------- the Director (v0.11) ----------
+   Before every deal it rates the board and may pick WHICH ball of the current bag comes next:
+   intro (first balls: a ball that merges) · building (calm board: an awkward ball) · peak (pure bag) ·
+   crisis (full board: the ball with the longest chain, max 2 in a row) · relief (pure bag after a big moment) ·
+   jackpot (after a drought: the chain ball, chance grows with the drought). Every bag still holds each value twice. */
+function director(exclude){
+  refillBag();
+  if (exclude != null && !S.bag.some(v => v !== exclude)) S.bag = buildBag().concat(S.bag);
+  S.dealN = (S.dealN || 0) + 1;
+  const vals = [...new Set(S.bag)].filter(v => v !== exclude);
+  const take = v => { S.bag.splice(S.bag.lastIndexOf(v), 1); return v; };
+  const plain = () => { for (let i = S.bag.length - 1; i >= 0; i--) if (S.bag[i] !== exclude) return take(S.bag[i]); };
+  if (S.relief > 0) S.relief--;
+  if (S.rescueCool > 0) S.rescueCool--;
+  S.lastP = 0;
+  if (!dirOn() || vals.length < 2){ S.lastSrc = "bag"; S.rescueRun = 0; return plain(); }
+  const best = {}; let M = 0;
+  for (const v of vals){ let b = -1; for (let c = 0; c < COLS; c++) b = Math.max(b, simChain(c, v)); best[v] = b; if (b >= 1) M++; }
+  const F = fillRatio(), Hh = Math.max(...S.grid.map(c => c.length)) / ROWS, free = freeTracks();
+  const T = .5 * F + .3 * (1 - M / vals.length) + .2 * Hh;
+  const P = D(), m = S.frMod || {}, top = Math.max(...vals.map(v => best[v]));
+  const any = f => { const ok = vals.filter(f); return ok.length ? ok[Math.floor(rnd() * ok.length)] : null; };
+  const crisis = T >= .8 || free <= 1;
+  let pick = null, src = "bag";
+  if (S.drought >= 6 && top >= 4){ S.lastP = Math.min(.6, .05 * S.drought); if (rnd() < S.lastP){ pick = any(v => best[v] === top); src = "jackpot"; } }
+  if (pick != null){}
+  else if (crisis){ if (!S.rescueCool && top >= 1){ S.lastP = P.rescue + (m.rescue || 0); if (rnd() < S.lastP){ pick = any(v => best[v] === top); src = "rescue"; } } }
+  else if (S.dealN <= (S.introLen || 30)){ S.lastP = P.intro; if (rnd() < S.lastP){ pick = any(v => best[v] >= 1); src = "intro"; } }
+  else if (T < .45 && free >= 3 && !(S.relief > 0)){ S.lastP = P.awk + (m.awk || 0); if (rnd() < S.lastP){ pick = any(v => best[v] === 0); src = "awkward"; } }
+  if (src === "rescue" && pick != null){ S.rescueRun = (S.rescueRun || 0) + 1; if (S.rescueRun >= 2){ S.rescueRun = 0; S.rescueCool = 2; } } else S.rescueRun = 0;
+  if (S.crisisN != null && crisis && !S.inCrisis){ S.crisisN++; } S.inCrisis = crisis;
+  if (pick == null){ S.lastSrc = "bag"; return plain(); }
+  S.dirN = (S.dirN || 0) + 1; S.lastSrc = src; return take(pick);
+}
+function gen(){ return director(); }
 
 /* ---------- state ---------- */
 const clone = o => JSON.parse(JSON.stringify(o));
-function newGame(seed){
+let lastOverAt = 0;
+function norm(s){
+  const d = { thr: D().prism, used: { undo: 0, swap: 0, hammer: 0 }, prisms: 0, pidSeq: 0, dealN: 0, dirN: 0, relief: 0, rescueRun: 0, rescueCool: 0, drought: 0,
+    introLen: 30, frMod: null, danger: false, bestChain: 0, comboPts: 0, comboN: 0, ch4: 0, earned: 0, spent: 0, marks: [], firstChain: 0, t0: Date.now(),
+    daily: null, crisisN: 0, savedN: 0, inCrisis: false, gold: false };
+  for (const k in d) if (s[k] === undefined) s[k] = d[k];
+  if (s.nxt != null){ (s.bag = s.bag || []).push(s.nxt); delete s.nxt; }
+  return s;
+}
+function newGame(seed, opt = {}){
   seed = seed ?? (Date.now() % 1e9);
-  S = { grid: Array.from({ length: COLS }, () => []), score: 0, maxEver: 8, seed, rs: seed, cur: 2, nxt: 2,
-        coins: store.get("coins", 100), best: store.get("best", 0), revives: 0, over: false, lastSrc: "random", reached: [], moves: 0, hist: [], lowerPrev: 2, bag: [], bagLower: "", linger: [] };
-  S.startBest = S.best;
-  S.cur = gen(); S.nxt = gen();
+  const daily = opt.daily || null;
+  const p = store.get("frP", null); if (p){ store.set("fr", Math.max(-5, Math.min(5, store.get("fr", 0) + p.d))); store.set("frP", null); }
+  S = norm({ grid: Array.from({ length: COLS }, () => []), score: 0, maxEver: 8, seed, rs: seed, cur: 2,
+        coins: store.get("coins", 100), best: store.get("best", 0), revives: 0, over: false, lastSrc: "bag", reached: [], moves: 0, hist: [], lowerPrev: 2, bag: [], bagLower: "", linger: [], daily });
+  S.startBest = daily ? ((store.get("daily", {})[daily] || {}).score || 0) : S.best;
+  const fr = store.get("fr", 0);
+  if (!daily && dirOn() && !BOT){ if (fr >= 3){ S.introLen = 45; S.frMod = { rescue: .1 }; } else if (fr <= -3) S.frMod = { awk: .1 }; }
+  if (!daily){ S.gold = store.get("gold", false); store.set("gold", false); }
+  S.cur = gen();
   undoSnap = null; hammer = false; shards = []; sparks = [];
+  $("prog").classList.remove("pulse");
+  if (lastOverAt){ teleRestart(performance.now() - lastOverAt); lastOverAt = 0; }
   rebuild(); hud(); save();
 }
-function save(){ store.set("game6", S.over ? null : S); store.set("coins", S.coins); store.set("best", S.best); }
+const saveKey = () => S && S.daily ? "daily7" : "game7";
+function save(){ if (BOT) return; store.set(saveKey(), S.over ? null : S); store.set("coins", S.coins); store.set("best", S.best); }
 
 /* grid[c] is bottom → top. slot i sits at y = H - (i + .5) cells from the top */
 function find(id){
@@ -327,26 +496,21 @@ function find(id){
 const at = (c, i) => (c >= 0 && c < COLS && i >= 0) ? S.grid[c][i] : undefined;
 const SLOT_LIFT = .04;                              // centres the 8 slots inside the drawn tubes
 const slotY = i => H - (i + 0.5) - SLOT_LIFT;
-function compact(){
-  const before = new Map(); S.grid.forEach((col, c) => col.forEach((t, i) => before.set(t.id, c + ":" + i)));
-  S.grid = S.grid.map(col => col.filter(t => !t.dead));
-  const moved = []; S.grid.forEach((col, c) => col.forEach((t, i) => { if (before.get(t.id) !== c + ":" + i) moved.push(t.id); }));
-  return moved;
-}
+function compact(){ const r = applyPlan(S.grid, { kind: "none", gone: [] }); S.grid = r.grid; return r.moved; }
 function rebuild(){
   balls.clear();
   S.grid.forEach((col, c) => col.forEach((t, i) => { uid = Math.max(uid, t.id); balls.set(t.id, mkBall(t, c + .5, slotY(i))); }));
 }
-function mkBall(t, x, y){ return { id: t.id, v: t.v, x, y, vy: 0, form: 1, crack: 0, sq: 0, seed: Math.random() * 1000 }; }
+function mkBall(t, x, y){ return { id: t.id, v: t.v, n: t.n || 0, x, y, vy: 0, form: 1, crack: 0, sq: 0, pulse: 0, seed: Math.random() * 1000 }; }
 
 /* ---------- colour helpers ---------- */
 const hex = h => [1, 3, 5].map(k => parseInt(h.slice(k, k + 2), 16));
 const rgba = (c, a) => `rgba(${c[0]|0},${c[1]|0},${c[2]|0},${a})`;
 const mix = (a, b, t) => a.map((x, i) => x + (b[i] - x) * t);
 const WHITE = [255, 255, 255], BLACK = [0, 0, 0];
-const colorOf = v => v >= INF ? hex("#141414") : hex(COLORS[(Math.log2(v) - 1) % COLORS.length]);
+const colorOf = v => v >= PRISM ? hex("#2f405b") : hex(COLORS[(Math.log2(v) - 1) % COLORS.length]);
 const textOn = c => (c[0] * .299 + c[1] * .587 + c[2] * .114) > 150 ? INK : "#ffffff";
-const label = v => v >= INF ? "∞" : v >= 4194304 ? (v / 1048576) + "M" : v >= 8192 ? (v / 1024) + "K" : String(v);
+const label = v => v >= PRISM ? "Prism" : v >= 4194304 ? (v / 1048576) + "M" : v >= 8192 ? (v / 1024) + "K" : String(v);
 
 /* ---------- drawing ---------- */
 function resize(){
@@ -359,7 +523,7 @@ new ResizeObserver(resize).observe(board);
 function drawGlass(g, x, y, r, v, opt = {}){
   // flat candy ball (layout v2): hard offset shadow, flat fill, 2.2/28 ink outline, white rim glint,
   // white Anton number with a thin ink outline; ∞ = navy ball with a big yellow sign
-  const isInf = v >= INF, c = isInf ? "#2f405b" : colorOf(v), alpha = opt.alpha ?? 1, sq = opt.sq || 0, lw = Math.max(1.6, r * .079);
+  const isInf = v >= PRISM, c = isInf ? "#2f405b" : colorOf(v), alpha = opt.alpha ?? 1, sq = opt.sq || 0, lw = Math.max(1.6, r * .079);
   g.save(); g.translate(x, y + sq * r * .5); g.scale(1 + sq, 1 - sq); g.globalAlpha = alpha;
   g.beginPath(); g.arc(r * .14, r * .16, r, 0, Math.PI * 2); g.fillStyle = INK; g.fill();
   g.beginPath(); g.arc(0, 0, r, 0, Math.PI * 2); g.fillStyle = rgba(c, 1); g.fill();
@@ -368,6 +532,7 @@ function drawGlass(g, x, y, r, v, opt = {}){
   g.beginPath(); g.arc(0, 0, r * .851, Math.PI * 1.198, Math.PI * 1.5);
   g.moveTo(-r * .851, 0); g.arc(0, 0, r * .851, Math.PI, Math.PI * 1.117);
   g.lineWidth = Math.max(1.2, r * .0668); g.strokeStyle = "#ffffff"; g.lineCap = "round"; g.stroke(); g.lineCap = "butt";
+  if (isInf){ prismGlyph(g, r, opt.n || 0); g.restore(); return; }
   const L = label(v); const fs = r * (isInf ? 2.1 : L.length <= 1 ? .93 : L.length === 2 ? .86 : L.length === 3 ? .79 : L.length === 4 ? .71 : .6);
   g.font = `${fs}px Anton, Impact, "Arial Narrow Bold", sans-serif`; g.textAlign = "center"; g.textBaseline = "middle";
   const ty = isInf ? r * .02 : r * .05;
@@ -387,6 +552,19 @@ function drawGlass(g, x, y, r, v, opt = {}){
   g.restore();
 }
 
+function prismGlyph(g, r, n){
+  const s = r * (n ? .44 : .6), oy = n ? -r * .2 : r * .04;
+  ["#f2675c", "#ffd23f", "#3cc5b4", "#4aa3f0"].forEach((c, k) => {
+    g.beginPath(); g.moveTo(s * .3, oy + s * .05 + k * s * .1); g.lineTo(r * .9, oy - s * .3 + k * s * .26);
+    g.strokeStyle = c; g.lineWidth = Math.max(1.4, r * .08); g.lineCap = "round"; g.stroke();
+  });
+  g.beginPath(); g.moveTo(0, oy - s); g.lineTo(s * .92, oy + s * .62); g.lineTo(-s * .92, oy + s * .62); g.closePath();
+  g.fillStyle = "#ffffff"; g.fill(); g.lineWidth = Math.max(1.6, r * .09); g.strokeStyle = INK; g.lineJoin = "round"; g.stroke();
+  if (n){
+    const fs = r * .46; g.font = `${fs}px Anton, Impact, sans-serif`; g.textAlign = "center"; g.textBaseline = "middle";
+    g.lineWidth = Math.max(1.4, fs * .12); g.strokeStyle = INK; g.strokeText("×" + n, 0, r * .52); g.fillStyle = "#ffd23f"; g.fillText("×" + n, 0, r * .52);
+  }
+}
 function drawBoard(){
   const g = ctx; g.setTransform(dpr, 0, 0, dpr, 0, 0);
   // paper + dot grid
@@ -399,6 +577,7 @@ function drawBoard(){
   g.fillStyle = INK; const sw = cellX * .14;
   for (let x = -cellX; x < W + cellX; x += sw * 2){ g.beginPath(); g.moveTo(x, cell * 1.04); g.lineTo(x + sw, cell * 1.04); g.lineTo(x + sw * 2, cell * .94); g.lineTo(x + sw, cell * .94); g.closePath(); g.fill(); }
   g.restore();
+  if (S.danger && !S.over){ g.fillStyle = `rgba(229,72,77,${.35 + .35 * Math.sin(time * 6)})`; g.fillRect(0, cell * .94, W, cell * .1); }
   g.fillStyle = INK; g.fillRect(0, cell * .94 - 1.5, W, 3); g.fillRect(0, cell * 1.04 - 1.5, W, 3);
   // tracks
   for (let c = 0; c < COLS; c++){
@@ -407,7 +586,7 @@ function drawBoard(){
     const isAim = c === aim && !S.over;
     roundRect(g, x0 + 3, y0 + 3, w, h, w / 2); g.fillStyle = INK; g.fill();
     roundRect(g, x0, y0, w, h, w / 2); g.fillStyle = full ? "#ffd9d4" : isAim ? "#fff1b8" : "#ffffff"; g.fill();
-    g.lineWidth = 2.7; g.strokeStyle = INK; g.stroke();
+    const warn = full && S.danger && !S.over; g.lineWidth = warn ? 4.5 : 2.7; g.strokeStyle = warn ? "#e5484d" : INK; g.stroke();
     // glass glint on the tube
     g.fillStyle = full ? "rgba(242,103,92,.35)" : "rgba(20,20,20,.06)";
     roundRect(g, x0 + w * .14, y0 + w * .3, w * .1, h - w * .6, w * .05); g.fill();
@@ -425,8 +604,8 @@ function drawBoard(){
   }
   // balls
   for (const b of balls.values()){
-    const s = easeOutBack(Math.min(1, b.form));
-    drawGlass(g, b.x * cellX, b.y * cell, BALL_R * bc * s, b.v, { sq: b.sq, crack: b.crack, seed: b.seed });
+    const s = easeOutBack(Math.min(1, b.form)) * (b.pulse > 0 ? 1 + .28 * Math.sin(Math.PI * (1 - b.pulse / .6)) : 1);
+    drawGlass(g, b.x * cellX, b.y * cell, BALL_R * bc * s, b.v, { sq: b.sq, crack: b.crack, seed: b.seed, n: b.n });
   }
   // launcher
   if (!busy && !S.over){
@@ -478,6 +657,7 @@ function step(dt){
     }
     b.sq *= Math.pow(.0005, dt);
     if (b.form < 1) b.form = Math.min(1, b.form + dt / .26);
+    if (b.pulse > 0) b.pulse = Math.max(0, b.pulse - dt);
   }
   for (const s of shards){
     s.vy += PHYS.g * .55 * dt; s.x += s.vx * dt; s.y += s.vy * dt; s.rot += s.vr * dt;
@@ -499,13 +679,14 @@ function settled(){
   return true;
 }
 function settle(){
+  if (BOT) return Promise.resolve();
   return new Promise(res => { const t0 = performance.now();
     const chk = () => (settled() || performance.now() - t0 > 3000) ? res() : requestAnimationFrame(chk); chk(); });
 }
 let last = performance.now();
 function loop(now){
-  const dt = Math.min(1 / 30, (now - last) / 1000); last = now;
-  if (S){ step(dt); drawBoard(); }
+  const dt = Math.min(1 / 30, (now - last) / 1000) * (now < slowUntil ? .3 : 1); last = now;
+  if (S){ step(dt); drawBoard(); heartbeat(); }
   requestAnimationFrame(loop);
 }
 
@@ -541,6 +722,7 @@ const SFX = {
 let actx = null, master = null, muted = store.get("muted", false);
 const samples = {};
 function audio(){
+  if (BOT) return null;
   if (!actx){
     try { actx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: "interactive" }); master = actx.createGain(); master.gain.value = SFX.master; master.connect(actx.destination); loadSamples(); }
     catch(e){ actx = null; }
@@ -619,14 +801,16 @@ const VOICE = {
     newball: { p: 7, k: ["newball_new_record", "newball_never_seen", "newball_brand_new"] },
     ball:    { p: 3, k: ["ball_back_again", "ball_there_it_is", "ball_big_one", "ball_welcome_back", "ball_heavy_hitter"] },
     inf:     { p: 8, k: ["inf_infinity", "inf_beyond_numbers", "inf_legendary"] },
-    burst:   { p: 9, k: ["burst_infinity_burst", "burst_boom_cleared", "burst_jackpot"] },
+    burst:   { p: 9, k: ["burst_boom_cleared", "burst_jackpot"] },
     unlock:  { p: 6, k: ["unlock_level_up", "unlock_new_balls", "unlock_stepping_up", "unlock_moving_on_up"] },
     cleared: { p: 3, k: ["clear_clean_sweep", "clear_small_fry", "clear_fresh_space"] },
     outplay: { p: 3, k: ["out_last_one_gone", "out_see_you_later", "out_out_of_play", "clear_clean_sweep", "clear_small_fry", "clear_fresh_space"] },
-    over:    { p: 9, k: ["over_so_close", "over_almost_had_it", "over_one_more_try"] },
+    over:    { p: 9, k: ["over_one_more_try", "over_almost_had_it"] },
+    overclose:{ p: 9, k: ["over_so_close", "over_almost_had_it"] },
+    prism:   { p: 8, k: ["inf_beyond_numbers", "inf_legendary", "newball_never_seen"] },
     best:    { p: 9, k: ["best_new_high_score", "best_you_did_it", "best_personal_best"] },
     easy:    { p: 9, k: ["mode_easy"] }, normal: { p: 9, k: ["mode_normal"] }, hard: { p: 9, k: ["mode_hard"] },
-    danger:  { p: 0, k: ["danger_careful", "danger_getting_tight", "danger_watch_it"] },
+    danger:  { p: 5, k: ["danger_careful", "danger_getting_tight", "danger_watch_it"] },
     saved:   { p: 5, k: ["saved_saved", "saved_phew"] },
     herecomes:{ p: 9, k: ["herecomes"] },                      // reserved for the v0.8 director (jackpot)
     revive:  { p: 9, k: ["revive_second_chance", "revive_back_in_game"] },
@@ -636,7 +820,7 @@ const VOICE = {
 /* Velvet: the same events, each line tagged by "temperature" in its name: _w_ warm (up to 512),
    _h_ hot (1K–64K), _m_ melting (128K+), _a_ any. Hotter levels also keep the level below in rotation. */
 const VELVET = ["ball_a_back_for_more", "ball_a_remember", "ball_a_there_again", "best_a_favorite", "best_a_impressed", "best_a_never_this_good", "burst_a_shattered", "burst_a_speechless", "combo2_h_fragile", "combo2_h_keep_it_coming", "combo2_h_my_type", "combo2_h_nice_touch", "combo2_m_dont_stop", "combo2_m_making_me_crack", "combo2_m_yes", "combo2_w_again", "combo2_w_i_like_that", "combo2_w_mmm_nice", "combo2_w_oh_cute", "combo2_w_smooth", "combo3_h_hot_in_here", "combo3_h_how_you_do_it", "combo3_h_warming_up", "combo3_m_melting", "combo3_m_spoil_me", "combo3_w_attention", "combo3_w_show_off", "danger_h_getting_close", "danger_h_tiger", "danger_m_not_yet", "danger_w_easy", "great_h_blush", "great_h_chain_id_wear", "great_m_perfect", "great_m_what_i_like", "great_w_impressive", "great_w_look_at_you", "herecomes", "inf_a_breath_away", "inf_a_forever", "inf_a_no_limit", "mega_h_dangerous", "mega_h_felt_that", "mega_h_oh_my", "mega_m_breaking_glass", "mega_m_do_it_again", "mode_easy", "mode_hard", "mode_normal", "newball_h_curious", "newball_h_serious", "newball_m_special", "newball_m_surprising", "newball_w_something_new", "outplay_a_bye_bye", "outplay_a_small_stuff", "outplay_a_you_and_me", "over_h_dont_leave", "over_h_one_more", "over_m_come_back", "over_w_already", "over_w_wanted_more", "revive_a_come_back", "revive_a_one_more_chance", "saved_a_my_hero", "saved_a_smooth_save", "saved_a_worried", "start_a_hey_you", "start_a_those_hands", "start_a_waiting", "unlock_h_heating_up", "unlock_h_higher", "unlock_m_no_turning_back", "unlock_m_take_me_higher", "unlock_w_ready", "unlock_w_turn_it_up"];
-const VELVET_EVENT = { cleared: "outplay", easy: "mode_easy", normal: "mode_normal", hard: "mode_hard" };
+const VELVET_EVENT = { prism: "inf", overclose: "over", cleared: "outplay", easy: "mode_easy", normal: "mode_normal", hard: "mode_hard" };
 const heat = () => (S && S.maxEver >= 131072) ? "m" : (S && S.maxEver >= 1024) ? "h" : "w";
 function packKeys(ev){
   if (VOICE.pack !== "velvet") return (VOICE.lines[ev] || {}).k || [];
@@ -686,14 +870,15 @@ function hud(){
   $("score").textContent = S.score.toLocaleString("en-US");
   $("best").textContent = Math.max(S.best, S.score).toLocaleString("en-US");
   $("coins").textContent = S.coins;
+  hudExtra();
   const { lower, upper } = poolRange();
   
   const b = S.startBest || 0, prog = $("prog");
-  prog.firstChild.style.width = (b > 0 ? Math.min(100, S.score / b * 100) : 100) + "%";
+  prog.firstChild.style.width = (b > 0 ? Math.min(100, S.score / b * 100) : 0) + "%";
   prog.classList.toggle("over", b > 0 && S.score > b);
-  $("bUndo").disabled = !undoSnap || S.coins < COST.undo || busy;
-  $("bSwap").disabled = S.coins < COST.swap || busy || S.over;
-  $("bHammer").disabled = (S.coins < COST.hammer && !hammer) || busy || S.over;
+  $("bUndo").disabled = !undoSnap || S.coins < costOf("undo") || busy || !!S.daily;
+  $("bSwap").disabled = S.coins < costOf("swap") || busy || S.over || !!S.daily;
+  $("bHammer").disabled = (S.coins < costOf("hammer") && !hammer) || busy || S.over || !!S.daily;
   $("bHammer").classList.toggle("on", hammer); board.classList.toggle("hammer", hammer);
   $("muteIco").innerHTML = muted ? '<path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="m23 9-6 6"/><path d="m17 9 6 6"/>' : '<path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>'; $("bMute").classList.toggle("off", muted); $("bVoice").classList.toggle("off", !VOICE.on); $("bVoice").setAttribute("aria-label", VOICE.on ? "Announcer on" : "Announcer off"); $("bVoice").title = VOICE.on ? "Announcer on" : "Announcer off"; $("bMute").setAttribute("aria-label", muted ? "Sound off" : "Sound on"); $("bMute").title = muted ? "Sound off" : "Sound on";
   $("moves").textContent = S.moves || 0; $("kval").textContent = poolK();
@@ -701,77 +886,151 @@ function hud(){
   $("pity").textContent = Math.round(pityChance() * 100) + "%"; $("lastsrc").textContent = S.lastSrc;
   $("pool").innerHTML = poolWeights().map(o => `<tr><td>${label(o.v)}${o.linger ? " · leaving (still on board)" : ""}</td><td>${Math.round(o.p * 100)}%</td></tr>`).join("");
 }
-function floatText(txt){ const f = document.createElement("div"); f.className = "float"; f.textContent = txt; board.appendChild(f); setTimeout(() => f.remove(), 1100); }
-const sleep = ms => new Promise(r => setTimeout(r, ms));
+function hudExtra(){
+  $("cUndo").textContent = costOf("undo"); $("cSwap").textContent = costOf("swap"); $("cHammer").textContent = costOf("hammer");
+  document.querySelector(".scorebox").classList.toggle("gold", !!S.gold);
+  const dots = store.get("bagDots", false), inBag = v => (S.bag || []).filter(x => x === v).length;
+  const chips = poolWeights().map(o => `<span class="pc${o.linger ? " lg" : ""}" style="--c:${rgba(colorOf(o.v), 1)}" title="${o.linger ? "leaving: still on the board" : "in the pool"}">${label(o.v)}${dots ? `<i>${"•".repeat(inBag(o.v))}</i>` : ""}</span>`).join("");
+  const pT = 2 * S.thr, pf = Math.min(1, mass(pT) / pT);
+  $("poolBar").innerHTML = chips + `<span class="pc prism" title="Prism: merge two ${label(S.thr)}, then two Prisms side by side">◆${label(S.thr)}${S.prisms ? " ·" + S.prisms : ""}<u style="width:${pf * 100}%"></u></span>`;
+  const nextT = Math.min(pT, S.maxEver * 2);
+  $("nextLbl").textContent = nextT >= pT ? "Prism" : label(nextT);
+  $("nextBar").firstChild.style.width = Math.min(100, mass(nextT) / nextT * 100) + "%";
+  $("dayTag").hidden = !S.daily; if (S.daily) $("dayTag").textContent = "Daily";
+  $("dirTxt").textContent = dirOn() ? `${S.dealN ? Math.round(S.dirN / S.dealN * 100) : 0}% of deals changed · last: ${S.lastSrc}` : "off (Classic or Daily)";
+}
+const fmt = n => Math.round(n).toLocaleString("en-US");
+function addCoins(n){ S.coins += n; S.earned = (S.earned || 0) + n; }
+function tagAt(txt, b){
+  if (BOT) return;
+  const f = document.createElement("div"); f.className = "tagf"; f.textContent = txt;
+  f.style.left = (b.x / COLS * 100) + "%"; f.style.top = (b.y / H * 100) + "%"; board.appendChild(f); setTimeout(() => f.remove(), 900);
+}
+/* one celebration at a time; a bigger one cuts in. S = tiny, M = float text, L/XL/XXL = banner (XL slows time 300 ms, XXL 500 ms + flash) */
+const LV = { S: 0, M: 1, L: 2, XL: 3, XXL: 4 };
+let banUntil = 0, banLv = -1, slowUntil = 0, banTimer = 0, beatAt = 0;
+function celebrate(lv, title, sub = ""){
+  if (BOT) return;
+  const l = LV[lv], now = performance.now();
+  if (now < banUntil && l < banLv) return;
+  if (l <= 1){ if (now >= banUntil) floatText(title); return; }
+  const bn = $("banner"); bn.className = "banner l" + l; $("banT").textContent = title; $("banS").textContent = sub; bn.hidden = false;
+  void bn.offsetWidth; bn.classList.add("go");
+  const dur = [0, 0, 1100, 1500, 2100][l]; banLv = l; banUntil = now + dur;
+  clearTimeout(banTimer); banTimer = setTimeout(() => { bn.hidden = true; banLv = -1; }, dur);
+  if (l >= 3){ slowUntil = now + (l === 4 ? 500 : 300); buzz(l === 4 ? [40, 50, 40, 50, 60] : [30, 40, 30]); }
+  if (l === 4){ board.classList.remove("flash"); void board.offsetWidth; board.classList.add("flash"); }
+}
+function heartbeat(){
+  if (!S.danger || S.over || !actx || muted || BOT || time - beatAt < 1) return;
+  beatAt = time; tone(70, .09, .12, "sine"); tone(60, .07, .12, "sine", .2);
+}
+function floatText(txt){ if (BOT) return; const f = document.createElement("div"); f.className = "float"; f.textContent = txt; board.appendChild(f); setTimeout(() => f.remove(), 1100); }
+const sleep = ms => BOT ? Promise.resolve() : new Promise(r => setTimeout(r, ms));
 
 /* ---------- merge resolution (gravity down: result stays in the lowest slot) ---------- */
 async function resolve(dirty){
   let chain = 0;
   while (dirty.length){
     await settle();
-    const id = dirty.shift(); const p = find(id); if (!p) continue;
-    const { c, i, t } = p; const v = t.v;
-    const N = [[c, i - 1], [c - 1, i], [c + 1, i], [c, i + 1]]
-      .map(([cc, ii]) => ({ c: cc, i: ii, t: at(cc, ii) })).filter(o => o.t && o.t.v === v);
-    if (!N.length) continue;
-    const group = [{ c, i, t }, ...N];
-    let target = group[0]; for (const g of group) if (g.i < target.i) target = g;
-    const isInf = v >= INF;
-    const newV = isInf ? INF : Math.min(INF, v * Math.pow(2, N.length));
+    const t0 = dirty.shift(); if (t0.dead) continue;
+    const pl = mergePlan(S.grid, t0); if (!pl) continue;
+    const parts = [...new Set([...pl.group.map(o => o.t), ...pl.gone])];
     // crack…
-    for (const g of group){ const b = balls.get(g.t.id); if (b) b.crack = .55; }
+    for (const t of parts){ const b = balls.get(t.id); if (b) b.crack = .55; }
     await sleep(60);
-    for (const g of group){ const b = balls.get(g.t.id); if (b) b.crack = 1; }
+    for (const t of parts){ const b = balls.get(t.id); if (b) b.crack = 1; }
     await sleep(70);
     // …and shatter
     chain++; crash(chain); buzz(14);
-    for (const g of group){
-      const b = balls.get(g.t.id); if (!b) continue;
-      shatter(b, g === target ? .7 : 1);
-      if (g !== target){ g.t.dead = true; balls.delete(g.t.id); }
-    }
-    if (isInf){                                   // ∞ + ∞ → both vanish, big reward
-      target.t.dead = true; balls.delete(target.t.id);
-      const reward = 25 * group.length; S.coins += reward; S.score += 100 * group.length;
-      floatText("∞ Burst! +" + reward); say("burst"); coinBurst(10, target.c + .5, slotY(target.i)); crash(12);
-      const movedI = compact(); hud();
-      dirty = [...movedI, ...dirty.filter(d => !movedI.includes(d))];
+    for (const t of pl.gone){ const b = balls.get(t.id); if (b){ shatter(b, pl.kind === "burst" ? 1.3 : 1); balls.delete(t.id); } }
+    const tb = balls.get(pl.target.t.id);
+    if (tb){ tb.crack = 0; shatter(tb, pl.kind === "burst" ? .5 : .7); }
+    if (pl.kind === "burst"){                                  // Prism + Prism → the newer one bursts and clears its track
+      const r = applyPlan(S.grid, pl); S.grid = r.grid;
+      S.prisms++; pl.target.t.n = S.prisms; if (tb){ tb.n = S.prisms; tb.pulse = .6; }
+      S.thr *= 2;
+      const reward = 25 * S.prisms; addCoins(reward); S.score += 200 * S.prisms; S.relief = Math.max(S.relief, 5);
+      if (!BOT) store.set("prismBursts", store.get("prismBursts", 0) + 1);
+      celebrate("XXL", `PRISM BURST ×${S.prisms}`, `+${reward} coins · next: two ${label(S.thr)}`);
+      say("burst"); coinBurst(10, pl.target.c + .5, slotY(pl.target.i)); crash(12);
+      hud(); dirty = nextDirty(pl, r.moved, dirty);
       continue;
     }
-    target.t.v = newV;
-    const tb = balls.get(target.t.id); tb.v = newV; tb.crack = 0; tb.form = 0; tb.seed = Math.random() * 1000;
-    S.score += Math.log2(newV) * chain;           // score by exponent × chain step (values grow too large for raw sums)
-    const moved = compact();
-    if (newV > S.maxEver) reachTile(newV, tb);
+    const newV = pl.newV, isP = newV >= PRISM, ev = isP ? 2 * S.thr : newV;
+    const r = applyPlan(S.grid, pl); S.grid = r.grid;
+    if (tb){ tb.v = newV; tb.form = 0; tb.seed = Math.random() * 1000; }
+    S.score += Math.log2(ev) * chain;                          // score by exponent × chain step (values grow too large for raw sums)
+    if (isP) madePrism(tb || { x: pl.target.c + .5, y: slotY(pl.target.i) });
+    else if (newV > S.maxEver) reachTile(newV, tb);
     hud();
-    dirty = [target.t.id, ...moved.filter(m => m !== target.t.id), ...dirty.filter(d => d !== target.t.id && !moved.includes(d))];
+    dirty = nextDirty(pl, r.moved, dirty);
   }
   await settle();
   return chain;
 }
-/* When the pool's lowest value rises, balls below it can never be matched again — shatter them for a small bonus */
 /* Pool shift without a purge: the new top value unlocks at once; a smaller value leaves the pool
    only after its last ball has left the board (merged up or smashed). */
 async function purgeLocked(){
-  const { lower } = poolRange();
-  if (lower > (S.lowerPrev || 2)){ S.lowerPrev = lower; floatText(`Unlocked ${label(lower * Math.pow(2, POOL_SIZE - 1))}`); say("unlock"); }
+  const { lower, upper } = poolRange();
+  if (lower > (S.lowerPrev || 2)){
+    S.lowerPrev = lower; S.relief = Math.max(S.relief, 5);
+    celebrate("XL", "UNLOCKED " + label(upper), label(lower / 2) + " is leaving the pool"); say("unlock");
+  }
   const now = lingering(), before = S.linger || [];
   const gone = before.filter(v => !now.includes(v));
   S.linger = now;
   if (gone.length){
     setTimeout(() => floatText(`${gone.map(label).join(" · ")} out of play`), 350); say("outplay");
-    S.coins += gone.length * 2;
+    addCoins(gone.length * 2);
   }
   hud();
 }
+function albumAdd(v){
+  if (BOT) return;
+  const a = store.get("album", {}), e = a[v] || { d: dayKey(), n: 0 }; e.n++; a[v] = e; store.set("album", a);
+}
 function reachTile(v, b){
   S.maxEver = v;
-  const best = store.get("bestTile", 0);
-  if (v >= 128 && !S.reached.includes(v)){
-    S.reached.push(v); const bonus = Math.log2(v) * 2; S.coins += bonus;
-    floatText(v >= INF ? "Infinity!" : (v > best ? "New ball " : "Ball ") + label(v) + "!"); say(v >= INF ? "inf" : v > best ? "newball" : "ball"); coinBurst(6, b.x, b.y);
+  const life = store.get("bestTile", 0), isNew = v > life;
+  if (isNew) store.set("bestTile", v);
+  if (S.reached.includes(v)) return;
+  S.reached.push(v); albumAdd(v);
+  if (isNew && v >= 16){                                     // never made before: banner (XL from 1024)
+    if (v >= 128) addCoins(Math.log2(v) * 2);
+    if (b){ b.pulse = .6; coinBurst(6, b.x, b.y); }
+    celebrate(v >= 1024 ? "XL" : "L", "NEW BALL", label(v)); say("newball");
+  } else if (v >= 512){ addCoins(Math.log2(v) * 2); if (b){ tagAt(label(v) + "!", b); coinBurst(4, b.x, b.y); } say("ball"); }
+  else if (v >= 16 && b) tagAt(label(v), b);
+}
+function madePrism(b){
+  S.maxEver = Math.max(S.maxEver, 2 * S.thr);
+  const life = BOT ? 1 : store.get("prismMade", 0); if (!BOT) store.set("prismMade", life + 1);
+  albumAdd(PRISM); addCoins(20); S.prismMade = (S.prismMade || 0) + 1;
+  celebrate(life ? "XL" : "XXL", life ? "PRISM!" : "FIRST PRISM!", S.prisms ? "Put it next to your Prism" : "Make another, put them side by side");
+  say("prism"); coinBurst(8, b.x, b.y); b.pulse = .6;
+}
+function dangerCheck(){
+  const f = fillRatio(), free = freeTracks();
+  if (S.danger && f < .6 && free >= 2){
+    S.danger = false; S.savedN++; S.relief = Math.max(S.relief, 5); say("saved"); celebrate("XL", "SAVED!");
+    board.classList.remove("saved"); void board.offsetWidth; board.classList.add("saved");
+  } else if (!S.danger && (f >= .8 || free <= 1)){ S.danger = true; S.dangerN = (S.dangerN || 0) + 1; say("danger"); }
+}
+/* record marks during a game: 25% (sound) · 50% · 75% (bar pulses) · 100% NEW BEST · +10/+25/+50% */
+function checkMarks(){
+  const b = S.startBest || 0; if (b <= 0) return;
+  const r = S.score / b;
+  const list = b >= 200 ? [[.25, "S"], [.5, "M", "Halfway to your best"], [.75, "L", "Record in sight"], [1, "XL", "NEW BEST!"], [1.1, "M", "+10% over your best"], [1.25, "M", "+25% over your best"], [1.5, "M", "+50% over your best"]]
+                        : [[1, "XL", "NEW BEST!"]];
+  for (const [k, lv, txt] of list){
+    if (r < k || S.marks.includes(k)) continue;
+    S.marks.push(k);
+    if (lv === "S"){ if (actx && !muted && !BOT) tone(1320, .05, .12); continue; }
+    celebrate(lv, txt, k === 1 ? fmt(S.score) : "");
+    if (k === .75) $("prog").classList.add("pulse");
+    if (k === 1){ $("prog").classList.remove("pulse"); say("best"); }
   }
-  if (v > best) store.set("bestTile", v);
 }
 
 /* ---------- actions ---------- */
@@ -784,55 +1043,186 @@ async function drop(c){
   aim = c;
   if (full && col[ROWS - 1].v !== v){ sfx("reject"); buzz(30); board.classList.remove("shake"); void board.offsetWidth; board.classList.add("shake"); return; }
   busy = true; undoSnap = clone(S);
+  const sc0 = S.score;
   const t = { id: ++uid, v }; col.push(t);
   const b = mkBall(t, c + .5, .48); b.vy = 1.5; balls.set(t.id, b);
-  S.cur = S.nxt; S.nxt = gen(); hud();
-  const chain = await resolve([t.id]);
+  hud();
+  const chain = await resolve([t]);
   if (chain >= 2){
-    const gain = chain - 1; S.coins += gain;
-    floatText(chain >= 6 ? `Mega! ×${chain}` : chain >= 4 ? `Great! ×${chain}` : `Combo ×${chain}`);
+    const gain = chain - 1; addCoins(gain);
+    S.comboN++; S.comboPts += S.score - sc0;
+    if (!S.firstChain) S.firstChain = Date.now() - S.t0;
+    if (chain >= 6) celebrate("XL", `MEGA ×${chain}`);
+    else if (chain >= 4) celebrate("L", `GREAT ×${chain}`);
+    else celebrate("M", `Combo ×${chain}`);
     say(chain >= 6 ? "mega" : chain >= 4 ? "great" : chain === 3 ? "combo3" : "combo2");
     coinBurst(gain, c + .5, H / 2);
-    if (chain >= 4){ board.classList.remove("shake"); void board.offsetWidth; board.classList.add("shake"); buzz([20, 30, 20]); }
+    if (chain >= 4){ S.ch4++; S.relief = Math.max(S.relief, 5); board.classList.remove("shake"); void board.offsetWidth; board.classList.add("shake"); buzz([20, 30, 20]); }
   }
+  S.bestChain = Math.max(S.bestChain, chain);
+  S.drought = chain >= 3 ? 0 : S.drought + 1;
   S.moves = (S.moves || 0) + 1;
   await purgeLocked();
   if (S.score > S.best) S.best = S.score;
-  const f = fillRatio();
-  if (S.danger && f < .6){ S.danger = false; say("saved"); }
-  else if (!S.danger && f >= .8){ S.danger = true; say("danger"); }
+  checkMarks();
+  dangerCheck();
+  S.cur = gen();
   busy = false; hud();
   if (!canPlace(S.cur)){ vpending = []; gameOver(); } else sayFlush();
   save();
 }
+const reviveCost = () => S.revives === 0 ? 0 : COST.revive;
+const canRevive = () => !S.daily && S.revives < 2 && S.coins >= reviveCost();
+const niceUp = x => { const p = Math.pow(10, Math.max(0, Math.floor(Math.log10(Math.max(1, x))) - 1)); return Math.ceil(x / p) * p; };
+function dayKey(d = new Date()){ return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+/* the closest real goal (largest progress below 100%) for the end screen */
+function nearestGoal(r){
+  const c = [], life = store.get("bestTile", 0), pT = 2 * S.thr;
+  if (S.startBest > 0 && r < 1) c.push([r, `${Math.round(r * 100)}% of your best score`]);
+  if (life > 0){                                             // only literal facts: "one merge from" or the ratio of real values
+    const nx = life * 2;
+    if (S.maxEver >= life) c.push([.9, nx >= pT ? "One merge from a Prism" : `One merge from a new ball: ${label(nx)}`]);
+    else c.push([S.maxEver / life, `Biggest ball ${label(S.maxEver)} · your record ${label(life)}`]);
+  }
+  c.sort((a, b) => b[0] - a[0]);
+  return (c.find(x => x[0] < 1) || c[0])[1];
+}
 function gameOver(){
-  S.over = true; hud();
-  $("overScore").textContent = S.score.toLocaleString("en-US");
-  const rec = S.score > (S.startBest || 0);
-  $("overTitle").textContent = rec ? "New best!" : "Tracks full";
-  setTimeout(() => speakNow(rec ? "best" : "over"), 450);
-  $("overMsg").textContent = rec ? "You beat your best score." : `${((S.startBest || 0) - S.score).toLocaleString("en-US")} points short of your best.`;
-  const free = S.revives === 0;
-  $("reviveLbl").textContent = free ? "Revive for free" : `Revive for ${COST.revive} coins`;
-  $("reviveNote").textContent = free ? "smashes the top 2 balls in full tracks · rewarded ad goes here" : "smashes the top 2 balls in full tracks";
-  $("bRevive").disabled = !free && S.coins < COST.revive;
+  S.over = true; hud(); lastOverAt = performance.now();
+  if (BOT) return;
+  const sb = S.startBest || 0, sc = S.score, rec = sc > sb, r = sb > 0 ? sc / sb : 1, short = Math.max(0, sb - sc);
+  const moment = S.bestChain >= 4 ? `Longest chain ×${S.bestChain}` : `Biggest ball ${label(S.maxEver)}`;
+  let title, msg, sub = "", main = "restart", rl = "Play again";
+  if (S.daily){
+    const d = store.get("daily", {}), prev = d[S.daily] || { score: 0, max: 0 };
+    title = sc > prev.score ? "DAILY BEST!" : "DAILY DONE";
+    msg = `${moment}.` + (prev.score && sc <= prev.score ? ` Today's best: ${fmt(prev.score)}.` : "");
+    d[S.daily] = { score: Math.max(prev.score, sc), max: Math.max(prev.max, S.maxEver) };
+    const keys = Object.keys(d).sort(); while (keys.length > 14) delete d[keys.shift()];
+    store.set("daily", d);
+    if (store.get("dailyPaid", "") !== S.daily){ store.set("dailyPaid", S.daily); addCoins(20); sub = "+20 coins for today's challenge"; }
+    else sub = "Same board for everyone today. New one tomorrow.";
+    rl = "Back to my game";
+  } else if (rec){
+    title = "NEW BEST!";
+    msg = sb > 0 ? `+${fmt(sc - sb)} over your old best` : "Your first record.";
+    sub = `Next target: ${fmt(niceUp(sc * 1.1))}`; rl = `Beat ${fmt(sc)}`;
+    if (!S.recPaid){ S.recPaid = true; addCoins(50); sub += " · +50 coins"; store.set("gold", true); }
+    const R = store.get("records", []), i = R.findIndex(x => x.t0 === S.t0), e = { t0: S.t0, d: dayKey(), s: sc };
+    if (i >= 0) R[i] = e; else R.push(e); store.set("records", R.slice(-20));
+  } else if (r >= .9){
+    title = "SO CLOSE!";
+    const avg = S.comboN ? S.comboPts / S.comboN : 0, n = avg ? Math.max(1, Math.ceil(short / avg)) : 0;
+    msg = `${fmt(short)} points short.` + (n ? ` About ${n} good combo${n > 1 ? "s" : ""}.` : "");
+    sub = moment; rl = "One more try"; if (canRevive()) main = "revive";
+  } else if (r >= .75){ title = "ALMOST"; msg = `${Math.round(r * 100)}% of your best. ${moment}.`; sub = nearestGoal(r); rl = "One more try"; }
+  else if (r >= .5){ title = "SOLID RUN"; msg = moment + "."; sub = nearestGoal(r); }
+  else { title = "TRACKS FULL"; msg = moment + "."; sub = nearestGoal(r); }
+  $("overTitle").textContent = title; $("overScore").textContent = fmt(sc); $("overMsg").textContent = msg; $("overSub").textContent = sub;
+  $("overWhy").textContent = `All tracks full · no room for ${label(S.cur)}`;
+  $("bRestart").textContent = rl;
+  const rv = $("bRevive"), can = canRevive();
+  rv.hidden = S.daily || S.revives >= 2; rv.disabled = !can;
+  $("reviveLbl").textContent = main === "revive" ? `Revive · ${fmt(short)} to go` : reviveCost() ? `Revive for ${reviveCost()} coins` : "Revive for free";
+  $("reviveNote").textContent = (main === "revive" ? (reviveCost() ? `${reviveCost()} coins · ` : "free · ") : "") + "smashes the top 2 balls in full tracks" + (S.revives === 1 ? " · last one" : "");
+  rv.className = "btn " + (main === "revive" ? "primary" : "ghost"); $("bRestart").className = "btn " + (main === "revive" ? "ghost" : "primary");
+  rv.style.order = main === "revive" ? 0 : 1; $("bRestart").style.order = main === "revive" ? 1 : 0;
+  $("bShare").hidden = !(rec || S.daily); $("bShare").textContent = "Share";
+  $("bDaily").textContent = S.daily ? "Play it again" : "Daily challenge";
+  setTimeout(() => speakNow(rec ? "best" : (!S.daily && r >= .9) ? "overclose" : "over"), 450);
+  if (!S.daily && dirOn()){
+    const d = (r < .5 ? 1 : 0) + (S.moves < 40 ? .5 : 0) - (S.bestChain >= 4 ? 1 : 0) - (rec ? 2 : 0);
+    store.set("frP", { t0: S.t0, d });
+  }
+  teleEnd(); save(); hud();
   $("over").hidden = false;
 }
 function revive(){
-  if (S.revives > 0){ if (S.coins < COST.revive) return; S.coins -= COST.revive; }
-  S.revives++; $("over").hidden = true; S.over = false; undoSnap = null;
-  S.grid.forEach(col => { while (col.length > ROWS - 2){ const t = col.pop(); const b = balls.get(t.id); if (b){ shatter(b, 1.2); balls.delete(t.id); } } });
-  crash(5); buzz([30, 40, 30]); S.danger = false; speakNow("revive"); hud(); save();
+  if (!canRevive()) return;
+  const k = reviveCost(); S.coins -= k; S.spent += k;
+  S.revives++; $("over").hidden = true; S.over = false; undoSnap = null; lastOverAt = 0;
+  S.grid.forEach(col => {
+    while (col.length > ROWS - 2){
+      let i = col.length - 1; while (i >= 0 && col[i].v >= PRISM) i--;
+      if (i < 0) break;
+      const t = col.splice(i, 1)[0], b = balls.get(t.id); if (b){ shatter(b, 1.2); balls.delete(t.id); }
+    }
+  });
+  crash(5); buzz([30, 40, 30]); S.danger = false; S.relief = Math.max(S.relief, 5); speakNow("revive");
+  if (!canPlace(S.cur)) S.cur = gen();
+  hud(); save();
 }
 async function hammerAt(c, i){
   const t = at(c, i); if (!t) return;
-  S.coins -= COST.hammer; hammer = false; undoSnap = clone(S); busy = true; hud();
+  if (t.v >= PRISM){ sfx("reject"); floatText("Prism can't be smashed"); hammer = false; hud(); return; }
+  const k = costOf("hammer"); if (S.coins < k){ hammer = false; hud(); return; }
+  undoSnap = clone(S); S.coins -= k; S.spent += k; S.used.hammer++; hammer = false; busy = true; hud();
   const b = balls.get(t.id); if (b){ b.crack = 1; await sleep(90); shatter(b, 1.4); balls.delete(t.id); }
   crash(2); buzz(25);
   t.dead = true; const moved = compact();
   await resolve(moved);
+  await purgeLocked(); dangerCheck();
   busy = false; hud(); sayFlush(); save();
 }
+
+/* ---------- daily challenge, album, share ---------- */
+const valid = s => s && s.grid && !s.over && s.grid.every(c => c.every(t => typeof t.v === "number"));
+function closeSheets(){ $("over").hidden = true; $("tuneSheet").hidden = true; $("album").hidden = true; }
+function startDaily(){
+  closeSheets();
+  const k = dayKey(), saved = store.get("daily7", null);
+  if (saved && valid(saved) && saved.daily === k){ S = norm(saved); undoSnap = null; rebuild(); hud(); }
+  else newGame(+k.replace(/-/g, ""), { daily: k });
+  audio(); speakNow("start"); floatText("Daily " + k);
+}
+function backToGame(){
+  closeSheets();
+  const saved = store.get("game7", null);
+  if (valid(saved)){ S = norm(saved); undoSnap = null; rebuild(); hud(); } else newGame();
+  audio(); speakNow("start");
+}
+function openAlbum(){
+  const al = store.get("album", {}), life = store.get("bestTile", 0);
+  const topE = Math.max(12, Math.round(Math.log2(Math.max(life, 2))) + 2);
+  let h = "";
+  for (let e = 1; e <= topE; e++){
+    const v = Math.pow(2, e), a = al[v];
+    h += a ? `<div class="al" style="--c:${rgba(colorOf(v), 1)}"><b>${label(v)}</b><small>${a.d}<br>×${a.n}</small></div>` : `<div class="al no"><b>?</b></div>`;
+  }
+  const ap = al[PRISM];
+  h += ap ? `<div class="al pr"><b>◆</b><small>Prism ×${ap.n}<br>bursts ${store.get("prismBursts", 0)}</small></div>` : `<div class="al no"><b>◆</b><small>Prism</small></div>`;
+  $("alGrid").innerHTML = h;
+  const R = store.get("records", []);
+  $("alRecs").innerHTML = R.length ? R.slice(-8).reverse().map(x => `<li><b>${fmt(x.s)}</b> · ${x.d}</li>`).join("") : "<li>No records yet</li>";
+  const d = store.get("daily", {}), days = Object.keys(d).sort().slice(-7).reverse();
+  $("alDaily").innerHTML = days.length ? days.map(k => `<li>${k} · <b>${fmt(d[k].score)}</b> · ${label(d[k].max)}</li>`).join("") : "<li>Not played yet</li>";
+  $("album").hidden = false;
+}
+async function share(){
+  const txt = S.daily ? `CrackLET 2 · Daily ${S.daily}: ${fmt(S.score)} pts, biggest ball ${label(S.maxEver)}`
+                      : `CrackLET 2 · new best: ${fmt(S.score)} pts, biggest ball ${label(S.maxEver)}`;
+  try { if (navigator.share){ await navigator.share({ text: txt }); return; } } catch(e){ return; }
+  try { await navigator.clipboard.writeText(txt); $("bShare").textContent = "Copied!"; } catch(e){}
+}
+
+/* ---------- telemetry (local only, last 40 games) ---------- */
+function teleEnd(){
+  if (BOT) return;
+  const T = store.get("tele", []);
+  const e = { t0: S.t0, dur: Math.round((Date.now() - S.t0) / 1000), moves: S.moves, score: S.score, max: S.maxEver, ch4: S.ch4,
+              dir: S.dealN ? +(S.dirN / S.dealN).toFixed(3) : 0, first: S.firstChain, earned: S.earned, spent: S.spent,
+              prisms: S.prismMade || 0, danger: S.dangerN || 0, saved: S.savedN, daily: !!S.daily, classic: !dirOn(), revives: S.revives };
+  const i = T.findIndex(x => x.t0 === S.t0); if (i >= 0) T[i] = { ...T[i], ...e }; else T.push(e);
+  store.set("tele", T.slice(-40));
+}
+function teleRestart(ms){ if (BOT) return; const T = store.get("tele", []); if (T.length){ T[T.length - 1].restart = Math.round(ms / 1000); store.set("tele", T); } }
+function teleSummary(){
+  const T = store.get("tele", []).filter(x => !x.daily).slice(-20); if (!T.length) return "no finished games yet";
+  const med = k => { const a = T.map(x => x[k] || 0).sort((p, q) => p - q); return a[Math.floor(a.length / 2)]; };
+  const quick = T.filter(x => x.restart != null), q = quick.length ? Math.round(quick.filter(x => x.restart <= 10).length / quick.length * 100) : 0;
+  return `${T.length} games · ${Math.round(med("dur") / 6) / 10} min · ${med("moves")} moves · ${fmt(med("score"))} pts · big chains ${med("ch4")} · Director ${Math.round(med("dir") * 100)}% · first chain ${Math.round(med("first") / 1000)} s · coins +${med("earned")} / −${med("spent")} · rescued ${med("saved")}/${med("danger")} · restart ≤10 s ${q}%`;
+}
+if (BOT) window.__CL2 = { newGame, drop, simChain, state: () => S, setDiff: d => { diff = d; }, label };
 
 /* ---------- input ---------- */
 function laneFromEvent(e){ const r = board.getBoundingClientRect(); return Math.max(0, Math.min(COLS - 1, Math.floor((e.clientX - r.left) / r.width * COLS))); }
@@ -855,16 +1245,32 @@ document.addEventListener("keydown", e => {
   else if (e.key.toLowerCase() === "z") $("bUndo").click();
 });
 $("bUndo").onclick = () => {
-  if (!undoSnap || S.coins < COST.undo || busy) return;
-  const coins = S.coins - COST.undo; S = undoSnap; S.coins = coins; undoSnap = null; S.over = false; $("over").hidden = true;
+  const k = costOf("undo");
+  if (!undoSnap || S.daily || S.coins < k || busy) return;
+  const coins = S.coins - k, used = { ...S.used, undo: S.used.undo + 1 }, spent = S.spent + k, earned = S.earned;
+  S = undoSnap; S.coins = coins; S.used = used; S.spent = spent; S.earned = earned; undoSnap = null; S.over = false; $("over").hidden = true;
   rebuild(); hud(); save();
 };
-$("bSwap").onclick = () => { if (S.coins < COST.swap || busy) return; S.coins -= COST.swap; [S.cur, S.nxt] = [S.nxt, S.cur]; sfx("swap"); hud(); save(); };
-$("bHammer").onclick = () => { if (busy) return; if (!hammer && S.coins < COST.hammer) return; hammer = !hammer; hud(); };
+$("bSwap").onclick = () => {                 // the ball goes back into the bag, another value comes out (price doubles per use)
+  const k = costOf("swap"); if (busy || S.over || S.daily || S.coins < k) return;
+  S.coins -= k; S.spent += k; S.used.swap++;
+  const old = S.cur; S.bag.push(old); S.cur = director(old); sfx("swap"); hud(); save();
+};
+$("bHammer").onclick = () => { if (busy || S.daily) return; if (!hammer && S.coins < costOf("hammer")) return; hammer = !hammer; hud(); };
 $("bRevive").onclick = revive;
-$("bRestart").onclick = () => { $("over").hidden = true; newGame(); audio(); speakNow("start"); };
-$("bNew").onclick = () => { $("over").hidden = true; $("tuneSheet").hidden = true; newGame(); audio(); speakNow("start"); };
-$("bTune").onclick = () => { $("tuneSheet").hidden = false; };
+$("bRestart").onclick = () => { if (S.daily){ backToGame(); return; } $("over").hidden = true; newGame(); audio(); speakNow("start"); };
+$("bShare").onclick = share;
+$("bDaily").onclick = () => { if (S.daily && S.over) store.set("daily7", null); startDaily(); };
+$("bDaily2").onclick = startDaily;
+$("bAlbum").onclick = openAlbum; $("bAlbum2").onclick = () => { $("tuneSheet").hidden = true; openAlbum(); };
+$("bAlbumClose").onclick = () => { $("album").hidden = true; };
+$("album").addEventListener("click", e => { if (e.target.id === "album") $("album").hidden = true; });
+$("clIn").checked = store.get("classic", false);
+$("clIn").addEventListener("change", e => { store.set("classic", e.target.checked); floatText(e.target.checked ? "Classic: pure bag" : "Director on"); hud(); });
+$("bdIn").checked = store.get("bagDots", false);
+$("bdIn").addEventListener("change", e => { store.set("bagDots", e.target.checked); hud(); });
+$("bNew").onclick = () => { closeSheets(); newGame(); audio(); speakNow("start"); };
+$("bTune").onclick = () => { $("teleTxt").textContent = teleSummary(); hud(); $("tuneSheet").hidden = false; };
 $("bTuneClose").onclick = () => { $("tuneSheet").hidden = true; };
 $("tuneSheet").addEventListener("click", e => { if (e.target.id === "tuneSheet") $("tuneSheet").hidden = true; });
 $("vIn").value = VOICE.pack;
@@ -885,9 +1291,10 @@ $("dIn").addEventListener("change", e => { diff = e.target.value; store.set("dif
 /* ---------- boot ---------- */
 function start(data){
   resize();
-  const saved = (data && data.S) || store.get("game6", null);
-  if (saved && saved.grid && !saved.over && saved.grid.every(c => c.every(t => typeof t.v === "number"))){
-    S = saved; S.best = Math.max(S.best || 0, store.get("best", 0)); if (S.startBest == null) S.startBest = S.best;
+  let saved = (data && data.S) || store.get("game7", null);
+  if (!saved && !BOT){ saved = store.get("game6", null); store.set("game6", null); }      // v0.10 save → v0.11
+  if (!BOT && valid(saved)){
+    S = norm(saved); S.best = Math.max(S.best || 0, store.get("best", 0)); if (S.startBest == null) S.startBest = S.best;
     rebuild(); hud();
   } else newGame();
   requestAnimationFrame(t => { last = t; loop(t); });
@@ -897,7 +1304,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.10.0";
+const APP_VERSION = "0.11.0";
 $("verTxt").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;

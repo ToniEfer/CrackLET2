@@ -14,6 +14,7 @@ HTML5 prototype, installable on Android as an app (PWA), works offline.
 | `fonts/` | Anton and Kalam (SIL Open Font License) |
 | `voice/` | announcer lines (ElevenLabs v4 via Magnific) |
 | `sfx/` | glass sounds (ElevenLabs SFX via Magnific) |
+| `tools/bot.mjs` | test bot: plays the real game headless and prints balance stats (`node tools/bot.mjs 40 director normal 3000`, needs Playwright) |
 
 **Releasing a new version:** set the same number in `APP_VERSION` (index.html), `VERSION` (sw.js) and `version.json`, then push. Installed games show the Update bar within 15 min or on next start.
 
