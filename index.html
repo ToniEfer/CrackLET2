@@ -673,8 +673,8 @@ function drawBoard(){
       g.beginPath(); g.moveTo(gx, cell * 1.25); g.lineTo(gx, gy - rr - 4); g.stroke(); g.restore();
     }
   }
-  // balls
-  for (const b of balls.values()){
+  // balls: top ones first, so lower balls are drawn over the shadows of the balls above them
+  for (const b of [...balls.values()].sort((p, q) => p.y - q.y)){
     const mo = b.morph > 0 ? Math.sin(Math.PI * (1 - b.morph / .7)) : 0;
     const s = easeOutBack(Math.min(1, b.form)) * (b.pulse > 0 ? 1 + .28 * Math.sin(Math.PI * (1 - b.pulse / .6)) : 1) * (1 + .3 * mo);
     drawGlass(g, b.x * cellX, b.y * cell, RPX * s, b.v, { sq: b.sq, crack: b.crack, seed: b.seed, n: b.n });
@@ -1433,7 +1433,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.12.0";
+const APP_VERSION = "0.12.1";
 $("verTxt").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
