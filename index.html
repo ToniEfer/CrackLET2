@@ -877,13 +877,20 @@ const VOICE = {
     newball: { p: 7, k: ["newball_new_record", "newball_never_seen", "newball_brand_new"] },
     ball:    { p: 3, k: ["ball_back_again", "ball_there_it_is", "ball_big_one", "ball_welcome_back", "ball_heavy_hitter"] },
     inf:     { p: 8, k: ["inf_infinity", "inf_beyond_numbers", "inf_legendary"] },
-    burst:   { p: 9, k: ["burst_boom_cleared", "burst_jackpot"] },
+    burst:   { p: 9, k: ["burst_prism_burst", "burst_light_show", "burst_boom_cleared", "burst_jackpot"] },
     unlock:  { p: 6, k: ["unlock_level_up", "unlock_new_balls", "unlock_stepping_up", "unlock_moving_on_up"] },
     cleared: { p: 3, k: ["clear_clean_sweep", "clear_small_fry", "clear_fresh_space"] },
     outplay: { p: 3, k: ["out_last_one_gone", "out_see_you_later", "out_out_of_play", "clear_clean_sweep", "clear_small_fry", "clear_fresh_space"] },
     over:    { p: 9, k: ["over_one_more_try", "over_almost_had_it"] },
     overclose:{ p: 9, k: ["over_so_close", "over_almost_had_it"] },
-    prism:   { p: 8, k: ["inf_beyond_numbers", "inf_legendary", "newball_never_seen"] },
+    prism:   { p: 8, k: ["prism_a_prism", "prism_pure_light", "prism_look_at_it_shine"] },
+    prismturn:{ p: 7, k: ["prismturn_wait_for_it"] },
+    mark50:  { p: 4, k: ["mark50_halfway_there"] },
+    mark75:  { p: 5, k: ["mark75_record_in_sight"] },
+    poolgrow:{ p: 6, k: ["poolgrow_more_balls"] },
+    dailystart:{ p: 9, k: ["dailystart_todays_challenge"] },
+    dailygoal:{ p: 6, k: ["dailygoal_goal_done"] },
+    dailyall:{ p: 8, k: ["dailyall_see_you_tomorrow"] },
     best:    { p: 9, k: ["best_new_high_score", "best_you_did_it", "best_personal_best"] },
     easy:    { p: 9, k: ["mode_easy"] }, normal: { p: 9, k: ["mode_normal"] }, hard: { p: 9, k: ["mode_hard"] },
     danger:  { p: 5, k: ["danger_careful", "danger_getting_tight", "danger_watch_it"] },
@@ -895,8 +902,8 @@ const VOICE = {
 };
 /* Velvet: the same events, each line tagged by "temperature" in its name: _w_ warm (up to 512),
    _h_ hot (1K–64K), _m_ melting (128K+), _a_ any. Hotter levels also keep the level below in rotation. */
-const VELVET = ["ball_a_back_for_more", "ball_a_remember", "ball_a_there_again", "best_a_favorite", "best_a_impressed", "best_a_never_this_good", "burst_a_shattered", "burst_a_speechless", "combo2_h_fragile", "combo2_h_keep_it_coming", "combo2_h_my_type", "combo2_h_nice_touch", "combo2_m_dont_stop", "combo2_m_making_me_crack", "combo2_m_yes", "combo2_w_again", "combo2_w_i_like_that", "combo2_w_mmm_nice", "combo2_w_oh_cute", "combo2_w_smooth", "combo3_h_hot_in_here", "combo3_h_how_you_do_it", "combo3_h_warming_up", "combo3_m_melting", "combo3_m_spoil_me", "combo3_w_attention", "combo3_w_show_off", "danger_h_getting_close", "danger_h_tiger", "danger_m_not_yet", "danger_w_easy", "great_h_blush", "great_h_chain_id_wear", "great_m_perfect", "great_m_what_i_like", "great_w_impressive", "great_w_look_at_you", "herecomes", "inf_a_breath_away", "inf_a_forever", "inf_a_no_limit", "mega_h_dangerous", "mega_h_felt_that", "mega_h_oh_my", "mega_m_breaking_glass", "mega_m_do_it_again", "mode_easy", "mode_hard", "mode_normal", "newball_h_curious", "newball_h_serious", "newball_m_special", "newball_m_surprising", "newball_w_something_new", "outplay_a_bye_bye", "outplay_a_small_stuff", "outplay_a_you_and_me", "over_h_dont_leave", "over_h_one_more", "over_m_come_back", "over_w_already", "over_w_wanted_more", "revive_a_come_back", "revive_a_one_more_chance", "saved_a_my_hero", "saved_a_smooth_save", "saved_a_worried", "start_a_hey_you", "start_a_those_hands", "start_a_waiting", "unlock_h_heating_up", "unlock_h_higher", "unlock_m_no_turning_back", "unlock_m_take_me_higher", "unlock_w_ready", "unlock_w_turn_it_up"];
-const VELVET_EVENT = { prism: "inf", overclose: "over", cleared: "outplay", easy: "mode_easy", normal: "mode_normal", hard: "mode_hard" };
+const VELVET = ["prism_a_pure_light", "prism_a_you_made_a_prism", "prism_a_look_at_it_shine", "prismturn_a_wait_for_it", "burst_a_all_that_light", "burst_a_again_please", "mark50_a_halfway", "mark75_a_so_close", "poolgrow_a_more_of_everything", "dailystart_a_just_us", "dailygoal_a_one_for_today", "dailyall_a_come_back_tomorrow", "ball_a_back_for_more", "ball_a_remember", "ball_a_there_again", "best_a_favorite", "best_a_impressed", "best_a_never_this_good", "burst_a_shattered", "burst_a_speechless", "combo2_h_fragile", "combo2_h_keep_it_coming", "combo2_h_my_type", "combo2_h_nice_touch", "combo2_m_dont_stop", "combo2_m_making_me_crack", "combo2_m_yes", "combo2_w_again", "combo2_w_i_like_that", "combo2_w_mmm_nice", "combo2_w_oh_cute", "combo2_w_smooth", "combo3_h_hot_in_here", "combo3_h_how_you_do_it", "combo3_h_warming_up", "combo3_m_melting", "combo3_m_spoil_me", "combo3_w_attention", "combo3_w_show_off", "danger_h_getting_close", "danger_h_tiger", "danger_m_not_yet", "danger_w_easy", "great_h_blush", "great_h_chain_id_wear", "great_m_perfect", "great_m_what_i_like", "great_w_impressive", "great_w_look_at_you", "herecomes", "inf_a_breath_away", "inf_a_forever", "inf_a_no_limit", "mega_h_dangerous", "mega_h_felt_that", "mega_h_oh_my", "mega_m_breaking_glass", "mega_m_do_it_again", "mode_easy", "mode_hard", "mode_normal", "newball_h_curious", "newball_h_serious", "newball_m_special", "newball_m_surprising", "newball_w_something_new", "outplay_a_bye_bye", "outplay_a_small_stuff", "outplay_a_you_and_me", "over_h_dont_leave", "over_h_one_more", "over_m_come_back", "over_w_already", "over_w_wanted_more", "revive_a_come_back", "revive_a_one_more_chance", "saved_a_my_hero", "saved_a_smooth_save", "saved_a_worried", "start_a_hey_you", "start_a_those_hands", "start_a_waiting", "unlock_h_heating_up", "unlock_h_higher", "unlock_m_no_turning_back", "unlock_m_take_me_higher", "unlock_w_ready", "unlock_w_turn_it_up"];
+const VELVET_EVENT = { overclose: "over", cleared: "outplay", easy: "mode_easy", normal: "mode_normal", hard: "mode_hard" };
 const heat = () => (S && S.maxEver >= 131072) ? "m" : (S && S.maxEver >= 1024) ? "h" : "w";
 function packKeys(ev){
   if (VOICE.pack !== "velvet") return (VOICE.lines[ev] || {}).k || [];
@@ -1053,7 +1060,7 @@ async function purgeLocked(){
   if (up || low){
     const grew = up && !low;                          // the pool got longer (5 or 6 values)
     S.upperPrev = upper; S.lowerPrev = lower; S.relief = Math.max(S.relief, 5);
-    celebrate("XL", "UNLOCKED " + label(upper), grew ? `Pool: ${poolK()} values` : label(lower / 2) + " is leaving the pool"); say("unlock");
+    celebrate("XL", "UNLOCKED " + label(upper), grew ? `Pool: ${poolK()} values` : label(lower / 2) + " is leaving the pool"); say(grew ? "poolgrow" : "unlock");
   }
   const now = lingering(), before = S.linger || [];
   const gone = before.filter(v => !now.includes(v));
@@ -1082,7 +1089,7 @@ function reachTile(v, b){
   else if (v >= 16 && b) tagAt(label(v), b);
 }
 async function prismMorph(b, v){            // the merged ball shows its value first, then turns into a Prism
-  celebrate("L", label(v) + "!", "turning into a Prism…"); b.pulse = .6; crash(4);
+  celebrate("L", label(v) + "!", "turning into a Prism…"); b.pulse = .6; crash(4); speakNow("prismturn");
   await sleep(850);
   b.morph = .7; buzz([20, 30, 20]);
   await sleep(350);
@@ -1114,7 +1121,8 @@ function checkMarks(){
     S.marks.push(k);
     if (lv === "S"){ if (actx && !muted && !BOT) tone(1320, .05, .12); continue; }
     celebrate(lv, txt, k === 1 ? fmt(S.score) : "");
-    if (k === .75) $("prog").classList.add("pulse");
+    if (k === .5) say("mark50");
+    if (k === .75){ $("prog").classList.add("pulse"); say("mark75"); }
     if (k === 1){ $("prog").classList.remove("pulse"); say("best"); }
   }
 }
@@ -1278,8 +1286,8 @@ function checkDailyGoals(){
     const ok = g.id === "ball" ? S.maxEver >= g.v : g.id === "score" ? S.score >= g.v : S.bestChain >= g.v;
     if (!ok) continue;
     done.push(g.id); addCoins(10);
-    if (done.length === 3){ addCoins(20); celebrate("XL", "ALL 3 GOALS!", "+30 coins · come back tomorrow"); }
-    else celebrate("L", "GOAL ✓", goalText(g) + " · +10");
+    if (done.length === 3){ addCoins(20); celebrate("XL", "ALL 3 GOALS!", "+30 coins · come back tomorrow"); say("dailyall"); }
+    else { celebrate("L", "GOAL ✓", goalText(g) + " · +10"); say("dailygoal"); }
   }
   const ks = Object.keys(all).sort(); while (ks.length > 14) delete all[ks.shift()];
   all[S.daily] = done; store.set("dailyGoals", all);
@@ -1300,7 +1308,7 @@ function startDaily(){
   const k = dayKey(), saved = store.get("daily7", null);
   if (saved && valid(saved) && saved.daily === k){ S = norm(saved); undoSnap = null; rebuild(); hud(); }
   else newGame(+k.replace(/-/g, ""), { daily: k });
-  audio(); speakNow("start"); floatText("Daily " + k);
+  audio(); speakNow("dailystart"); floatText("Daily " + k);
 }
 function backToGame(){
   closeSheets();
@@ -1435,7 +1443,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.12.3";
+const APP_VERSION = "0.12.4";
 $("verTxt").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
