@@ -162,6 +162,27 @@ body{
 .pc.lg{opacity:.45;border-style:dashed}
 .pc.prism{background:var(--navy);color:var(--yellow);overflow:hidden;padding:0 6px 0 4px}
 .pc.prism u{position:absolute;left:0;bottom:0;height:3px;background:var(--yellow)}
+.pgoal{flex:none;display:flex;align-items:center;gap:5px;height:22px;padding:0 8px 0 6px;border-radius:99px;background:var(--navy);border:1.6px solid var(--ink);box-shadow:2px 2px 0 var(--ink);font-family:var(--display);font-size:12px;color:var(--yellow);white-space:nowrap}
+.pgoal svg{display:block}
+.pgoal small{font-family:var(--ui);font-weight:700;font-size:10px;color:#fff}
+.top3{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}
+.top3 li{display:flex;justify-content:space-between;align-items:center;background:var(--card);border:2px solid var(--ink);border-radius:10px;box-shadow:2px 2px 0 var(--ink);padding:6px 10px}
+.top3 b{font-family:var(--display);font-weight:400;font-size:18px}
+.top3 i{font-style:normal;font-family:var(--display);font-size:14px;color:var(--muted);width:22px}
+.balls{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-top:6px}
+.balls img{width:100%;display:block}
+.troph{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+.troph div{border:2px solid var(--ink);border-radius:10px;box-shadow:2px 2px 0 var(--ink);background:var(--card);padding:4px;text-align:center}
+.troph img{width:70%;display:block;margin:0 auto}
+.troph small{display:block;font-size:9px;font-weight:700;line-height:1.2}
+.troph .no{background:#e9e2d6;color:#b7ae9f}
+.troph .no b{display:grid;place-items:center;aspect-ratio:1;width:70%;margin:0 auto;border-radius:50%;border:2px dashed #b7ae9f;font-family:var(--display);font-weight:400;font-size:20px}
+.btn.danger{background:var(--coral);color:#fff}
+.goals{list-style:none;margin:6px 0;padding:0;display:grid;gap:6px;text-align:left}
+.goals li{display:flex;gap:8px;align-items:center;background:var(--card);border:2px solid var(--ink);border-radius:10px;padding:6px 10px;font-weight:700;font-size:13px;color:var(--ink)}
+.goals li b{width:20px;height:20px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;font-size:12px;flex:none}
+.goals li.ok b{background:var(--green);color:#fff}
+.goals li small{margin-left:auto;color:var(--muted);font-weight:700}
 .next{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;white-space:nowrap}
 .next b{font-family:var(--display);font-weight:400;font-size:13px}
 .nbar{width:54px;height:10px;border:1.6px solid var(--ink);border-radius:99px;background:var(--card);overflow:hidden}
@@ -223,7 +244,7 @@ body{
   <div class="strip">
     <span class="daytag" id="dayTag" hidden></span>
     <span class="poolbar" id="poolBar" title="Balls in play · Prism at the end"></span>
-    <span class="next" title="Next new ball"><span>Next <b id="nextLbl">16</b></span><span class="nbar" id="nextBar"><i></i></span></span>
+    <span class="pgoal" id="pGoal" title="Next Prism: merge two of these"></span>
   </div>
 
   <div class="meta">
@@ -262,7 +283,7 @@ body{
       <label for="clIn"><span>Classic</span><input id="clIn" type="checkbox"><small>pure random order, no Director</small></label>
       <label for="bdIn"><span>Bag dots</span><input id="bdIn" type="checkbox"><small>show balls left in the bag</small></label>
     </div>
-    <div class="row2"><button class="btn ghost sm" id="bDaily2" type="button">Daily challenge</button><button class="btn ghost sm" id="bAlbum2" type="button">Album</button></div>
+    <div class="row2"><button class="btn ghost sm" id="bDaily2" type="button">Daily challenge</button><button class="btn ghost sm" id="bAlbum2" type="button">Records</button></div>
     <div class="row"><span>Director this game: <b id="dirTxt">—</b></span></div>
     <div class="row"><span>Last games (median): <b id="teleTxt">—</b></span></div>
     <div class="row">
@@ -286,8 +307,7 @@ body{
       <button class="btn primary" id="bRevive" type="button"><span id="reviveLbl">Revive</span><small id="reviveNote">smashes the top 2 balls in full tracks</small></button>
       <button class="btn ghost" id="bRestart" type="button">Play again</button>
     </div>
-    <button class="btn ghost sm" id="bShare" type="button" hidden>Share</button>
-    <div class="row2"><button class="btn ghost sm" id="bDaily" type="button">Daily challenge</button><button class="btn ghost sm" id="bAlbum" type="button">Album</button></div>
+    <div class="row2"><button class="btn ghost sm" id="bDaily" type="button">Daily challenge</button><button class="btn ghost sm" id="bAlbum" type="button">Records</button></div>
     <p class="why" id="overWhy"></p>
     <span class="ver" id="verOver"></span>
   </div>
@@ -295,10 +315,23 @@ body{
 
 <div class="overlay" id="album" hidden>
   <div class="card tune album">
-    <div class="head"><b>Album</b><button class="btn ghost" id="bAlbumClose" type="button" style="padding:6px 12px;font-size:12px;box-shadow:3px 3px 0 var(--ink)">Close</button></div>
-    <div class="algrid" id="alGrid"></div>
-    <div class="row"><b>Records</b></div><ul id="alRecs"></ul>
-    <div class="row"><b>Daily · last 7 days</b></div><ul id="alDaily"></ul>
+    <div class="head"><b>Records</b><button class="btn ghost" id="bAlbumClose" type="button" style="padding:6px 12px;font-size:12px;box-shadow:3px 3px 0 var(--ink)">Close</button></div>
+    <div class="row"><b>Top scores</b></div><ol class="top3" id="alTop"></ol>
+    <div class="row"><b>Balls</b></div><div class="balls" id="alBalls"></div>
+    <div class="row"><b>Trophies</b><small>8K and up, Prism</small></div><div class="troph" id="alTroph"></div>
+    <div class="row"><button class="btn danger sm" id="bReset" type="button" style="width:100%">Reset records</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="dayCard" hidden>
+  <div class="card">
+    <h2>Daily challenge</h2>
+    <p id="dayDate"></p>
+    <p class="sub">Same balls for everyone today. Classic bag: no Director, no Back, Swap, Smash or Revive.</p>
+    <ul class="goals" id="dayGoals"></ul>
+    <p id="dayInfo"></p>
+    <button class="btn primary" id="bDayPlay" type="button">Play</button>
+    <button class="btn ghost sm" id="bDayClose" type="button">Not now</button>
   </div>
 </div>
 
@@ -306,7 +339,7 @@ body{
 (() => {
 const COLS = 5, ROWS = 8, H = ROWS + 1;           // board is 5 × 9 cells: 1 spawn row + 8 rows
 const BALL_R = 0.42;                               // radius in cells
-const COST = { undo: 20, swap: 15, hammer: 60, revive: 60 };   // base prices; every use in a game doubles the next one (up to ×4)
+const COST = { revive: 60 };                                     // second Revive; Back / Swap / Smash: see costOf()
 const MILESTONES = [128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536];
 /* flat candy palette (neo-brutalist): 2 teal · 4 yellow · 8 coral · 16 purple · 32 blue · 64 orange · 128 green · 256 pink · 512 cobalt · 1024 red · 2048 emerald · 4096 lilac · 8K gold · 16K sky · 32K brick · 64K violet */
 const COLORS = ["#3cc5b4","#ffd23f","#f2675c","#9a7cf0","#4aa3f0","#f39a4b","#6cc24a","#f27ab0","#2f5bd9","#e5484d","#1fa37a","#c2a3f7","#f0b429","#7fd3ee","#c2553f","#6d4ff0"];
@@ -387,7 +420,11 @@ function buildBag(){
 }
 function refillBag(){ const key = poolKey(); if (!S.bag || !S.bag.length || S.bagLower !== key){ S.bag = buildBag(); S.bagLower = key; } }
 const dirOn = () => !S.daily && !store.get("classic", false) && !(BOT && BOT.classic);
-const costOf = k => COST[k] * Math.pow(2, Math.min(2, (S.used && S.used[k]) || 0));
+/* Back / Swap / Smash prices grow with progress (×1.5 per pool step) and never drop below a share of the coins you hold,
+   so they stay a real decision even with a big balance. Using a booster does not raise its price. */
+const PRICE = { undo: [15, .08], swap: [10, .05], hammer: [40, .20] };
+const stage = () => Math.max(0, Math.log2(poolRange().upper) - 4);
+const costOf = k => { const [base, share] = PRICE[k]; return Math.max(5, Math.round(Math.max(base * Math.pow(1.5, stage()), share * (S.coins || 0)) / 5) * 5); };
 const freeTracks = () => S.grid.filter(c => c.length < ROWS).length;
 const mass = (T) => S.grid.reduce((a, c) => a + c.reduce((b, t) => b + (t.v < PRISM && t.v >= T / 8 && t.v < T ? t.v : 0), 0), 0);   // material within 3 merges of target T
 
@@ -638,8 +675,10 @@ function drawBoard(){
   }
   // balls
   for (const b of balls.values()){
-    const s = easeOutBack(Math.min(1, b.form)) * (b.pulse > 0 ? 1 + .28 * Math.sin(Math.PI * (1 - b.pulse / .6)) : 1);
+    const mo = b.morph > 0 ? Math.sin(Math.PI * (1 - b.morph / .7)) : 0;
+    const s = easeOutBack(Math.min(1, b.form)) * (b.pulse > 0 ? 1 + .28 * Math.sin(Math.PI * (1 - b.pulse / .6)) : 1) * (1 + .3 * mo);
     drawGlass(g, b.x * cellX, b.y * cell, RPX * s, b.v, { sq: b.sq, crack: b.crack, seed: b.seed, n: b.n });
+    if (mo > 0){ g.beginPath(); g.arc(b.x * cellX, b.y * cell, RPX * s * 1.05, 0, Math.PI * 2); g.fillStyle = `rgba(255,255,255,${mo * .95})`; g.fill(); }
   }
   // launcher
   if (!busy && !S.over){
@@ -692,6 +731,7 @@ function step(dt){
     b.sq *= Math.pow(.0005, dt);
     if (b.form < 1) b.form = Math.min(1, b.form + dt / .26);
     if (b.pulse > 0) b.pulse = Math.max(0, b.pulse - dt);
+    if (b.morph > 0) b.morph = Math.max(0, b.morph - dt);
   }
   for (const s of shards){
     s.vy += PHYS.g * .55 * dt; s.x += s.vx * dt; s.y += s.vy * dt; s.rot += s.vr * dt;
@@ -925,15 +965,14 @@ function hudExtra(){
   document.querySelector(".scorebox").classList.toggle("gold", !!S.gold);
   const dots = store.get("bagDots", false), inBag = v => (S.bag || []).filter(x => x === v).length;
   const chips = poolWeights().map(o => `<span class="pc${o.linger ? " lg" : ""}" style="--c:${rgba(colorOf(o.v), 1)}" title="${o.linger ? "leaving: still on the board" : "in the pool"}">${label(o.v)}${dots ? `<i>${"•".repeat(inBag(o.v))}</i>` : ""}</span>`).join("");
-  const pT = 2 * S.thr, pf = Math.min(1, mass(pT) / pT);
-  $("poolBar").innerHTML = chips + `<span class="pc prism" title="Prism: merge two ${label(S.thr)}, then two Prisms side by side">◆${label(S.thr)}${S.prisms ? " ·" + S.prisms : ""}<u style="width:${pf * 100}%"></u></span>`;
-  const nextT = Math.min(pT, S.maxEver * 2);
-  $("nextLbl").textContent = nextT >= pT ? "Prism" : label(nextT);
-  $("nextBar").firstChild.style.width = Math.min(100, mass(nextT) / nextT * 100) + "%";
-  $("dayTag").hidden = !S.daily; if (S.daily) $("dayTag").textContent = "Daily";
+  $("poolBar").innerHTML = chips;
+  $("pGoal").innerHTML = `${TRI}${label(S.thr)} + ${label(S.thr)}${S.prisms ? `<small>×${S.prisms}</small>` : ""}`;
+  $("dayTag").hidden = !S.daily;
+  if (S.daily){ const n = dailyDone(S.daily).length; $("dayTag").textContent = "Daily " + "★".repeat(n) + "☆".repeat(3 - n); }
   $("dirTxt").textContent = dirOn() ? `${S.dealN ? Math.round(S.dirN / S.dealN * 100) : 0}% of deals changed · last: ${S.lastSrc}` : "off (Classic or Daily)";
 }
 const fmt = n => Math.round(n).toLocaleString("en-US");
+const TRI = '<svg viewBox="0 0 14 12" width="14" height="12"><path d="M7 1.2 12.8 10.8H1.2Z" fill="#fff" stroke="#141414" stroke-width="1.5" stroke-linejoin="round"/></svg>';
 function addCoins(n){ S.coins += n; S.earned = (S.earned || 0) + n; }
 function tagAt(txt, b){
   if (BOT) return;
@@ -993,9 +1032,9 @@ async function resolve(dirty){
     }
     const newV = pl.newV, isP = newV >= PRISM, ev = isP ? 2 * S.thr : newV;
     const r = applyPlan(S.grid, pl); S.grid = r.grid;
-    if (tb){ tb.v = newV; tb.form = 0; tb.seed = Math.random() * 1000; }
+    if (tb){ tb.v = isP ? ev : newV; tb.form = 0; tb.seed = Math.random() * 1000; }
     S.score += Math.log2(ev) * chain;                          // score by exponent × chain step (values grow too large for raw sums)
-    if (isP) madePrism(tb || { x: pl.target.c + .5, y: slotY(pl.target.i) });
+    if (isP){ if (tb) await prismMorph(tb, ev); madePrism(tb || { x: pl.target.c + .5, y: slotY(pl.target.i) }); }
     else if (newV > S.maxEver) reachTile(newV, tb);
     hud();
     dirty = nextDirty(pl, r.moved, dirty);
@@ -1039,6 +1078,14 @@ function reachTile(v, b){
     celebrate(v >= 1024 ? "XL" : "L", "NEW BALL", label(v)); say("newball");
   } else if (v >= 512){ addCoins(Math.log2(v) * 2); if (b){ tagAt(label(v) + "!", b); coinBurst(4, b.x, b.y); } say("ball"); }
   else if (v >= 16 && b) tagAt(label(v), b);
+}
+async function prismMorph(b, v){            // the merged ball shows its value first, then turns into a Prism
+  celebrate("L", label(v) + "!", "turning into a Prism…"); b.pulse = .6; crash(4);
+  await sleep(850);
+  b.morph = .7; buzz([20, 30, 20]);
+  await sleep(350);
+  b.v = PRISM; b.pulse = .6; crash(8); coinBurst(6, b.x, b.y);
+  await sleep(300);
 }
 function madePrism(b){
   S.maxEver = Math.max(S.maxEver, 2 * S.thr);
@@ -1102,6 +1149,7 @@ async function drop(c){
   await purgeLocked();
   if (S.score > S.best) S.best = S.score;
   checkMarks();
+  checkDailyGoals();
   dangerCheck();
   S.cur = gen();
   busy = false; hud();
@@ -1133,12 +1181,12 @@ function gameOver(){
   if (S.daily){
     const d = store.get("daily", {}), prev = d[S.daily] || { score: 0, max: 0 };
     title = sc > prev.score ? "DAILY BEST!" : "DAILY DONE";
-    msg = `${moment}.` + (prev.score && sc <= prev.score ? ` Today's best: ${fmt(prev.score)}.` : "");
+    const dn = dailyDone(S.daily).length;
+    msg = `Goals ${dn}/3: ` + dailyGoals(S.daily).map(g => (dailyDone(S.daily).includes(g.id) ? "✓ " : "✗ ") + goalText(g)).join(" · ") + (prev.score && sc <= prev.score ? `. Today's best: ${fmt(prev.score)}.` : ".");
     d[S.daily] = { score: Math.max(prev.score, sc), max: Math.max(prev.max, S.maxEver) };
     const keys = Object.keys(d).sort(); while (keys.length > 14) delete d[keys.shift()];
     store.set("daily", d);
-    if (store.get("dailyPaid", "") !== S.daily){ store.set("dailyPaid", S.daily); addCoins(20); sub = "+20 coins for today's challenge"; }
-    else sub = "Same board for everyone today. New one tomorrow.";
+    sub = dn === 3 ? "All goals done. New challenge tomorrow." : "Same balls all day: try again for the missing goals.";
     rl = "Back to my game";
   } else if (rec){
     title = "NEW BEST!";
@@ -1164,12 +1212,16 @@ function gameOver(){
   $("reviveNote").textContent = (main === "revive" ? (reviveCost() ? `${reviveCost()} coins · ` : "free · ") : "") + "smashes the top 2 balls in full tracks" + (S.revives === 1 ? " · last one" : "");
   rv.className = "btn " + (main === "revive" ? "primary" : "ghost"); $("bRestart").className = "btn " + (main === "revive" ? "ghost" : "primary");
   rv.style.order = main === "revive" ? 0 : 1; $("bRestart").style.order = main === "revive" ? 1 : 0;
-  $("bShare").hidden = !(rec || S.daily); $("bShare").textContent = "Share";
   $("bDaily").textContent = S.daily ? "Play it again" : "Daily challenge";
   setTimeout(() => speakNow(rec ? "best" : (!S.daily && r >= .9) ? "overclose" : "over"), 450);
   if (!S.daily && dirOn()){
     const d = (r < .5 ? 1 : 0) + (S.moves < 40 ? .5 : 0) - (S.bestChain >= 4 ? 1 : 0) - (rec ? 2 : 0);
     store.set("frP", { t0: S.t0, d });
+  }
+  if (!S.daily){
+    const T = store.get("top", []), i = T.findIndex(x => x.t0 === S.t0), e = { t0: S.t0, s: sc, d: dayKey() };
+    if (i >= 0) T[i] = e; else T.push(e);
+    T.sort((a, b) => b.s - a.s); store.set("top", T.slice(0, 3));
   }
   teleEnd(); save(); hud();
   $("over").hidden = false;
@@ -1204,7 +1256,43 @@ async function hammerAt(c, i){
 
 /* ---------- daily challenge, album, share ---------- */
 const valid = s => s && s.grid && !s.over && s.grid.every(c => c.every(t => typeof t.v === "number"));
-function closeSheets(){ $("over").hidden = true; $("tuneSheet").hidden = true; $("album").hidden = true; }
+function closeSheets(){ $("over").hidden = true; $("tuneSheet").hidden = true; $("album").hidden = true; $("dayCard").hidden = true; }
+function dailyGoals(k){
+  const n = +k.replace(/-/g, ""), pick = (a, i) => a[(n * 7 + i * 13) % a.length];
+  return [{ id: "ball", v: pick([256, 512, 512, 1024], 1) }, { id: "score", v: pick([1500, 2000, 2500, 3000], 2) }, { id: "chain", v: pick([3, 4, 4, 5], 3) }];
+}
+const goalText = g => g.id === "ball" ? `Make a ${label(g.v)} ball` : g.id === "score" ? `Score ${fmt(g.v)} points` : `Chain ×${g.v} in one drop`;
+const dailyDone = k => (store.get("dailyGoals", {})[k] || []);
+function goalsHtml(k){
+  const done = dailyDone(k);
+  return dailyGoals(k).map(g => `<li class="${done.includes(g.id) ? "ok" : ""}"><b>${done.includes(g.id) ? "✓" : ""}</b>${goalText(g)}<small>+10</small></li>`).join("");
+}
+/* checked after every move of a daily game: each goal +10 coins once a day, all three +20 */
+function checkDailyGoals(){
+  if (!S.daily || BOT) return;
+  const all = store.get("dailyGoals", {}), done = all[S.daily] || [];
+  for (const g of dailyGoals(S.daily)){
+    if (done.includes(g.id)) continue;
+    const ok = g.id === "ball" ? S.maxEver >= g.v : g.id === "score" ? S.score >= g.v : S.bestChain >= g.v;
+    if (!ok) continue;
+    done.push(g.id); addCoins(10);
+    if (done.length === 3){ addCoins(20); celebrate("XL", "ALL 3 GOALS!", "+30 coins · come back tomorrow"); }
+    else celebrate("L", "GOAL ✓", goalText(g) + " · +10");
+  }
+  const ks = Object.keys(all).sort(); while (ks.length > 14) delete all[ks.shift()];
+  all[S.daily] = done; store.set("dailyGoals", all);
+}
+function openDaily(){
+  closeSheets();
+  const k = dayKey(), d = store.get("daily", {}), best = (d[k] || {}).score || 0;
+  $("dayDate").textContent = k + (best ? ` · today's best ${fmt(best)}` : "");
+  $("dayGoals").innerHTML = goalsHtml(k);
+  const days = Object.keys(d).sort().slice(-7).reverse().filter(x => x !== k);
+  $("dayInfo").textContent = days.length ? "Last days: " + days.map(x => `${x.slice(5)} ${fmt(d[x].score)} (${dailyDone(x).length}/3)`).join(" · ") : "Goals reset every day. Finish a game to save your score.";
+  const saved = store.get("daily7", null);
+  $("bDayPlay").textContent = saved && valid(saved) && saved.daily === k ? "Continue" : best ? "Play again" : "Play";
+  $("dayCard").hidden = false;
+}
 function startDaily(){
   closeSheets();
   const k = dayKey(), saved = store.get("daily7", null);
@@ -1218,28 +1306,30 @@ function backToGame(){
   if (valid(saved)){ S = norm(saved); undoSnap = null; rebuild(); hud(); } else newGame();
   audio(); speakNow("start");
 }
+function ballImg(v, px = 64){
+  const c = document.createElement("canvas"); c.width = c.height = px * 2;
+  const g2 = c.getContext("2d"); drawGlass(g2, px, px, px * .86, v, {}); return c.toDataURL();
+}
 function openAlbum(){
-  const al = store.get("album", {}), life = store.get("bestTile", 0);
-  const topE = Math.max(12, Math.round(Math.log2(Math.max(life, 2))) + 2);
-  let h = "";
-  for (let e = 1; e <= topE; e++){
-    const v = Math.pow(2, e), a = al[v];
-    h += a ? `<div class="al" style="--c:${rgba(colorOf(v), 1)}"><b>${label(v)}</b><small>${a.d}<br>×${a.n}</small></div>` : `<div class="al no"><b>?</b></div>`;
-  }
+  const al = store.get("album", {}), T = store.get("top", []);
+  if (!T.length && S.best) T.push({ s: S.best, d: "—" });
+  $("alTop").innerHTML = [0, 1, 2].map(i => T[i] ? `<li><i>${i + 1}.</i><b>${fmt(T[i].s)}</b><small>${T[i].d}</small></li>` : `<li><i>${i + 1}.</i><b>—</b><small></small></li>`).join("");
+  let h = ""; for (let e = 1; e <= 12; e++) h += `<img alt="${label(2 ** e)}" src="${ballImg(2 ** e, 40)}">`;
+  $("alBalls").innerHTML = h;
+  let t = "";
+  for (let e = 13; e <= 20; e++){ const v = 2 ** e, a = al[v];
+    t += a ? `<div><img alt="${label(v)}" src="${ballImg(v)}"><small>${label(v)}<br>${a.d}</small></div>` : `<div class="no"><b>?</b><small>${label(v)}</small></div>`; }
   const ap = al[PRISM];
-  h += ap ? `<div class="al pr"><b>◆</b><small>Prism ×${ap.n}<br>bursts ${store.get("prismBursts", 0)}</small></div>` : `<div class="al no"><b>◆</b><small>Prism</small></div>`;
-  $("alGrid").innerHTML = h;
-  const R = store.get("records", []);
-  $("alRecs").innerHTML = R.length ? R.slice(-8).reverse().map(x => `<li><b>${fmt(x.s)}</b> · ${x.d}</li>`).join("") : "<li>No records yet</li>";
-  const d = store.get("daily", {}), days = Object.keys(d).sort().slice(-7).reverse();
-  $("alDaily").innerHTML = days.length ? days.map(k => `<li>${k} · <b>${fmt(d[k].score)}</b> · ${label(d[k].max)}</li>`).join("") : "<li>Not played yet</li>";
+  t += ap ? `<div><img alt="Prism" src="${ballImg(PRISM)}"><small>Prism ×${ap.n}<br>${ap.d}</small></div>` : `<div class="no"><b>?</b><small>Prism</small></div>`;
+  $("alTroph").innerHTML = t;
+  $("bReset").textContent = "Reset records"; resetArm = 0;
   $("album").hidden = false;
 }
-async function share(){
-  const txt = S.daily ? `CrackLET 2 · Daily ${S.daily}: ${fmt(S.score)} pts, biggest ball ${label(S.maxEver)}`
-                      : `CrackLET 2 · new best: ${fmt(S.score)} pts, biggest ball ${label(S.maxEver)}`;
-  try { if (navigator.share){ await navigator.share({ text: txt }); return; } } catch(e){ return; }
-  try { await navigator.clipboard.writeText(txt); $("bShare").textContent = "Copied!"; } catch(e){}
+let resetArm = 0;
+function resetRecords(){
+  if (Date.now() - resetArm > 3000){ resetArm = Date.now(); $("bReset").textContent = "Tap again to delete all records"; return; }
+  ["best", "top", "records", "album", "bestTile", "prismMade", "prismBursts", "daily", "dailyGoals", "gold"].forEach(k => { try { localStorage.removeItem("pew2:" + k); } catch(e){} });
+  S.best = 0; S.startBest = 0; S.marks = []; S.gold = false; save(); hud(); openAlbum(); floatText("Records reset");
 }
 
 /* ---------- telemetry (local only, last 40 games) ---------- */
@@ -1296,11 +1386,13 @@ $("bSwap").onclick = () => {                 // the ball goes back into the bag,
 $("bHammer").onclick = () => { if (busy || S.daily) return; if (!hammer && S.coins < costOf("hammer")) return; hammer = !hammer; hud(); };
 $("bRevive").onclick = revive;
 $("bRestart").onclick = () => { if (S.daily){ backToGame(); return; } $("over").hidden = true; newGame(); audio(); speakNow("start"); };
-$("bShare").onclick = share;
-$("bDaily").onclick = () => { if (S.daily && S.over) store.set("daily7", null); startDaily(); };
-$("bDaily2").onclick = startDaily;
+$("bDaily").onclick = () => { if (S.daily && S.over) store.set("daily7", null); openDaily(); };
+$("bDaily2").onclick = openDaily;
+$("bDayPlay").onclick = startDaily;
+$("bDayClose").onclick = () => { $("dayCard").hidden = true; if (S.over) $("over").hidden = false; };
 $("bAlbum").onclick = openAlbum; $("bAlbum2").onclick = () => { $("tuneSheet").hidden = true; openAlbum(); };
 $("bAlbumClose").onclick = () => { $("album").hidden = true; };
+$("bReset").onclick = resetRecords;
 $("album").addEventListener("click", e => { if (e.target.id === "album") $("album").hidden = true; });
 $("clIn").checked = store.get("classic", false);
 $("clIn").addEventListener("change", e => { store.set("classic", e.target.checked); floatText(e.target.checked ? "Classic: pure bag" : "Director on"); hud(); });
@@ -1341,7 +1433,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.11.1";
+const APP_VERSION = "0.12.0";
 $("verTxt").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
