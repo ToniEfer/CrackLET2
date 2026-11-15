@@ -17,10 +17,10 @@
 @font-face{font-family:"Kalam";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/kalam-latin-400-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 @font-face{font-family:"Kalam";font-style:normal;font-weight:700;font-display:swap;src:url(fonts/kalam-latin-ext-700-normal.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
 @font-face{font-family:"Kalam";font-style:normal;font-weight:700;font-display:swap;src:url(fonts/kalam-latin-700-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-/* CrackLET 2 · layout from pew2_layout_neo_android_2.svg (Toni, 2026-10-27).
-   Phone-first neo-brutalist toy box: cream paper, 2.2px ink outlines on UI (3px on board and cards), hard offset shadows,
-   flat candy balls without highlights, white ball numbers with a thin ink outline, handwritten UI type (Segoe Print → Kalam).
-   HUD (logo · score card · coins) → progress bar → icon buttons → 5-track well → booster blocks. Single light look by choice. */
+/* CrackLET 2 · layout v0.13 from layout/CrackLET2_layout_v0.12.5_edit.svg (Toni, 2026-11-15), designed at 412 × 892.
+   Neo-brutalist toy box: cream paper, square blocks with ink outlines and hard 3px shadows, Arial UI type, Anton numbers.
+   HUD (logo · score · coins) → progress → pool chips + Prism goal → boosters / icon buttons → full-width 5-tube board.
+   Balls: flat colour, white rim light, glints, ink outline; exactly 8 balls fit a tube, one above the other. */
 :root{
   --paper:#fbf3e6;      /* screen */
   --card:#fffaf1;       /* raised surfaces */
@@ -34,7 +34,7 @@
   --purple:#9a7cf0;
   --green:#6cc24a;
   --display:"Anton","Impact","Arial Narrow Bold",sans-serif;
-  --ui:"Segoe Print","Kalam","Comic Sans MS",cursive;   /* Segoe Print where installed, Kalam (Google Fonts) elsewhere */
+  --ui:Arial,"Helvetica Neue",Arimo,"Liberation Sans",Roboto,sans-serif;   /* layout v0.13: Arial (Arimo / Liberation Sans on Android) */
   --bw:2.2px;           /* UI outlines: buttons, score, coins, progress */
   --bwb:3px;            /* board, phone frame, overlay cards */
   --sh:4px 4px 0 var(--ink);
@@ -45,16 +45,16 @@
 html,body{height:100%;height:100dvh}
 body{
   margin:0;background:var(--paper);color:var(--ink);font-family:var(--ui);
-  padding-left:max(16px,env(safe-area-inset-left,0px));
-  padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-left:max(18.5px,env(safe-area-inset-left,0px));
+  padding-right:max(18.5px,env(safe-area-inset-right,0px));
   padding-block:0;overflow:hidden;
   -webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;
 }
 .stage{height:100%;display:grid;place-items:center}
 .app{
   width:100%;max-width:430px;height:100%;
-  display:grid;grid-template-rows:auto auto auto auto minmax(0,1fr);gap:10px;
-  padding-block:calc(12px + env(safe-area-inset-top, 0px)) calc(14px + env(safe-area-inset-bottom, 0px));
+  display:grid;grid-template-rows:auto auto auto auto minmax(0,1fr);gap:0;
+  padding-block:calc(11.7px + env(safe-area-inset-top, 0px)) calc(17px + env(safe-area-inset-bottom, 0px));
 }
 @media (min-width:700px) and (min-height:720px){
   body{background-color:var(--desk);background-image:radial-gradient(rgba(20,20,20,.28) 1.4px,transparent 1.6px);background-size:18px 18px}
@@ -65,38 +65,40 @@ body{
   }
 }
 
-/* HUD */
-.hud{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}
-.brand{font-family:var(--display);font-size:29px;line-height:1;letter-spacing:.2px;display:flex;align-items:flex-start;white-space:nowrap}
-.brand sup{font-size:12px;line-height:1;width:16px;height:16px;display:grid;place-items:center;background:var(--yellow);border:1.2px solid var(--ink);border-radius:5px;box-shadow:1.6px 1.6px 0 var(--ink);margin:-6px 0 0 -3px;position:relative}
-.scorebox{background:var(--card);border:var(--bw) solid var(--ink);border-radius:12px;box-shadow:var(--sh);padding:4px 16px 5px;text-align:center;min-width:120px}
-.score{font-family:var(--display);font-size:32px;line-height:1.05;font-variant-numeric:tabular-nums;color:var(--yellow);-webkit-text-stroke:1.2px var(--ink)}
-.best{font-size:9px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);line-height:1.2}
-.coins{justify-self:end;display:flex;align-items:center;gap:6px;background:var(--yellow);border:var(--bw) solid var(--ink);border-radius:999px;box-shadow:3px 3px 0 var(--ink);padding:3px 12px 3px 5px;font-weight:700;font-size:14px;font-variant-numeric:tabular-nums}
-.coin{display:inline-block;width:18px;height:18px;border-radius:50%;background:var(--yellow);border:1.6px solid var(--ink)}
+/* HUD — layout v0.13 (CrackLET2_layout_v0.12.5_edit.svg, 412 × 892): square blocks, hard 3px shadows, Arial UI type */
+.hud{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;height:51.8px}
+.brand{font-family:var(--display);font-size:24px;line-height:1;display:flex;align-items:flex-start;white-space:nowrap;margin-left:-2.5px;padding-top:5.26px}
+.brand sup{font-size:12px;line-height:1;width:16px;height:16px;display:grid;place-items:center;background:var(--yellow);border:1px solid var(--ink);border-radius:0;box-shadow:1.6px 1.6px 0 var(--ink);margin:-7.25px 0 0 -1.4px;position:relative;padding-top:1px}
+.scorebox{background:var(--card);border:1.81px solid var(--ink);border-radius:0;box-shadow:3px 3px 0 var(--ink);padding:0 13.9px;text-align:center;min-width:101.8px;height:51.8px;display:flex;flex-direction:column;align-items:center;white-space:nowrap}
+.score{font-family:var(--display);font-size:28px;line-height:28px;margin-top:5.86px;font-variant-numeric:tabular-nums;color:var(--yellow);-webkit-text-stroke:1.2px var(--ink)}
+.best{font-size:9px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);line-height:9px;margin-top:3.7px}
+.best span{margin-left:1.6px}
+.coins{justify-self:end;display:flex;align-items:center;gap:6px;background:var(--yellow);border:1.6px solid var(--ink);border-radius:0;box-shadow:3px 3px 0 var(--ink);padding:0 8.3px 0 5.3px;height:31.6px;min-width:63.6px;margin-right:.7px;font-weight:700;font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.coin{display:inline-block;width:18px;height:18px;border-radius:50%;background:var(--yellow);border:1px solid var(--ink);flex:none}
 .coins .coin{background:#fff3b5}
-.progress{height:16px;border-radius:99px;background:var(--card);overflow:hidden;border:var(--bw) solid var(--ink);box-shadow:3px 3px 0 var(--ink)}
-.progress i{display:block;height:100%;width:0;background:var(--coral);border-right:var(--bw) solid var(--ink);transition:width .3s}
+.progress{height:15.6px;margin:10.7px .7px 0;border-radius:7.8px;background:var(--card);overflow:hidden;border:1.6px solid var(--ink);box-shadow:3px 3px 0 var(--ink)}
+.progress i{display:block;height:100%;width:0;background:var(--coral);border-right:2.16px solid var(--ink);transition:width .3s}
 .progress.over i{background:var(--green)}
-.meta{display:flex;justify-content:space-between;align-items:center;gap:8px;min-width:0}
+.meta{display:flex;justify-content:space-between;align-items:center;gap:8px;min-width:0;margin-top:13.82px}
 .tag{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;display:flex;align-items:center;gap:6px}
 .tag::before{content:"";width:10px;height:10px;background:var(--yellow);border:2px solid var(--ink);box-shadow:4px -4px 0 -2px var(--ink)}
-.metabtns{display:flex;gap:8px}
+.metabtns{display:flex;gap:4.8px;margin-right:1.32px}
 .ico{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;display:block}
-.ibtn{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;border:var(--bw) solid var(--ink);box-shadow:3px 3px 0 var(--ink);color:var(--ink);cursor:pointer;padding:0;transition:transform .08s,box-shadow .08s}
+.ibtn{width:39.2px;height:39.2px;border-radius:0;display:grid;place-items:center;border:1.2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);color:var(--ink);cursor:pointer;padding:0;transition:transform .08s,box-shadow .08s}
 #bVoice{background:var(--yellow)} #bMute{background:var(--teal)} #bVoice.off,#bMute.off{background:var(--card)} #bTune{background:var(--purple)}
-.ibtn .ico{width:20px;height:20px}
+.ibtn .ico{width:23px;height:23px;stroke-width:1.68}
 .ibtn.off{background:var(--card)}
 .ibtn:active,.bst:active:not(:disabled),.btn:active:not(:disabled){transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
 .ibtn:focus-visible,.bst:focus-visible,.btn:focus-visible,.chip:focus-visible,.board:focus-visible{outline:3px solid var(--coral);outline-offset:3px}
 
 /* Board */
-.boardwrap{container-type:size;min-height:0;display:grid;place-items:center}
+.boardwrap{container-type:size;min-height:0;display:grid;place-items:start center;margin-top:19.8px}
 .board{
   position:relative;container-type:inline-size;
-  width:min(calc(100cqw - 8px), calc((100cqh - 8px) * .6536));      /* 5 / (9 × 0.85) */
-  height:min(calc(100cqh - 8px), calc((100cqw - 8px) * 1.98));       /* 9 × 1.1 / 5 */
-  background:var(--card);border:3.25px solid var(--ink);border-radius:18px;box-shadow:6.5px 6.5px 0 var(--ink);overflow:hidden;
+  /* inside the 3px border the board is 369 × 667 (layout v0.13); the drawing scales with the inner width */
+  --bw-in:min(calc(100cqw - 6px), calc((100cqh - 12px) * 369 / 667));
+  width:calc(var(--bw-in) + 6px);height:calc(var(--bw-in) * 667 / 369 + 6px);
+  background:var(--card);border:3px solid var(--ink);border-radius:0;box-shadow:6px 6px 0 var(--ink);overflow:hidden;
   touch-action:none;cursor:pointer;
 }
 .board canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
@@ -108,15 +110,17 @@ body{
 @keyframes floatUp{0%{opacity:0;transform:translate(-50%,-30%) scale(.7) rotate(-4deg)}15%{opacity:1;transform:translate(-50%,-50%) scale(1.08) rotate(-4deg)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-90%) scale(1) rotate(-4deg)}}
 
 /* Boosters */
-.boosters{display:flex;gap:8px}
-.bst{font:inherit;color:var(--ink);width:64px;height:40px;border:var(--bw) solid var(--ink);border-radius:10px;box-shadow:3px 3px 0 var(--ink);padding:3px 4px 2px;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;align-items:center;column-gap:3px;row-gap:0;cursor:pointer;transition:transform .08s,box-shadow .08s}
-.bst b{grid-column:1 / -1;font-size:10px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;line-height:1.1;text-align:center}
+.boosters{display:flex;gap:4.73px;margin-left:1px}
+/* booster: icon top-left, price pill, label; the block widens when the price does */
+.bst{font:inherit;color:var(--ink);position:relative;min-width:59.2px;height:39.2px;border:1.2px solid var(--ink);border-radius:0;box-shadow:3px 3px 0 var(--ink);padding:6px 4px 0 18.6px;display:flex;align-items:flex-start;cursor:pointer;transition:transform .08s,box-shadow .08s}
+.bst b{position:absolute;left:0;right:0;top:23px;font-size:10px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;line-height:10px;text-align:center}
 #bUndo{background:var(--yellow)} #bSwap{background:var(--teal)} #bHammer{background:var(--coral)}
-.bst .ico{width:16px;height:16px;stroke-width:2.2}
-.bst span{font-size:9px;font-weight:700;display:flex;align-items:center;gap:3px;background:var(--card);border:1.15px solid var(--ink);border-radius:99px;padding:0 5px 0 1px;line-height:1.25;justify-self:stretch}
-.bst span .coin{width:9px;height:9px;border-width:1px}
+.bst .ico{position:absolute;left:1.9px;top:4.4px;width:16px;height:16px;stroke-width:1.5}
+#bUndo .ico{stroke-width:1.8}
+.bst span{font-size:9px;font-weight:700;display:flex;align-items:center;gap:3px;background:var(--card);border:1px solid var(--ink);border-radius:99px;padding:0 4.4px 0 1px;height:13.25px;min-width:34.4px;line-height:9px;white-space:nowrap}
+.bst span .coin{width:9px;height:9px;border-width:1px;background:var(--yellow)}
 .bst:disabled{opacity:.45;cursor:not-allowed;box-shadow:2px 2px 0 var(--ink)}
-@media (max-width:399px){ .bst{width:56px} .boosters,.metabtns{gap:6px} .ibtn{width:36px;height:36px} .meta{gap:6px} }
+
 .bst.on{outline:3px dashed var(--ink);outline-offset:3px}
 
 /* Overlays */
@@ -155,30 +159,42 @@ body{
 .progress.pulse{animation:ppulse .8s infinite}
 @keyframes ppulse{50%{box-shadow:3px 3px 0 var(--ink),0 0 0 4px rgba(242,103,92,.55)}}
 .scorebox.gold{background:#fff3b5;border-color:#b8860b;box-shadow:4px 4px 0 #b8860b}
-.strip{display:flex;align-items:center;gap:8px;min-width:0;margin:-2px 0 4px}
-.poolbar{display:flex;gap:4px;align-items:center;flex:1;min-width:0;overflow:hidden;padding:0 3px 3px 0}
-.pc{position:relative;flex:none;min-width:30px;height:22px;padding:0 6px;border-radius:99px;background:var(--c,#ccc);border:1.6px solid var(--ink);box-shadow:2px 2px 0 var(--ink);font-family:var(--display);font-size:12px;line-height:19px;color:#fff;-webkit-text-stroke:.6px var(--ink);text-align:center;transition:opacity .3s}
-.pc i{position:absolute;left:0;right:0;bottom:-1px;font-style:normal;font-size:8px;line-height:6px;color:var(--ink);-webkit-text-stroke:0;letter-spacing:-1px}
-.pc.lg{opacity:.45;border-style:dashed}
-.pc.prism{background:var(--navy);color:var(--yellow);overflow:hidden;padding:0 6px 0 4px}
-.pc.prism u{position:absolute;left:0;bottom:0;height:3px;background:var(--yellow)}
-.pgoal{flex:none;display:flex;align-items:center;gap:5px;height:22px;padding:0 8px 0 6px;border-radius:99px;background:var(--navy);border:1.6px solid var(--ink);box-shadow:2px 2px 0 var(--ink);font-family:var(--display);font-size:12px;color:var(--yellow);white-space:nowrap}
-.pgoal svg{display:block}
-.poolbar.many{gap:3px}.poolbar.many .pc{min-width:24px;padding:0 3px;font-size:10.5px}
-.pgoal{gap:3px;padding:0 6px 0 5px}
-.pgoal small{font-family:var(--ui);font-weight:700;font-size:10px;color:#fff}
-.top3{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}
-.top3 li{display:flex;justify-content:space-between;align-items:center;background:var(--card);border:2px solid var(--ink);border-radius:10px;box-shadow:2px 2px 0 var(--ink);padding:6px 10px}
-.top3 b{font-family:var(--display);font-weight:400;font-size:18px}
-.top3 i{font-style:normal;font-family:var(--display);font-size:14px;color:var(--muted);width:22px}
-.balls{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-top:6px}
-.balls img{width:100%;display:block}
-.troph{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
-.troph div{border:2px solid var(--ink);border-radius:10px;box-shadow:2px 2px 0 var(--ink);background:var(--card);padding:4px;text-align:center}
-.troph img{width:70%;display:block;margin:0 auto}
-.troph small{display:block;font-size:9px;font-weight:700;line-height:1.2}
-.troph .no{background:#e9e2d6;color:#b7ae9f}
-.troph .no b{display:grid;place-items:center;aspect-ratio:1;width:70%;margin:0 auto;border-radius:50%;border:2px dashed #b7ae9f;font-family:var(--display);font-weight:400;font-size:20px}
+.strip{display:flex;align-items:flex-start;gap:8px;min-width:0;margin-top:7px;height:26px}
+.poolbar{display:flex;gap:2px;align-items:center;flex:1;min-width:0;overflow:hidden;margin-left:1px}
+/* pool chips: tiny balls (r 11, drawn by drawGlass), leaving values faded with a dashed rim */
+.pc{position:relative;flex:none;width:26px;height:26px;transition:opacity .3s}
+.pc img{display:block;width:26px;height:26px}
+.pc i{position:absolute;left:0;right:4px;bottom:-3px;font-style:normal;font-size:8px;line-height:6px;color:var(--ink);letter-spacing:-1px;text-align:center}
+.pc.lg{opacity:.45}
+.pgoal{flex:none;display:flex;align-items:center;font-size:9px;font-weight:700;letter-spacing:.13em;color:var(--muted);white-space:nowrap;margin:1.42px 1px 0 0;gap:4.4px}
+.pgoal span{position:relative;display:flex;align-items:center;height:23px;min-width:61px;padding:0 12.5px 0 23px;background:var(--navy);border:1px solid var(--ink);box-shadow:2px 2px 0 var(--ink);font-family:var(--display);font-size:12px;letter-spacing:0;color:var(--yellow);overflow:hidden}
+.pgoal span::before{content:"";position:absolute;inset:0;background:radial-gradient(30px 14.4px at 50% 50%,rgba(255,255,255,0) 75%,#fff 100%);mix-blend-mode:overlay;opacity:.5;pointer-events:none}
+.pgoal img{position:absolute;left:0;top:-1px;width:24px;height:24px}
+.pgoal small{font-family:var(--display);font-size:10px;color:#fff;margin-left:3px;letter-spacing:0;font-weight:400}
+/* Records — layout v0.13: square cells, 2px outlines, 3px shadows, no card shadow */
+.card.album{box-shadow:none;gap:0;padding:22px;font-size:12px}
+.album .head{height:35px;margin-top:-.8px}
+.album .head b{font-size:22px;line-height:22px;padding-top:3.3px}
+.album .head .btn{width:55.5px;height:35px;padding:0;border:2px solid var(--ink);border-radius:0;box-shadow:3px 3px 0 var(--ink);font-size:12px;font-weight:700;background:var(--card)}
+.album .row{margin-top:0;height:12px;line-height:12px;align-items:flex-end;flex-wrap:nowrap}
+.album .row b{font-size:12px;font-weight:700}
+.album .row small{font-size:10px;color:var(--muted);font-weight:400}
+.album .r1{margin-top:13.8px}.album .r2{margin-top:21.8px}.album .r3{margin-top:17.7px}
+.top3{list-style:none;margin:7.2px 0 0;padding:0;display:grid;gap:5px}
+.top3 li{position:relative;display:flex;justify-content:space-between;align-items:center;height:43px;background:var(--card);border:2px solid var(--ink);border-radius:0;box-shadow:3px 3px 0 var(--ink);padding:0 6px 0 10px}
+.top3 b{position:absolute;left:0;right:0;text-align:center;font-family:var(--display);font-weight:400;font-size:18px;color:var(--ink);top:9.5px;line-height:22px}
+.top3 i{font-style:normal;font-family:var(--display);font-size:14px;color:var(--muted);margin-top:1px}
+.top3 small{font-size:10px;color:var(--muted);margin-top:-1px}
+.balls{display:grid;grid-template-columns:repeat(6,38px);justify-content:space-between;row-gap:11px;margin-top:8.2px;padding:0 1.1px}
+.balls img{display:block;width:43px;height:43px;margin:-1px -4px -4px -1px}
+.troph{display:grid;grid-template-columns:repeat(3,92px);gap:6px;margin-top:7.9px;padding:0 1px}
+.troph div{position:relative;height:92px;border:2px solid var(--ink);border-radius:0;box-shadow:3px 3px 0 var(--ink);background:var(--card)}
+.troph img{position:absolute;left:19px;top:12px;width:54px;height:54px}
+.troph small{position:absolute;left:0;right:0;top:73.2px;text-align:center;font-size:9px;line-height:9px;color:var(--muted)}
+.troph .no{background:#e9e2d6}
+.troph .no svg{position:absolute;left:15.8px;top:15.8px;width:56.5px;height:56.5px}
+.troph .no b{position:absolute;left:0;right:0;top:34px;text-align:center;font-family:var(--display);font-weight:400;font-size:20px;line-height:20px;color:var(--ink)}
+.album #bReset{margin-top:15.7px;height:37px;padding:0;border:2px solid var(--ink);border-radius:0;box-shadow:none;font-size:12px;font-weight:700}
 .btn.danger{background:var(--coral);color:#fff}
 .goals{list-style:none;margin:6px 0;padding:0;display:grid;gap:6px;text-align:left}
 .goals li{display:flex;gap:8px;align-items:center;background:var(--card);border:2px solid var(--ink);border-radius:10px;padding:6px 10px;font-weight:700;font-size:13px;color:var(--ink)}
@@ -205,14 +221,15 @@ body{
 .bst span em{font-style:normal}
 .app{container-type:inline-size}
 .app>*{min-width:0}
-@container (max-width:400px){
-  .bst{width:57px}.ibtn{width:36px;height:36px}.boosters,.metabtns{gap:6px}
-  .brand{font-size:24px}.scorebox{min-width:100px;padding:3px 10px 4px}.score{font-size:28px}
+/* narrower than the 375px design width: tighten, keep the proportions */
+@container (max-width:360px){
+  .ibtn{width:35px;height:35px}.ibtn .ico{width:20px;height:20px}.boosters,.metabtns{gap:4px}.bst{min-width:55px;padding-left:16.5px}.bst .ico{left:.8px}
+  .hud{gap:6px}.brand{font-size:21px}.scorebox{min-width:92px;padding:0 10px}.score{font-size:25px}
 }
-@container (max-width:340px){
-  .bst{width:50px}.bst b{font-size:9px}.bst span{padding:0 3px 0 1px}.ibtn{width:32px;height:32px}.ibtn .ico{width:17px;height:17px}.boosters,.metabtns{gap:5px}
-  .hud{gap:6px}.brand{font-size:20px}.scorebox{min-width:84px;padding:3px 8px 4px}.score{font-size:24px}.coins{font-size:12px;padding:2px 8px 2px 4px}
-  .pc{min-width:26px;padding:0 4px;font-size:11px}.nbar{width:40px}
+@container (max-width:320px){
+  .bst{min-width:50px;padding-left:15px;padding-right:3px}.bst b{font-size:9px}.bst span{min-width:30px;padding-right:3px;font-size:8.5px}.bst span .coin{width:8px;height:8px}.ibtn{width:29px;height:29px}.ibtn .ico{width:17px;height:17px}.metabtns{gap:3px}.boosters{gap:3px}
+  .brand{font-size:18px}.scorebox{min-width:80px;padding:0 7px}.score{font-size:22px}.coins{font-size:12px;padding:0 6px 0 4px;min-width:52px}
+  .pc,.pc img{width:22px;height:22px}.nbar{width:40px}
 }
 .card .sub{color:var(--ink);font-weight:700}
 .card .why{font-size:11px}
@@ -236,7 +253,7 @@ body{
     <div class="brand" aria-label="CrackLET 2">CrackLET<sup>2</sup></div>
     <div class="scorebox">
       <div class="score" id="score">0</div>
-      <div class="best">Best <span id="best">0</span></div>
+      <div class="best">Best<span id="best">0</span></div>
     </div>
     <div class="coins" title="Coins"><span class="coin"></span><span id="coins">0</span></div>
   </header>
@@ -317,11 +334,11 @@ body{
 
 <div class="overlay" id="album" hidden>
   <div class="card tune album">
-    <div class="head"><b>Records</b><button class="btn ghost" id="bAlbumClose" type="button" style="padding:6px 12px;font-size:12px;box-shadow:3px 3px 0 var(--ink)">Close</button></div>
-    <div class="row"><b>Top scores</b></div><ol class="top3" id="alTop"></ol>
-    <div class="row"><b>Balls</b></div><div class="balls" id="alBalls"></div>
-    <div class="row"><b>Trophies</b><small>8K and up, Prism</small></div><div class="troph" id="alTroph"></div>
-    <div class="row"><button class="btn danger sm" id="bReset" type="button" style="width:100%">Reset records</button></div>
+    <div class="head"><b>Records</b><button class="btn ghost" id="bAlbumClose" type="button">Close</button></div>
+    <div class="row r1"><b>Top scores</b></div><ol class="top3" id="alTop"></ol>
+    <div class="row r2"><b>Balls</b></div><div class="balls" id="alBalls"></div>
+    <div class="row r3"><b>Trophies</b><small>8K and up, Prism</small></div><div class="troph" id="alTroph"></div>
+    <button class="btn danger" id="bReset" type="button">Reset records</button>
   </div>
 </div>
 
@@ -369,7 +386,11 @@ const balls = new Map();      // id → visual ball {id,v,x,y,vy,form,crack,sq}
 let shards = [], sparks = [], coinsFx = [];
 let W = 0, Hpx = 0, cell = 1, cellX = 1, bc = 1, dpr = 1, time = 0;
 /* geometry in px, recomputed on every resize: RPX = ball radius, PIT = slot pitch (= 2·RPX, balls touch), YB = tube floor */
-let RPX = 10, PIT = 20, YB = 180, TUBE_W = 20, TUBE_Y0 = 20, BAND0 = 10, BAND1 = 12, LAUNCH = 5;   // cell = vertical unit, cellX = track width, bc = ball unit
+let RPX = 10, PIT = 20, YB = 180, TUBE_W = 20, TUBE_Y0 = 20, TUBE_Y1 = 180, BAND0 = 10, BAND1 = 12, LAUNCH = 5, KB = 1, PXC = 20;   // cell = vertical unit, KB = board scale (1 = 369 px inner width), PXC = track pitch
+/* board geometry, layout v0.13 (inner board 369 × 667 px, from CrackLET2_layout_v0.12.5_edit.svg): 5 tubes 62 wide on a 73 px pitch,
+   centred; 8 slots of 60 px (ball r 30) stacked inside each tube; launcher ball above the hazard band */
+const GEO = { W: 369, H: 667, pitch: 73, r: 30, tubeW: 62, tubeTop: 160.4, tubeBot: 642.4, floor: 641.4, band0: 118.4, band1: 124.4, launch: 74.9, aimTop: 25.45, stripe: 10.36, stripe0: -74.5, ghost: 27.5 };
+const X = x => W / 2 + (x - 2.5) * PXC;                 // column units (centre of track c = c + .5) → px
 
 /* ---------- storage ---------- */
 const store = {
@@ -570,18 +591,11 @@ const label = v => v >= PRISM ? "Prism" : v >= 4194304 ? (v / 1048576) + "M" : v
    Height budget in pitches: launcher 1.07 + band .10 + gap .03 + tube 8.12 + floor .06 = 9.38.
    The ball is as big as both the height budget and the tube width allow; spare height goes to the launcher area. */
 function layout(){
-  cellX = W / COLS; cell = Hpx / H; bc = Math.min(cell, cellX);
-  TUBE_W = cellX * .86;
-  const rW = TUBE_W / 2 - Math.max(2, TUBE_W * .03), rH = Hpx / 9.38 / 2;
-  RPX = Math.max(4, Math.min(rW, rH)); PIT = RPX * 2;
-  const pad = PIT * .06;
-  YB = Hpx - pad - pad;                      // floor of slot 0 (inside the tube)
-  TUBE_Y0 = YB - PIT * ROWS - pad;           // tube top edge
-  BAND1 = TUBE_Y0 - PIT * .03; BAND0 = BAND1 - PIT * .1;
-  LAUNCH = Math.max(RPX * 1.04, BAND0 - PIT * .58);
-  // self-check: slots exactly one diameter apart, the top slot inside the tube, the launcher above the band
-  const okPitch = Math.abs((slotY(0) - slotY(1)) * cell - PIT) < .01, okTube = YB - PIT * ROWS >= TUBE_Y0 - .5, okTop = LAUNCH + RPX <= BAND0 + .5 && LAUNCH - RPX >= -.5;
-  if (!(okPitch && okTube && okTop) && RPX > 4){ console.warn("layout check failed, shrinking balls", { RPX, okPitch, okTube, okTop }); RPX *= .97; PIT = RPX * 2; }
+  KB = Math.min(W / GEO.W, Hpx / GEO.H);                // the board keeps the 369 : 667 shape; the drawing scales with it
+  cell = Hpx / H; cellX = W / COLS; bc = 74.4 * KB; PXC = GEO.pitch * KB;
+  RPX = GEO.r * KB; PIT = RPX * 2; TUBE_W = GEO.tubeW * KB;
+  YB = GEO.floor * KB; TUBE_Y0 = GEO.tubeTop * KB; TUBE_Y1 = GEO.tubeBot * KB;
+  BAND0 = GEO.band0 * KB; BAND1 = GEO.band1 * KB; LAUNCH = GEO.launch * KB;
 }
 function resize(){
   const r = board.getBoundingClientRect(); if (!r.width || !r.height) return;
@@ -593,24 +607,38 @@ new ResizeObserver(resize).observe(board);
 addEventListener("resize", resize); addEventListener("orientationchange", () => setTimeout(resize, 120));
 if (window.visualViewport) visualViewport.addEventListener("resize", resize);
 
-function drawGlass(g, x, y, r, v, opt = {}){
-  // flat candy ball (layout v2): hard offset shadow, flat fill, 2.2/28 ink outline, white rim glint,
-  // white Anton number with a thin ink outline; Prism = navy ball with the prism glyph
-  const isPrism = v >= PRISM, c = isPrism ? "#2f405b" : colorOf(v), alpha = opt.alpha ?? 1, sq = opt.sq || 0, lw = Math.max(1.6, r * .079);
-  g.save(); g.translate(x, y + sq * r * .5); g.scale(1 + sq, 1 - sq); g.globalAlpha = alpha;
-  g.beginPath(); g.arc(r * .14, r * .16, r, 0, Math.PI * 2); g.fillStyle = INK; g.fill();
-  g.beginPath(); g.arc(0, 0, r, 0, Math.PI * 2); g.fillStyle = rgba(c, 1); g.fill();
-  g.lineWidth = lw; g.strokeStyle = INK; g.stroke();
-  // white rim glint (from the layout: two arcs at 0.85 r, 1.87/28 r wide, round caps, upper-left)
+/* ball, layout v0.13 (balls layer of CrackLET2_layout_v0.12.5_edit.svg, r 30): hard ink shadow (+3.9, +4.5), flat colour,
+   white rim light (radial .75–1 r, overlay 50%), two white glint arcs, 2 px ink outline, white Anton number with a 1.07 px ink
+   stroke on top. Number size by length: 1 → .929 r, 2 → .857, 3 → .786, 4 → .714; K/M labels .857 (4 chars .714).
+   opt: sq (squash), crack, seed, n (Prism count), alpha, fs (fixed number size in r), sh ([dx, dy] shadow in r), dash (dashed rim) */
+const NUMFS = L => /[KM]/.test(L) ? (L.length <= 3 ? .857 : .714) : [0, .929, .857, .786, .714][L.length] || .6;
+function glints(g, r, w){
   g.beginPath(); g.arc(0, 0, r * .851, Math.PI * 1.198, Math.PI * 1.5);
   g.moveTo(-r * .851, 0); g.arc(0, 0, r * .851, Math.PI, Math.PI * 1.117);
-  g.lineWidth = Math.max(1.2, r * .0668); g.strokeStyle = "#ffffff"; g.lineCap = "round"; g.stroke(); g.lineCap = "butt";
-  if (isPrism){ prismGlyph(g, r, opt.n || 0); g.restore(); return; }
-  const L = label(v); const fs = r * (L.length <= 1 ? .93 : L.length === 2 ? .86 : L.length === 3 ? .79 : L.length === 4 ? .71 : .6);
-  g.font = `${fs}px Anton, Impact, "Arial Narrow Bold", sans-serif`; g.textAlign = "center"; g.textBaseline = "middle";
-  const ty = r * .05;
-  g.lineWidth = Math.max(1.6, fs * .11); g.strokeStyle = INK; g.lineJoin = "round"; g.strokeText(L, 0, ty);   // outline under the fill
-  g.fillStyle = "#ffffff"; g.fillText(L, 0, ty);
+  g.lineWidth = w; g.strokeStyle = "#ffffff"; g.lineCap = "round"; g.stroke(); g.lineCap = "butt";
+}
+function rimLight(g, r){
+  const gr = g.createRadialGradient(0, 0, r * .75, 0, 0, r); gr.addColorStop(0, "rgba(255,255,255,0)"); gr.addColorStop(1, "#ffffff");
+  g.save(); g.globalCompositeOperation = "overlay"; g.globalAlpha *= .5;
+  g.beginPath(); g.arc(0, 0, r, 0, Math.PI * 2); g.fillStyle = gr; g.fill(); g.restore();
+}
+function drawGlass(g, x, y, r, v, opt = {}){
+  const isPrism = v >= PRISM, c = colorOf(v), alpha = opt.alpha ?? 1, sq = opt.sq || 0, sh = opt.sh || [.13, .15];
+  g.save(); g.translate(x, y + sq * r * .5); g.scale(1 + sq, 1 - sq); g.globalAlpha = alpha;
+  g.beginPath(); g.arc(r * sh[0], r * sh[1], r, 0, Math.PI * 2); g.fillStyle = INK; g.fill();
+  g.beginPath(); g.arc(0, 0, r, 0, Math.PI * 2); g.fillStyle = rgba(c, 1); g.fill();
+  rimLight(g, r);
+  glints(g, r, r * .06);
+  if (isPrism) prismGlyph(g, r, opt.n || 0);
+  g.beginPath(); g.arc(0, 0, r, 0, Math.PI * 2); g.lineWidth = r * .0667; g.strokeStyle = INK;
+  if (opt.dash){ g.setLineDash([r * .09, r * .18]); g.lineCap = "round"; } g.stroke(); g.setLineDash([]); g.lineCap = "butt";
+  if (!isPrism){
+    const L = label(v), fs = r * (opt.fs || NUMFS(L));
+    g.font = `${fs}px Anton, Impact, "Arial Narrow Bold", sans-serif`; g.textAlign = "center"; g.textBaseline = "alphabetic";
+    const ty = fs * .432;
+    g.fillStyle = "#ffffff"; g.fillText(L, 0, ty);
+    g.lineWidth = r * .0357; g.strokeStyle = INK; g.lineJoin = "round"; g.strokeText(L, 0, ty);   // thin outline over the fill
+  }
   // cracks (ink)
   if (opt.crack > 0){
     let s = opt.seed || 1; const rr = () => (s = (s * 9301 + 49297) % 233280) / 233280;
@@ -625,81 +653,90 @@ function drawGlass(g, x, y, r, v, opt = {}){
   g.restore();
 }
 
+/* Prism glyph in ball units (r = 30 in the layout): white triangle, four rainbow rays out to the right, white light beam in from the left.
+   Paths copied from the layout file; with a count n the glyph shrinks and "×n" sits under it. */
+const PRAYS = [["#f2675c", 16.3, -11.8, 21.75, -15.71, 1.51, -1.07, 2.08, -3.33, 2.08, -3.33], ["#ffd23f", 18.18, -8.12, 24.23, -10.85, 1.72, -.78, 3.03, -2.25, 3.03, -2.25],
+               ["#3cc5b4", 19.25, -4.08, 25.67, -5.42, 1.72, -.36, 3.47, -1.22, 3.47, -1.22], ["#4aa3f0", 19.42, .08, 25.9, .14, 1.97, 0, 3.64, -.27, 3.64, -.27]];
 function prismGlyph(g, r, n){
-  const s = r * (n ? .44 : .6), oy = n ? -r * .2 : r * .04;
-  ["#f2675c", "#ffd23f", "#3cc5b4", "#4aa3f0"].forEach((c, k) => {
-    g.beginPath(); g.moveTo(s * .3, oy + s * .05 + k * s * .1); g.lineTo(r * .9, oy - s * .3 + k * s * .26);
-    g.strokeStyle = c; g.lineWidth = Math.max(1.4, r * .08); g.lineCap = "round"; g.stroke();
-  });
-  g.beginPath(); g.moveTo(0, oy - s); g.lineTo(s * .92, oy + s * .62); g.lineTo(-s * .92, oy + s * .62); g.closePath();
-  g.fillStyle = "#ffffff"; g.fill(); g.lineWidth = Math.max(1.6, r * .09); g.strokeStyle = INK; g.lineJoin = "round"; g.stroke();
+  g.save(); const k = r / 30 * (n ? .72 : 1); g.translate(0, n ? -r * .17 : 0); g.scale(k, k);
+  g.beginPath(); g.moveTo(0, -16.8); g.lineTo(16.56, 12.36); g.lineTo(-16.56, 12.36); g.closePath();
+  g.fillStyle = "#ffffff"; g.fill(); g.lineWidth = 2.24; g.strokeStyle = INK; g.lineJoin = "round"; g.lineCap = "round"; g.stroke();
+  const x0 = .02, y0 = 1.42; g.lineWidth = 2.53;
+  for (const [c, a1, b1, a2, b2, c1, d1, c2, d2, e1, f1] of PRAYS){
+    g.beginPath(); g.moveTo(x0, y0); g.bezierCurveTo(x0, y0, x0 + a1, y0 + b1, x0 + a2, y0 + b2);
+    const px = x0 + a2, py = y0 + b2; g.bezierCurveTo(px + c1, py + d1, px + c2, py + d2, px + e1, py + f1); g.strokeStyle = c; g.stroke();
+  }
+  g.beginPath(); g.moveTo(-3.54, -.13); g.bezierCurveTo(-3.54, -.13, -18.54, -6.8, -23.68, -9.18); g.bezierCurveTo(-25.31, -9.93, -26.58, -11.57, -26.58, -11.57);
+  g.lineWidth = 4; g.strokeStyle = "#ffffff"; g.stroke();
+  g.restore();
   if (n){
-    const fs = r * .46; g.font = `${fs}px Anton, Impact, sans-serif`; g.textAlign = "center"; g.textBaseline = "middle";
-    g.lineWidth = Math.max(1.4, fs * .12); g.strokeStyle = INK; g.strokeText("×" + n, 0, r * .52); g.fillStyle = "#ffd23f"; g.fillText("×" + n, 0, r * .52);
+    const fs = r * .42; g.font = `${fs}px Anton, Impact, sans-serif`; g.textAlign = "center"; g.textBaseline = "alphabetic";
+    g.fillStyle = "#ffd23f"; g.fillText("×" + n, 0, r * .72); g.lineWidth = r * .0357; g.strokeStyle = INK; g.strokeText("×" + n, 0, r * .72);
   }
 }
 function drawBoard(){
   const g = ctx; g.setTransform(dpr, 0, 0, dpr, 0, 0);
   // paper + dot grid
   g.fillStyle = PAPER; g.fillRect(0, 0, W, Hpx);
-  g.fillStyle = "rgba(20,20,20,.13)"; const step = Math.max(12, cellX * .22);
+  g.fillStyle = "rgba(20,20,20,.13)"; const step = Math.max(12, 16.37 * KB);
   for (let y = step / 2; y < Hpx; y += step) for (let x = step / 2; x < W; x += step){ g.beginPath(); g.arc(x, y, 1.1, 0, Math.PI * 2); g.fill(); }
   // spawn band: hazard stripes under the launcher row
   g.save(); g.beginPath(); g.rect(0, BAND0, W, BAND1 - BAND0); g.clip();
   g.fillStyle = "#ffd23f"; g.fillRect(0, BAND0, W, BAND1 - BAND0);
-  g.fillStyle = INK; const sw = cellX * .14;
-  for (let x = -cellX; x < W + cellX; x += sw * 2){ g.beginPath(); g.moveTo(x, BAND1); g.lineTo(x + sw, BAND1); g.lineTo(x + sw * 2, BAND0); g.lineTo(x + sw, BAND0); g.closePath(); g.fill(); }
+  g.fillStyle = INK; const sw = GEO.stripe * KB;
+  for (let x = W / 2 - GEO.W / 2 * KB + GEO.stripe0 * KB; x < W + sw * 2; x += sw * 2){ g.beginPath(); g.moveTo(x, BAND1); g.lineTo(x + sw, BAND1); g.lineTo(x + sw * 2, BAND0); g.lineTo(x + sw, BAND0); g.closePath(); g.fill(); }
   g.restore();
   if (S.danger && !S.over){ g.fillStyle = `rgba(229,72,77,${.35 + .35 * Math.sin(time * 6)})`; g.fillRect(0, BAND0, W, BAND1 - BAND0); }
-  g.fillStyle = INK; g.fillRect(0, BAND0 - 1.5, W, 3); g.fillRect(0, BAND1 - 1.5, W, 3);
+  g.fillStyle = INK; g.fillRect(0, BAND0 - 1.5 * KB, W, 3 * KB); g.fillRect(0, BAND1 - 1.5 * KB, W, 3 * KB);
   // tracks
   for (let c = 0; c < COLS; c++){
-    const w = TUBE_W, x0 = c * cellX + (cellX - w) / 2, y0 = TUBE_Y0, h = YB + PIT * .06 - y0;   // tube holds exactly 8 touching balls
+    const w = TUBE_W, x0 = X(c + .5) - w / 2, y0 = TUBE_Y0, h = TUBE_Y1 - y0;   // tube holds exactly 8 touching balls (no shadow)
     const full = S.grid[c].length >= ROWS;
     const isAim = c === aim && !S.over;
-    roundRect(g, x0 + 3, y0 + 3, w, h, w / 2); g.fillStyle = INK; g.fill();
     roundRect(g, x0, y0, w, h, w / 2); g.fillStyle = full ? "#ffd9d4" : isAim ? "#fff1b8" : "#ffffff"; g.fill();
-    const warn = full && S.danger && !S.over; g.lineWidth = warn ? 4.5 : 2.7; g.strokeStyle = warn ? "#e5484d" : INK; g.stroke();
-    // glass glint on the tube
+    const warn = full && S.danger && !S.over; g.lineWidth = warn ? 4.5 * KB : 2.64 * KB; g.strokeStyle = warn ? "#e5484d" : INK; g.stroke();
+    // glass glint on the tube: 6 px strip, 8 px from the left edge, 20 px short of both ends
     g.fillStyle = full ? "rgba(242,103,92,.35)" : "rgba(20,20,20,.06)";
-    roundRect(g, x0 + w * .14, y0 + w * .3, w * .1, h - w * .6, w * .05); g.fill();
+    roundRect(g, x0 + 8 * KB, y0 + 20 * KB, 6 * KB, h - 40 * KB, 3 * KB); g.fill();
   }
   // landing ghost
   if (!busy && !S.over){
     const col = S.grid[aim];
     if (col.length < ROWS){
-      const gy = slotY(col.length) * cell, gx = (aim + .5) * cellX, rr = RPX;
-      g.save(); g.setLineDash([5, 5]); g.lineWidth = 2.5; g.strokeStyle = INK;
-      g.beginPath(); g.arc(gx, gy, rr, 0, Math.PI * 2); g.stroke();
-      g.setLineDash([2, 7]); g.lineWidth = 2.5; g.lineCap = "round";
-      g.beginPath(); g.moveTo(gx, cell * 1.25); g.lineTo(gx, gy - rr - 4); g.stroke(); g.restore();
+      const gy = slotY(col.length) * cell, gx = X(aim + .5), k = KB;
+      // aim line (dash 4/6, 2 px) from above the launcher down to the landing ghost (dashed ring r 27.5)
+      g.save(); g.lineCap = "round"; g.lineJoin = "round"; g.strokeStyle = INK;
+      g.setLineDash([4 * k, 6 * k]); g.lineWidth = 2 * k;
+      g.beginPath(); g.moveTo(gx, GEO.aimTop * k); g.lineTo(gx, gy - RPX); g.stroke();
+      g.setLineDash([3.67 * k, 5.5 * k]); g.lineWidth = 1.83 * k;
+      g.beginPath(); g.arc(gx, gy, GEO.ghost * k, 0, Math.PI * 2); g.stroke(); g.restore();
     }
   }
   // balls: top ones first, so lower balls are drawn over the shadows of the balls above them
   for (const b of [...balls.values()].sort((p, q) => p.y - q.y)){
     const mo = b.morph > 0 ? Math.sin(Math.PI * (1 - b.morph / .7)) : 0;
     const s = easeOutBack(Math.min(1, b.form)) * (b.pulse > 0 ? 1 + .28 * Math.sin(Math.PI * (1 - b.pulse / .6)) : 1) * (1 + .3 * mo);
-    drawGlass(g, b.x * cellX, b.y * cell, RPX * s, b.v, { sq: b.sq, crack: b.crack, seed: b.seed, n: b.n });
-    if (mo > 0){ g.beginPath(); g.arc(b.x * cellX, b.y * cell, RPX * s * 1.05, 0, Math.PI * 2); g.fillStyle = `rgba(255,255,255,${mo * .95})`; g.fill(); }
+    drawGlass(g, X(b.x), b.y * cell, RPX * s, b.v, { sq: b.sq, crack: b.crack, seed: b.seed, n: b.n });
+    if (mo > 0){ g.beginPath(); g.arc(X(b.x), b.y * cell, RPX * s * 1.05, 0, Math.PI * 2); g.fillStyle = `rgba(255,255,255,${mo * .95})`; g.fill(); }
   }
   // launcher
   if (!busy && !S.over){
     const bob = Math.sin(time * 3) * .04;
-    drawGlass(g, (aim + .5) * cellX, LAUNCH + bob * cell, RPX, S.cur, {});
+    drawGlass(g, X(aim + .5), LAUNCH + bob * cell, RPX, S.cur, {});
   }
   // shards (flat, ink outline), dust & coins
   for (const s of shards){
-    g.save(); g.translate(s.x * cellX, s.y * cell); g.rotate(s.rot); g.globalAlpha = Math.max(0, Math.min(1, s.life * 1.4));
+    g.save(); g.translate(X(s.x), s.y * cell); g.rotate(s.rot); g.globalAlpha = Math.max(0, Math.min(1, s.life * 1.4));
     g.beginPath(); g.moveTo(s.p[0] * bc, s.p[1] * bc); g.lineTo(s.p[2] * bc, s.p[3] * bc); g.lineTo(s.p[4] * bc, s.p[5] * bc); g.closePath();
     g.fillStyle = rgba(s.c, 1); g.fill(); g.strokeStyle = INK; g.lineWidth = 1.6; g.lineJoin = "round"; g.stroke(); g.restore();
   }
   for (const p of sparks){
     g.globalAlpha = Math.max(0, p.life); g.fillStyle = p.dust ? rgba(p.c, 1) : INK;
-    g.fillRect(p.x * cellX - p.s / 2, p.y * cell - p.s / 2, p.s, p.s);
+    g.fillRect(X(p.x) - p.s / 2, p.y * cell - p.s / 2, p.s, p.s);
   }
   for (const p of coinsFx){
     g.globalAlpha = Math.max(0, p.life);
-    g.beginPath(); g.arc(p.x * cellX, p.y * cell, 7, 0, Math.PI * 2); g.fillStyle = "#ffd23f"; g.fill();
+    g.beginPath(); g.arc(X(p.x), p.y * cell, 7 * KB, 0, Math.PI * 2); g.fillStyle = "#ffd23f"; g.fill();
     g.lineWidth = 2; g.strokeStyle = INK; g.stroke();
   }
   g.globalAlpha = 1;
@@ -970,20 +1007,25 @@ function hudExtra(){
   $("cUndo").textContent = costOf("undo"); $("cSwap").textContent = costOf("swap"); $("cHammer").textContent = costOf("hammer");
   document.querySelector(".scorebox").classList.toggle("gold", !!S.gold);
   const dots = store.get("bagDots", false), inBag = v => (S.bag || []).filter(x => x === v).length;
-  const chips = poolWeights().map(o => `<span class="pc${o.linger ? " lg" : ""}" style="--c:${rgba(colorOf(o.v), 1)}" title="${o.linger ? "leaving: still on the board" : "in the pool"}">${label(o.v)}${dots ? `<i>${"•".repeat(inBag(o.v))}</i>` : ""}</span>`).join("");
-  $("poolBar").innerHTML = chips; $("poolBar").classList.toggle("many", poolWeights().length > 5);
-  $("pGoal").innerHTML = `${TRI}${label(S.thr)}${S.prisms ? `<small>×${S.prisms}</small>` : ""}`;
+  const chips = poolWeights().map(o => `<span class="pc${o.linger ? " lg" : ""}" title="${label(o.v)}${o.linger ? " · leaving: still on the board" : " · in the pool"}"><img alt="${label(o.v)}" src="${chipImg(o.v, o.linger)}">${dots ? `<i>${"•".repeat(inBag(o.v))}</i>` : ""}</span>`).join("");
+  if ($("poolBar").dataset.k !== chips){ $("poolBar").innerHTML = chips; $("poolBar").dataset.k = chips; }
+  PCHIP = PCHIP || prismChipImg();
+  const pg = `Prism<span><img alt="" src="${PCHIP}">${label(S.thr)}${S.prisms > 1 ? `<small>×${S.prisms}</small>` : ""}</span>`;
+  if ($("pGoal").dataset.k !== pg){ $("pGoal").innerHTML = pg; $("pGoal").dataset.k = pg; }
   $("dayTag").hidden = !S.daily;
   if (S.daily){ const n = dailyDone(S.daily).length; $("dayTag").textContent = "Daily " + "★".repeat(n) + "☆".repeat(3 - n); }
   $("dirTxt").textContent = dirOn() ? `${S.dealN ? Math.round(S.dirN / S.dealN * 100) : 0}% of deals changed · last: ${S.lastSrc}` : "off (Classic or Daily)";
 }
 const fmt = n => Math.round(n).toLocaleString("en-US");
+// pool chip: ball r 11, number .955 r, shadow +2/+2, leaving values with a dashed rim (cached per value)
+const chipCache = {};
+function chipImg(v, lg){ const k = v + (lg ? "l" : ""); return chipCache[k] || (chipCache[k] = ballImg(v, 11, { size: 26, m: .36, fs: .955, sh: [2 / 11, 2 / 11], dash: lg })); }
 const TRI = '<svg viewBox="0 0 14 12" width="14" height="12"><path d="M7 1.2 12.8 10.8H1.2Z" fill="#fff" stroke="#141414" stroke-width="1.5" stroke-linejoin="round"/></svg>';
 function addCoins(n){ S.coins += n; S.earned = (S.earned || 0) + n; }
 function tagAt(txt, b){
   if (BOT) return;
   const f = document.createElement("div"); f.className = "tagf"; f.textContent = txt;
-  f.style.left = (b.x / COLS * 100) + "%"; f.style.top = (b.y / H * 100) + "%"; board.appendChild(f); setTimeout(() => f.remove(), 900);
+  f.style.left = (X(b.x) / W * 100) + "%"; f.style.top = (b.y / H * 100) + "%"; board.appendChild(f); setTimeout(() => f.remove(), 900);
 }
 /* one celebration at a time; a bigger one cuts in. S = tiny, M = float text, L/XL/XXL = banner (XL slows time 300 ms, XXL 500 ms + flash) */
 const LV = { S: 0, M: 1, L: 2, XL: 3, XXL: 4 };
@@ -1313,21 +1355,31 @@ function backToGame(){
   if (valid(saved)){ S = norm(saved); undoSnap = null; rebuild(); hud(); } else newGame();
   audio(); speakNow("start");
 }
-function ballImg(v, px = 64){
-  const c = document.createElement("canvas"); c.width = c.height = px * 2;
-  const g2 = c.getContext("2d"); drawGlass(g2, px, px, px * .86, v, {}); return c.toDataURL();
+// ball picture for the DOM: radius r (css px), 1px margin round the outline, room for the shadow; drawn at 2× for sharpness
+function ballImg(v, r = 24, opt = {}){
+  const m = opt.m ?? 1, size = opt.size || Math.ceil(2 * r + 2 * m + r * .2), c = document.createElement("canvas"); c.width = c.height = size * 2;
+  const g2 = c.getContext("2d"); g2.scale(2, 2); drawGlass(g2, r + m, r + m, r, v, opt); return c.toDataURL();
 }
+// Prism goal glyph: the Prism ball's glints + triangle + rays, without the ball (as in the layout)
+function prismChipImg(){
+  const c = document.createElement("canvas"); c.width = c.height = 44; const g2 = c.getContext("2d"); g2.scale(2, 2); g2.translate(10.2, 10.9);
+  g2.save(); g2.translate(.6, 0); glints(g2, 9.36, .66); g2.restore(); prismGlyph(g2, 10.2, 0); return c.toDataURL();
+}
+let PCHIP = "";
+// pictures drawn before Anton has loaded would keep the fallback font: redraw once the fonts are in
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { for (const k in chipCache) delete chipCache[k]; PCHIP = ""; if (S){ $("poolBar").dataset.k = ""; $("pGoal").dataset.k = ""; hud(); } });
+const LOCK = '<svg viewBox="0 0 56.5 56.5"><circle cx="28.25" cy="28.25" r="27.23" fill="none" stroke="#b7ae9f" stroke-width="2" stroke-linecap="round" stroke-dasharray="6.11 6.11"/></svg>';
 function openAlbum(){
   const al = store.get("album", {}), T = store.get("top", []);
   if (!T.length && S.best) T.push({ s: S.best, d: "—" });
   $("alTop").innerHTML = [0, 1, 2].map(i => T[i] ? `<li><i>${i + 1}.</i><b>${fmt(T[i].s)}</b><small>${T[i].d}</small></li>` : `<li><i>${i + 1}.</i><b>—</b><small></small></li>`).join("");
-  let h = ""; for (let e = 1; e <= 12; e++) h += `<img alt="${label(2 ** e)}" src="${ballImg(2 ** e, 40)}">`;
+  let h = ""; for (let e = 1; e <= 12; e++) h += `<img alt="${label(2 ** e)}" src="${ballImg(2 ** e, 19, { size: 43 })}">`;
   $("alBalls").innerHTML = h;
   let t = "";
   for (let e = 13; e <= 20; e++){ const v = 2 ** e, a = al[v];
-    t += a ? `<div><img alt="${label(v)}" src="${ballImg(v)}"><small>${label(v)}<br>${a.d}</small></div>` : `<div class="no"><b>?</b><small>${label(v)}</small></div>`; }
+    t += a ? `<div title="${label(v)}"><img alt="${label(v)}" src="${ballImg(v, 24, { size: 54 })}"><small>${a.d}</small></div>` : `<div class="no" title="${label(v)}">${LOCK}<b>?</b></div>`; }
   const ap = al[PRISM];
-  t += ap ? `<div><img alt="Prism" src="${ballImg(PRISM)}"><small>Prism ×${ap.n}<br>${ap.d}</small></div>` : `<div class="no"><b>?</b><small>Prism</small></div>`;
+  t += ap ? `<div title="Prism ×${ap.n}"><img alt="Prism" src="${ballImg(PRISM, 24, { size: 54 })}"><small>${ap.d}</small></div>` : `<div class="no" title="Prism">${LOCK}<b>?</b></div>`;
   $("alTroph").innerHTML = t;
   $("bReset").textContent = "Reset records"; resetArm = 0;
   $("album").hidden = false;
@@ -1359,12 +1411,12 @@ function teleSummary(){
 if (BOT) window.__CL2 = { newGame, drop, simChain, state: () => S, setDiff: d => { diff = d; }, label };
 
 /* ---------- input ---------- */
-function laneFromEvent(e){ const r = board.getBoundingClientRect(); return Math.max(0, Math.min(COLS - 1, Math.floor((e.clientX - r.left) / r.width * COLS))); }
+function laneFromEvent(e){ const r = cv.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * W; return Math.max(0, Math.min(COLS - 1, Math.floor((x - W / 2) / PXC + 2.5))); }
 board.addEventListener("pointermove", e => { if (!busy && !S.over && !hammer) aim = laneFromEvent(e); });
 board.addEventListener("pointerup", e => {
   const c = laneFromEvent(e);
   if (hammer){
-    const r = board.getBoundingClientRect(), y = (e.clientY - r.top) / r.height * Hpx;
+    const r = cv.getBoundingClientRect(), y = (e.clientY - r.top) / r.height * Hpx;
     const i = Math.floor((YB - y) / PIT); if (!busy) hammerAt(c, i); return;
   }
   drop(c);
@@ -1440,7 +1492,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.12.5";
+const APP_VERSION = "0.13.0";
 $("verTxt").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
