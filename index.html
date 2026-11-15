@@ -164,6 +164,8 @@ body{
 .pc.prism u{position:absolute;left:0;bottom:0;height:3px;background:var(--yellow)}
 .pgoal{flex:none;display:flex;align-items:center;gap:5px;height:22px;padding:0 8px 0 6px;border-radius:99px;background:var(--navy);border:1.6px solid var(--ink);box-shadow:2px 2px 0 var(--ink);font-family:var(--display);font-size:12px;color:var(--yellow);white-space:nowrap}
 .pgoal svg{display:block}
+.poolbar.many{gap:3px}.poolbar.many .pc{min-width:24px;padding:0 3px;font-size:10.5px}
+.pgoal{gap:3px;padding:0 6px 0 5px}
 .pgoal small{font-family:var(--ui);font-weight:700;font-size:10px;color:#fff}
 .top3{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}
 .top3 li{display:flex;justify-content:space-between;align-items:center;background:var(--card);border:2px solid var(--ink);border-radius:10px;box-shadow:2px 2px 0 var(--ink);padding:6px 10px}
@@ -244,7 +246,7 @@ body{
   <div class="strip">
     <span class="daytag" id="dayTag" hidden></span>
     <span class="poolbar" id="poolBar" title="Balls in play · Prism at the end"></span>
-    <span class="pgoal" id="pGoal" title="Next Prism: merge two of these"></span>
+    <span class="pgoal" id="pGoal" title="Prism: merge two balls of this value"></span>
   </div>
 
   <div class="meta">
@@ -965,8 +967,8 @@ function hudExtra(){
   document.querySelector(".scorebox").classList.toggle("gold", !!S.gold);
   const dots = store.get("bagDots", false), inBag = v => (S.bag || []).filter(x => x === v).length;
   const chips = poolWeights().map(o => `<span class="pc${o.linger ? " lg" : ""}" style="--c:${rgba(colorOf(o.v), 1)}" title="${o.linger ? "leaving: still on the board" : "in the pool"}">${label(o.v)}${dots ? `<i>${"•".repeat(inBag(o.v))}</i>` : ""}</span>`).join("");
-  $("poolBar").innerHTML = chips;
-  $("pGoal").innerHTML = `${TRI}${label(S.thr)} + ${label(S.thr)}${S.prisms ? `<small>×${S.prisms}</small>` : ""}`;
+  $("poolBar").innerHTML = chips; $("poolBar").classList.toggle("many", poolWeights().length > 5);
+  $("pGoal").innerHTML = `${TRI}${label(S.thr)}${S.prisms ? `<small>×${S.prisms}</small>` : ""}`;
   $("dayTag").hidden = !S.daily;
   if (S.daily){ const n = dailyDone(S.daily).length; $("dayTag").textContent = "Daily " + "★".repeat(n) + "☆".repeat(3 - n); }
   $("dirTxt").textContent = dirOn() ? `${S.dealN ? Math.round(S.dirN / S.dealN * 100) : 0}% of deals changed · last: ${S.lastSrc}` : "off (Classic or Daily)";
@@ -1433,7 +1435,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.12.1";
+const APP_VERSION = "0.12.2";
 $("verTxt").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
