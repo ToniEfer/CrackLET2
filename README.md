@@ -1,6 +1,6 @@
 # CrackLET 2
 
-Drop · Merge · Smash. Glass balls fall down five tracks; equal neighbours merge and double, up to ∞.
+Drop · Merge · Smash. Glass balls fall down five tracks; equal neighbours merge and double; two Prisms side by side burst.
 HTML5 prototype, installable on Android as an app (PWA), works offline.
 
 **Play:** open the GitHub Pages address in Chrome on the phone → menu ⋮ → *Install app* / *Add to Home screen*.

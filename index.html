@@ -25,7 +25,7 @@
   --paper:#fbf3e6;      /* screen */
   --card:#fffaf1;       /* raised surfaces */
   --ink:#141414;        /* outlines, text, shadows */
-  --navy:#2f405b;       /* ∞ ball */
+  --navy:#2f405b;       /* Prism ball */
   --muted:#5f5a52;
   --desk:#f6b51e;       /* mustard desk behind the phone */
   --yellow:#ffd23f;
@@ -595,8 +595,8 @@ if (window.visualViewport) visualViewport.addEventListener("resize", resize);
 
 function drawGlass(g, x, y, r, v, opt = {}){
   // flat candy ball (layout v2): hard offset shadow, flat fill, 2.2/28 ink outline, white rim glint,
-  // white Anton number with a thin ink outline; ∞ = navy ball with a big yellow sign
-  const isInf = v >= PRISM, c = isInf ? "#2f405b" : colorOf(v), alpha = opt.alpha ?? 1, sq = opt.sq || 0, lw = Math.max(1.6, r * .079);
+  // white Anton number with a thin ink outline; Prism = navy ball with the prism glyph
+  const isPrism = v >= PRISM, c = isPrism ? "#2f405b" : colorOf(v), alpha = opt.alpha ?? 1, sq = opt.sq || 0, lw = Math.max(1.6, r * .079);
   g.save(); g.translate(x, y + sq * r * .5); g.scale(1 + sq, 1 - sq); g.globalAlpha = alpha;
   g.beginPath(); g.arc(r * .14, r * .16, r, 0, Math.PI * 2); g.fillStyle = INK; g.fill();
   g.beginPath(); g.arc(0, 0, r, 0, Math.PI * 2); g.fillStyle = rgba(c, 1); g.fill();
@@ -605,12 +605,12 @@ function drawGlass(g, x, y, r, v, opt = {}){
   g.beginPath(); g.arc(0, 0, r * .851, Math.PI * 1.198, Math.PI * 1.5);
   g.moveTo(-r * .851, 0); g.arc(0, 0, r * .851, Math.PI, Math.PI * 1.117);
   g.lineWidth = Math.max(1.2, r * .0668); g.strokeStyle = "#ffffff"; g.lineCap = "round"; g.stroke(); g.lineCap = "butt";
-  if (isInf){ prismGlyph(g, r, opt.n || 0); g.restore(); return; }
-  const L = label(v); const fs = r * (isInf ? 2.1 : L.length <= 1 ? .93 : L.length === 2 ? .86 : L.length === 3 ? .79 : L.length === 4 ? .71 : .6);
+  if (isPrism){ prismGlyph(g, r, opt.n || 0); g.restore(); return; }
+  const L = label(v); const fs = r * (L.length <= 1 ? .93 : L.length === 2 ? .86 : L.length === 3 ? .79 : L.length === 4 ? .71 : .6);
   g.font = `${fs}px Anton, Impact, "Arial Narrow Bold", sans-serif`; g.textAlign = "center"; g.textBaseline = "middle";
-  const ty = isInf ? r * .02 : r * .05;
+  const ty = r * .05;
   g.lineWidth = Math.max(1.6, fs * .11); g.strokeStyle = INK; g.lineJoin = "round"; g.strokeText(L, 0, ty);   // outline under the fill
-  g.fillStyle = isInf ? "#ffd23f" : "#ffffff"; g.fillText(L, 0, ty);
+  g.fillStyle = "#ffffff"; g.fillText(L, 0, ty);
   // cracks (ink)
   if (opt.crack > 0){
     let s = opt.seed || 1; const rr = () => (s = (s * 9301 + 49297) % 233280) / 233280;
@@ -789,7 +789,7 @@ const SFX = {
   master: 1.0,                         // global volume 0–1
   clink:  { src: null, freq: 1700, freqRand: 500, vol: .09, dur: .16, overtone: 2.76, overtoneVol: .4, minImpact: 4 },  // ball lands / bounces
   crash:  { src: ["sfx/crash_s1.mp3", "sfx/crash_s2.mp3", "sfx/crash_s3.mp3", "sfx/crash_s4.mp3"],   // single merge
-            big: ["sfx/crash_big1.mp3", "sfx/crash_big2.mp3", "sfx/crash_big3.mp3"],               // chain ≥ bigFrom, ∞ burst, purge, hammer
+            big: ["sfx/crash_big1.mp3", "sfx/crash_big2.mp3", "sfx/crash_big3.mp3"],               // chain ≥ bigFrom, Prism burst, hammer
             bigFrom: 4, sampleStep: 1.045, sampleVol: .9, noiseDur: .32, noiseDecay: 3, highpass: 2200, noiseVol: .22,   // glass breaking
             shards: 5, shardVol: .035, baseFreq: 900, chainStep: 1.12, bodyVol: .06, bodyDur: .25 },
   reject: { src: null, freq: 220, vol: .08, dur: .15, type: "square" },             // full track
@@ -876,10 +876,8 @@ const VOICE = {
     mega:    { p: 5, k: ["mega_mega", "mega_unstoppable", "mega_what_a_chain", "mega_incredible"] },
     newball: { p: 7, k: ["newball_new_record", "newball_never_seen", "newball_brand_new"] },
     ball:    { p: 3, k: ["ball_back_again", "ball_there_it_is", "ball_big_one", "ball_welcome_back", "ball_heavy_hitter"] },
-    inf:     { p: 8, k: ["inf_infinity", "inf_beyond_numbers", "inf_legendary"] },
     burst:   { p: 9, k: ["burst_prism_burst", "burst_light_show", "burst_boom_cleared", "burst_jackpot"] },
     unlock:  { p: 6, k: ["unlock_level_up", "unlock_new_balls", "unlock_stepping_up", "unlock_moving_on_up"] },
-    cleared: { p: 3, k: ["clear_clean_sweep", "clear_small_fry", "clear_fresh_space"] },
     outplay: { p: 3, k: ["out_last_one_gone", "out_see_you_later", "out_out_of_play", "clear_clean_sweep", "clear_small_fry", "clear_fresh_space"] },
     over:    { p: 9, k: ["over_one_more_try", "over_almost_had_it"] },
     overclose:{ p: 9, k: ["over_so_close", "over_almost_had_it"] },
@@ -895,15 +893,14 @@ const VOICE = {
     easy:    { p: 9, k: ["mode_easy"] }, normal: { p: 9, k: ["mode_normal"] }, hard: { p: 9, k: ["mode_hard"] },
     danger:  { p: 5, k: ["danger_careful", "danger_getting_tight", "danger_watch_it"] },
     saved:   { p: 5, k: ["saved_saved", "saved_phew"] },
-    herecomes:{ p: 9, k: ["herecomes"] },                      // reserved for the v0.8 director (jackpot)
     revive:  { p: 9, k: ["revive_second_chance", "revive_back_in_game"] },
     start:   { p: 9, k: ["start_drop_it", "start_lets_smash"] }
   }
 };
 /* Velvet: the same events, each line tagged by "temperature" in its name: _w_ warm (up to 512),
    _h_ hot (1K–64K), _m_ melting (128K+), _a_ any. Hotter levels also keep the level below in rotation. */
-const VELVET = ["prism_a_pure_light", "prism_a_you_made_a_prism", "prism_a_look_at_it_shine", "prismturn_a_wait_for_it", "burst_a_all_that_light", "burst_a_again_please", "mark50_a_halfway", "mark75_a_so_close", "poolgrow_a_more_of_everything", "dailystart_a_just_us", "dailygoal_a_one_for_today", "dailyall_a_come_back_tomorrow", "ball_a_back_for_more", "ball_a_remember", "ball_a_there_again", "best_a_favorite", "best_a_impressed", "best_a_never_this_good", "burst_a_shattered", "burst_a_speechless", "combo2_h_fragile", "combo2_h_keep_it_coming", "combo2_h_my_type", "combo2_h_nice_touch", "combo2_m_dont_stop", "combo2_m_making_me_crack", "combo2_m_yes", "combo2_w_again", "combo2_w_i_like_that", "combo2_w_mmm_nice", "combo2_w_oh_cute", "combo2_w_smooth", "combo3_h_hot_in_here", "combo3_h_how_you_do_it", "combo3_h_warming_up", "combo3_m_melting", "combo3_m_spoil_me", "combo3_w_attention", "combo3_w_show_off", "danger_h_getting_close", "danger_h_tiger", "danger_m_not_yet", "danger_w_easy", "great_h_blush", "great_h_chain_id_wear", "great_m_perfect", "great_m_what_i_like", "great_w_impressive", "great_w_look_at_you", "herecomes", "inf_a_breath_away", "inf_a_forever", "inf_a_no_limit", "mega_h_dangerous", "mega_h_felt_that", "mega_h_oh_my", "mega_m_breaking_glass", "mega_m_do_it_again", "mode_easy", "mode_hard", "mode_normal", "newball_h_curious", "newball_h_serious", "newball_m_special", "newball_m_surprising", "newball_w_something_new", "outplay_a_bye_bye", "outplay_a_small_stuff", "outplay_a_you_and_me", "over_h_dont_leave", "over_h_one_more", "over_m_come_back", "over_w_already", "over_w_wanted_more", "revive_a_come_back", "revive_a_one_more_chance", "saved_a_my_hero", "saved_a_smooth_save", "saved_a_worried", "start_a_hey_you", "start_a_those_hands", "start_a_waiting", "unlock_h_heating_up", "unlock_h_higher", "unlock_m_no_turning_back", "unlock_m_take_me_higher", "unlock_w_ready", "unlock_w_turn_it_up"];
-const VELVET_EVENT = { overclose: "over", cleared: "outplay", easy: "mode_easy", normal: "mode_normal", hard: "mode_hard" };
+const VELVET = ["prism_a_pure_light", "prism_a_you_made_a_prism", "prism_a_look_at_it_shine", "prismturn_a_wait_for_it", "burst_a_all_that_light", "burst_a_again_please", "mark50_a_halfway", "mark75_a_so_close", "poolgrow_a_more_of_everything", "dailystart_a_just_us", "dailygoal_a_one_for_today", "dailyall_a_come_back_tomorrow", "ball_a_back_for_more", "ball_a_remember", "ball_a_there_again", "best_a_favorite", "best_a_impressed", "best_a_never_this_good", "burst_a_shattered", "burst_a_speechless", "combo2_h_fragile", "combo2_h_keep_it_coming", "combo2_h_my_type", "combo2_h_nice_touch", "combo2_m_dont_stop", "combo2_m_making_me_crack", "combo2_m_yes", "combo2_w_again", "combo2_w_i_like_that", "combo2_w_mmm_nice", "combo2_w_oh_cute", "combo2_w_smooth", "combo3_h_hot_in_here", "combo3_h_how_you_do_it", "combo3_h_warming_up", "combo3_m_melting", "combo3_m_spoil_me", "combo3_w_attention", "combo3_w_show_off", "danger_h_getting_close", "danger_h_tiger", "danger_m_not_yet", "danger_w_easy", "great_h_blush", "great_h_chain_id_wear", "great_m_perfect", "great_m_what_i_like", "great_w_impressive", "great_w_look_at_you", "mega_h_dangerous", "mega_h_felt_that", "mega_h_oh_my", "mega_m_breaking_glass", "mega_m_do_it_again", "mode_easy", "mode_hard", "mode_normal", "newball_h_curious", "newball_h_serious", "newball_m_special", "newball_m_surprising", "newball_w_something_new", "outplay_a_bye_bye", "outplay_a_small_stuff", "outplay_a_you_and_me", "over_h_dont_leave", "over_h_one_more", "over_m_come_back", "over_w_already", "over_w_wanted_more", "revive_a_come_back", "revive_a_one_more_chance", "saved_a_my_hero", "saved_a_smooth_save", "saved_a_worried", "start_a_hey_you", "start_a_those_hands", "start_a_waiting", "unlock_h_heating_up", "unlock_h_higher", "unlock_m_no_turning_back", "unlock_m_take_me_higher", "unlock_w_ready", "unlock_w_turn_it_up"];
+const VELVET_EVENT = { overclose: "over", easy: "mode_easy", normal: "mode_normal", hard: "mode_hard" };
 const heat = () => (S && S.maxEver >= 131072) ? "m" : (S && S.maxEver >= 1024) ? "h" : "w";
 function packKeys(ev){
   if (VOICE.pack !== "velvet") return (VOICE.lines[ev] || {}).k || [];
@@ -1443,7 +1440,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.12.4";
+const APP_VERSION = "0.12.5";
 $("verTxt").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
