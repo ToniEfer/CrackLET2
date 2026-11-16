@@ -18,7 +18,7 @@
 @font-face{font-family:"Kalam";font-style:normal;font-weight:700;font-display:swap;src:url(fonts/kalam-latin-ext-700-normal.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
 @font-face{font-family:"Kalam";font-style:normal;font-weight:700;font-display:swap;src:url(fonts/kalam-latin-700-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 /* CrackLET 2 · layout v0.13 from layout/CrackLET2_layout_v0.12.5_edit.svg (Toni, 2026-11-15), designed at 412 × 892.
-   Neo-brutalist toy box: cream paper, square blocks with ink outlines and hard 3px shadows, Arial UI type, Anton numbers.
+   Neo-brutalist toy box: cream paper, rounded blocks (r 6–18) with ink outlines and hard 3px shadows, Arial UI type, Anton numbers.
    HUD (logo · score · coins) → progress → pool chips + Prism goal → boosters / icon buttons → full-width 5-tube board.
    Balls: flat colour, white rim light, glints, ink outline; exactly 8 balls fit a tube, one above the other. */
 :root{
@@ -65,15 +65,15 @@ body{
   }
 }
 
-/* HUD — layout v0.13 (CrackLET2_layout_v0.12.5_edit.svg, 412 × 892): square blocks, hard 3px shadows, Arial UI type */
+/* HUD — layout v0.13 (CrackLET2_layout_v0.12.5_edit.svg, 412 × 892): rounded blocks, hard 3px shadows, Arial UI type */
 .hud{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;height:51.8px}
-.brand{font-family:var(--display);font-size:24px;line-height:1;display:flex;align-items:flex-start;white-space:nowrap;margin-left:-2.5px;padding-top:5.26px}
-.brand sup{font-size:12px;line-height:1;width:16px;height:16px;display:grid;place-items:center;background:var(--yellow);border:1px solid var(--ink);border-radius:0;box-shadow:1.6px 1.6px 0 var(--ink);margin:-7.25px 0 0 -1.4px;position:relative;padding-top:1px}
-.scorebox{background:var(--card);border:1.81px solid var(--ink);border-radius:0;box-shadow:3px 3px 0 var(--ink);padding:0 13.9px;text-align:center;min-width:101.8px;height:51.8px;display:flex;flex-direction:column;align-items:center;white-space:nowrap}
+.brand{font-family:var(--display);font-size:24px;line-height:1;display:flex;align-items:flex-start;white-space:nowrap;margin-left:-2.5px;padding-top:2.36px}
+.brand sup{font-size:12px;line-height:1;width:16px;height:16px;display:grid;place-items:center;background:var(--yellow);border:1px solid var(--ink);border-radius:0;box-shadow:1.6px 1.6px 0 var(--ink);margin:-5.85px 0 0 -1.4px;position:relative;padding-top:1px}
+.scorebox{background:var(--card);border:1.81px solid var(--ink);border-radius:12.9px;box-shadow:3px 3px 0 var(--ink);padding:0 13.9px;text-align:center;min-width:101.8px;height:51.8px;display:flex;flex-direction:column;align-items:center;white-space:nowrap}
 .score{font-family:var(--display);font-size:28px;line-height:28px;margin-top:5.86px;font-variant-numeric:tabular-nums;color:var(--yellow);-webkit-text-stroke:1.2px var(--ink)}
 .best{font-size:9px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);line-height:9px;margin-top:3.7px}
 .best span{margin-left:1.6px}
-.coins{justify-self:end;display:flex;align-items:center;gap:6px;background:var(--yellow);border:1.6px solid var(--ink);border-radius:0;box-shadow:3px 3px 0 var(--ink);padding:0 8.3px 0 5.3px;height:31.6px;min-width:63.6px;margin-right:.7px;font-weight:700;font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.coins{justify-self:end;display:flex;align-items:center;gap:6px;background:var(--yellow);border:1.6px solid var(--ink);border-radius:99px;box-shadow:3px 3px 0 var(--ink);padding:0 8.3px 0 5.3px;height:31.6px;min-width:63.6px;margin-right:.7px;font-weight:700;font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap}
 .coin{display:inline-block;width:18px;height:18px;border-radius:50%;background:var(--yellow);border:1px solid var(--ink);flex:none}
 .coins .coin{background:#fff3b5}
 .progress{height:15.6px;margin:10.7px .7px 0;border-radius:7.8px;background:var(--card);overflow:hidden;border:1.6px solid var(--ink);box-shadow:3px 3px 0 var(--ink)}
@@ -84,7 +84,7 @@ body{
 .tag::before{content:"";width:10px;height:10px;background:var(--yellow);border:2px solid var(--ink);box-shadow:4px -4px 0 -2px var(--ink)}
 .metabtns{display:flex;gap:4.8px;margin-right:1.32px}
 .ico{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;display:block}
-.ibtn{width:39.2px;height:39.2px;border-radius:0;display:grid;place-items:center;border:1.2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);color:var(--ink);cursor:pointer;padding:0;transition:transform .08s,box-shadow .08s}
+.ibtn{width:39.2px;height:39.2px;border-radius:6.6px;display:grid;place-items:center;border:1.2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);color:var(--ink);cursor:pointer;padding:0;transition:transform .08s,box-shadow .08s}
 #bVoice{background:var(--yellow)} #bMute{background:var(--teal)} #bVoice.off,#bMute.off{background:var(--card)} #bTune{background:var(--purple)}
 .ibtn .ico{width:23px;height:23px;stroke-width:1.68}
 .ibtn.off{background:var(--card)}
@@ -98,7 +98,7 @@ body{
   /* inside the 3px border the board is 369 × 667 (layout v0.13); the drawing scales with the inner width */
   --bw-in:min(calc(100cqw - 6px), calc((100cqh - 12px) * 369 / 667));
   width:calc(var(--bw-in) + 6px);height:calc(var(--bw-in) * 667 / 369 + 6px);
-  background:var(--card);border:3px solid var(--ink);border-radius:0;box-shadow:6px 6px 0 var(--ink);overflow:hidden;
+  background:var(--card);border:3px solid var(--ink);border-radius:18px;box-shadow:6px 6px 0 var(--ink);overflow:hidden;
   touch-action:none;cursor:pointer;
 }
 .board canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
@@ -112,7 +112,7 @@ body{
 /* Boosters */
 .boosters{display:flex;gap:4.73px;margin-left:1px}
 /* booster: icon top-left, price pill, label; the block widens when the price does */
-.bst{font:inherit;color:var(--ink);position:relative;min-width:59.2px;height:39.2px;border:1.2px solid var(--ink);border-radius:0;box-shadow:3px 3px 0 var(--ink);padding:6px 4px 0 18.6px;display:flex;align-items:flex-start;cursor:pointer;transition:transform .08s,box-shadow .08s}
+.bst{font:inherit;color:var(--ink);position:relative;min-width:59.2px;height:39.2px;border:1.2px solid var(--ink);border-radius:6.6px;box-shadow:3px 3px 0 var(--ink);padding:6px 4px 0 18.6px;display:flex;align-items:flex-start;cursor:pointer;transition:transform .08s,box-shadow .08s}
 .bst b{position:absolute;left:0;right:0;top:23px;font-size:10px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;line-height:10px;text-align:center}
 #bUndo{background:var(--yellow)} #bSwap{background:var(--teal)} #bHammer{background:var(--coral)}
 .bst .ico{position:absolute;left:1.9px;top:4.4px;width:16px;height:16px;stroke-width:1.5}
@@ -167,34 +167,34 @@ body{
 .pc i{position:absolute;left:0;right:4px;bottom:-3px;font-style:normal;font-size:8px;line-height:6px;color:var(--ink);letter-spacing:-1px;text-align:center}
 .pc.lg{opacity:.45}
 .pgoal{flex:none;display:flex;align-items:center;font-size:9px;font-weight:700;letter-spacing:.13em;color:var(--muted);white-space:nowrap;margin:1.42px 1px 0 0;gap:4.4px}
-.pgoal span{position:relative;display:flex;align-items:center;height:23px;min-width:61px;padding:0 12.5px 0 23px;background:var(--navy);border:1px solid var(--ink);box-shadow:2px 2px 0 var(--ink);font-family:var(--display);font-size:12px;letter-spacing:0;color:var(--yellow);overflow:hidden}
+.pgoal span{position:relative;display:flex;align-items:center;height:23px;min-width:61px;padding:0 12.5px 0 23px;background:var(--navy);border:1px solid var(--ink);border-radius:99px;box-shadow:2px 2px 0 var(--ink);font-family:var(--display);font-size:12px;letter-spacing:0;color:var(--yellow);overflow:hidden}
 .pgoal span::before{content:"";position:absolute;inset:0;background:radial-gradient(30px 14.4px at 50% 50%,rgba(255,255,255,0) 75%,#fff 100%);mix-blend-mode:overlay;opacity:.5;pointer-events:none}
 .pgoal img{position:absolute;left:0;top:-1px;width:24px;height:24px}
 .pgoal small{font-family:var(--display);font-size:10px;color:#fff;margin-left:3px;letter-spacing:0;font-weight:400}
-/* Records — layout v0.13: square cells, 2px outlines, 3px shadows, no card shadow */
+/* Records — layout v0.13: rounded cells (r 10–12), 2px outlines, 3px shadows, no card shadow */
 .card.album{box-shadow:none;gap:0;padding:22px;font-size:12px}
 .album .head{height:35px;margin-top:-.8px}
 .album .head b{font-size:22px;line-height:22px;padding-top:3.3px}
-.album .head .btn{width:55.5px;height:35px;padding:0;border:2px solid var(--ink);border-radius:0;box-shadow:3px 3px 0 var(--ink);font-size:12px;font-weight:700;background:var(--card)}
+.album .head .btn{width:55.5px;height:35px;padding:0;border:2px solid var(--ink);border-radius:13px;box-shadow:3px 3px 0 var(--ink);font-size:12px;font-weight:700;background:var(--card)}
 .album .row{margin-top:0;height:12px;line-height:12px;align-items:flex-end;flex-wrap:nowrap}
 .album .row b{font-size:12px;font-weight:700}
 .album .row small{font-size:10px;color:var(--muted);font-weight:400}
 .album .r1{margin-top:13.8px}.album .r2{margin-top:21.8px}.album .r3{margin-top:17.7px}
 .top3{list-style:none;margin:7.2px 0 0;padding:0;display:grid;gap:5px}
-.top3 li{position:relative;display:flex;justify-content:space-between;align-items:center;height:43px;background:var(--card);border:2px solid var(--ink);border-radius:0;box-shadow:3px 3px 0 var(--ink);padding:0 6px 0 10px}
+.top3 li{position:relative;display:flex;justify-content:space-between;align-items:center;height:43px;background:var(--card);border:2px solid var(--ink);border-radius:11px;box-shadow:3px 3px 0 var(--ink);padding:0 6px 0 10px}
 .top3 b{position:absolute;left:0;right:0;text-align:center;font-family:var(--display);font-weight:400;font-size:18px;color:var(--ink);top:9.5px;line-height:22px}
 .top3 i{font-style:normal;font-family:var(--display);font-size:14px;color:var(--muted);margin-top:1px}
 .top3 small{font-size:10px;color:var(--muted);margin-top:-1px}
 .balls{display:grid;grid-template-columns:repeat(6,38px);justify-content:space-between;row-gap:11px;margin-top:8.2px;padding:0 1.1px}
 .balls img{display:block;width:43px;height:43px;margin:-1px -4px -4px -1px}
 .troph{display:grid;grid-template-columns:repeat(3,92px);gap:6px;margin-top:7.9px;padding:0 1px}
-.troph div{position:relative;height:92px;border:2px solid var(--ink);border-radius:0;box-shadow:3px 3px 0 var(--ink);background:var(--card)}
+.troph div{position:relative;height:92px;border:2px solid var(--ink);border-radius:11px;box-shadow:3px 3px 0 var(--ink);background:var(--card)}
 .troph img{position:absolute;left:19px;top:12px;width:54px;height:54px}
 .troph small{position:absolute;left:0;right:0;top:73.2px;text-align:center;font-size:9px;line-height:9px;color:var(--muted)}
 .troph .no{background:#e9e2d6}
 .troph .no svg{position:absolute;left:15.8px;top:15.8px;width:56.5px;height:56.5px}
 .troph .no b{position:absolute;left:0;right:0;top:34px;text-align:center;font-family:var(--display);font-weight:400;font-size:20px;line-height:20px;color:var(--ink)}
-.album #bReset{margin-top:15.7px;height:37px;padding:0;border:2px solid var(--ink);border-radius:0;box-shadow:none;font-size:12px;font-weight:700}
+.album #bReset{margin-top:15.7px;height:37px;padding:0;border:2px solid var(--ink);border-radius:13px;box-shadow:3px 3px 0 var(--ink);font-size:12px;font-weight:700}
 .btn.danger{background:var(--coral);color:#fff}
 .goals{list-style:none;margin:6px 0;padding:0;display:grid;gap:6px;text-align:left}
 .goals li{display:flex;gap:8px;align-items:center;background:var(--card);border:2px solid var(--ink);border-radius:10px;padding:6px 10px;font-weight:700;font-size:13px;color:var(--ink)}
@@ -690,9 +690,10 @@ function drawBoard(){
   g.fillStyle = INK; g.fillRect(0, BAND0 - 1.5 * KB, W, 3 * KB); g.fillRect(0, BAND1 - 1.5 * KB, W, 3 * KB);
   // tracks
   for (let c = 0; c < COLS; c++){
-    const w = TUBE_W, x0 = X(c + .5) - w / 2, y0 = TUBE_Y0, h = TUBE_Y1 - y0;   // tube holds exactly 8 touching balls (no shadow)
+    const w = TUBE_W, x0 = X(c + .5) - w / 2, y0 = TUBE_Y0, h = TUBE_Y1 - y0;   // tube holds exactly 8 touching balls
     const full = S.grid[c].length >= ROWS;
     const isAim = c === aim && !S.over;
+    roundRect(g, x0 + 3 * KB, y0 + 3 * KB, w, h, w / 2); g.fillStyle = INK; g.fill(); g.lineWidth = 2.64 * KB; g.strokeStyle = INK; g.stroke();   // hard shadow (+3, +3)
     roundRect(g, x0, y0, w, h, w / 2); g.fillStyle = full ? "#ffd9d4" : isAim ? "#fff1b8" : "#ffffff"; g.fill();
     const warn = full && S.danger && !S.over; g.lineWidth = warn ? 4.5 * KB : 2.64 * KB; g.strokeStyle = warn ? "#e5484d" : INK; g.stroke();
     // glass glint on the tube: 6 px strip, 8 px from the left edge, 20 px short of both ends
@@ -1492,7 +1493,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.13.0";
+const APP_VERSION = "0.13.1";
 $("verTxt").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
