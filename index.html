@@ -263,7 +263,7 @@ body{
   <div class="strip">
     <span class="daytag" id="dayTag" hidden></span>
     <span class="poolbar" id="poolBar" title="Balls in play · Prism at the end"></span>
-    <span class="pgoal" id="pGoal" title="Prism: merge two balls of this value"></span>
+    <span class="pgoal" id="pGoal" title="Next Prism: merge two balls of this value"></span>
   </div>
 
   <div class="meta">
@@ -337,7 +337,7 @@ body{
     <div class="head"><b>Records</b><button class="btn ghost" id="bAlbumClose" type="button">Close</button></div>
     <div class="row r1"><b>Top scores</b></div><ol class="top3" id="alTop"></ol>
     <div class="row r2"><b>Balls</b></div><div class="balls" id="alBalls"></div>
-    <div class="row r3"><b>Trophies</b><small>8K and up, Prism</small></div><div class="troph" id="alTroph"></div>
+    <div class="row r3"><b>Trophies</b><small id="alTrophHint">256 and up · Prism</small></div><div class="troph" id="alTroph"></div>
     <button class="btn danger" id="bReset" type="button">Reset records</button>
   </div>
 </div>
@@ -1011,7 +1011,7 @@ function hudExtra(){
   const chips = poolWeights().map(o => `<span class="pc${o.linger ? " lg" : ""}" title="${label(o.v)}${o.linger ? " · leaving: still on the board" : " · in the pool"}"><img alt="${label(o.v)}" src="${chipImg(o.v, o.linger)}">${dots ? `<i>${"•".repeat(inBag(o.v))}</i>` : ""}</span>`).join("");
   if ($("poolBar").dataset.k !== chips){ $("poolBar").innerHTML = chips; $("poolBar").dataset.k = chips; }
   PCHIP = PCHIP || prismChipImg();
-  const pg = `Prism<span><img alt="" src="${PCHIP}">${label(S.thr)}${S.prisms > 1 ? `<small>×${S.prisms}</small>` : ""}</span>`;
+  const pg = `Next Prism<span><img alt="" src="${PCHIP}">${label(S.thr)}${S.prisms > 1 ? `<small>×${S.prisms}</small>` : ""}</span>`;
   if ($("pGoal").dataset.k !== pg){ $("pGoal").innerHTML = pg; $("pGoal").dataset.k = pg; }
   $("dayTag").hidden = !S.daily;
   if (S.daily){ const n = dailyDone(S.daily).length; $("dayTag").textContent = "Daily " + "★".repeat(n) + "☆".repeat(3 - n); }
@@ -1137,7 +1137,10 @@ async function prismMorph(b, v){            // the merged ball shows its value f
   await sleep(300);
 }
 function madePrism(b){
-  S.maxEver = Math.max(S.maxEver, 2 * S.thr);
+  // the merged ball (2 × threshold) turns into the Prism without passing reachTile: record it as reached here
+  const pv = 2 * S.thr; S.maxEver = Math.max(S.maxEver, pv);
+  if (!S.reached.includes(pv)){ S.reached.push(pv); albumAdd(pv); }
+  if (!BOT && pv > store.get("bestTile", 0)) store.set("bestTile", pv);
   const life = BOT ? 1 : store.get("prismMade", 0); if (!BOT) store.set("prismMade", life + 1);
   albumAdd(PRISM); addCoins(20); S.prismMade = (S.prismMade || 0) + 1;
   celebrate(life ? "XL" : "XXL", life ? "PRISM!" : "FIRST PRISM!", S.prisms ? "Put it next to your Prism" : "Make another, put them side by side");
@@ -1376,8 +1379,11 @@ function openAlbum(){
   $("alTop").innerHTML = [0, 1, 2].map(i => T[i] ? `<li><i>${i + 1}.</i><b>${fmt(T[i].s)}</b><small>${T[i].d}</small></li>` : `<li><i>${i + 1}.</i><b>—</b><small></small></li>`).join("");
   let h = ""; for (let e = 1; e <= 12; e++) h += `<img alt="${label(2 ** e)}" src="${ballImg(2 ** e, 19, { size: 43 })}">`;
   $("alBalls").innerHTML = h;
+  // trophies: 8 values in a window that follows the player (from 256 up; the best ball so far sits 6th, the next two wait as "?")
+  const hi = Math.max(0, ...Object.keys(al).map(Number).filter(v => v < PRISM).map(v => Math.log2(v))), lo = Math.max(8, hi - 5);
+  $("alTrophHint").textContent = `${label(2 ** lo)} and up · Prism`;
   let t = "";
-  for (let e = 13; e <= 20; e++){ const v = 2 ** e, a = al[v];
+  for (let e = lo; e < lo + 8; e++){ const v = 2 ** e, a = al[v];
     t += a ? `<div title="${label(v)}"><img alt="${label(v)}" src="${ballImg(v, 24, { size: 54 })}"><small>${a.d}</small></div>` : `<div class="no" title="${label(v)}">${LOCK}<b>?</b></div>`; }
   const ap = al[PRISM];
   t += ap ? `<div title="Prism ×${ap.n}"><img alt="Prism" src="${ballImg(PRISM, 24, { size: 54 })}"><small>${ap.d}</small></div>` : `<div class="no" title="Prism">${LOCK}<b>?</b></div>`;
@@ -1389,7 +1395,7 @@ let resetArm = 0;
 function resetRecords(){
   if (Date.now() - resetArm > 3000){ resetArm = Date.now(); $("bReset").textContent = "Tap again to delete all records"; return; }
   ["best", "top", "records", "album", "bestTile", "prismMade", "prismBursts", "daily", "dailyGoals", "gold"].forEach(k => { try { localStorage.removeItem("pew2:" + k); } catch(e){} });
-  S.best = 0; S.startBest = 0; S.marks = []; S.gold = false; save(); hud(); openAlbum(); floatText("Records reset");
+  S.best = 0; S.startBest = 0; S.marks = []; S.gold = false; S.reached = []; save(); hud(); openAlbum(); floatText("Records reset");
 }
 
 /* ---------- telemetry (local only, last 40 games) ---------- */
@@ -1493,7 +1499,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.13.1";
+const APP_VERSION = "0.13.2";
 $("verTxt").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
