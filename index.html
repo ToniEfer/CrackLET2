@@ -362,7 +362,8 @@ const PRESETS = {
   hard:   { name: "Hard",   rate: .90, bag: 2, intro: .05, awk: .40, rescue: .35, prism: 4096 }
 };
 const POOL_SIZE = 4;
-const PRISM = Math.pow(2, 48);             // the final ball: two balls of S.thr make a Prism; two Prisms burst
+const PRISM = Math.pow(2, 48);             // special ball: two balls of S.thr make a Prism; two Prisms burst
+const INF = Math.pow(2, 40);               // the final ball ∞ (would be 1024B): ∞ + ∞ clears a row, ∞ eats Prisms, the pool stops growing
 const BOT = window.__BOT__ || null;        // headless test bot (tools/bot.mjs)
 let diff = "normal";
 const D = () => PRESETS[diff];
@@ -400,6 +401,7 @@ function poolK(){ return POOL_SIZE + (S.maxEver >= 512 ? 1 : 0) + (S.prisms >= 1
 /* v0.14: progress = biggest ball + one step per Prism burst, so every burst moves the pool; the top never comes
    closer than two merges to the Prism threshold (upper ≤ thr / 4) */
 function poolRange(){
+  if (S.poolFreeze) return S.poolFreeze;               // after ∞ the pool does not grow any more
   const L = Math.floor(Math.log2(Math.max(8, Math.min(S.maxEver, PRISM / 2)))) + (S.prisms || 0);
   const topExp = Math.max(4, 4 + Math.floor((L - 8) * D().rate));
   let lower = Math.max(2, Math.pow(2, topExp) / 8), upper = lower * Math.pow(2, poolK() - 1);   // bottom: v0.6 curve; the pool grows upward
@@ -438,7 +440,7 @@ const dirOn = () => !S.daily && !store.get("classic", false) && !(BOT && BOT.cla
 /* Back / Swap / Smash prices grow with progress (×1.5 per pool step) and never drop below a share of the coins you hold,
    so they stay a real decision even with a big balance. Using a booster does not raise its price. */
 const PRICE = { undo: [15, .08], swap: [10, .05], hammer: [40, .20] };
-const stage = () => Math.max(0, Math.log2(poolRange().upper) - 4);
+const stage = () => Math.min(10, Math.max(0, Math.log2(poolRange().upper) - 4));   // capped: late-game prices stay in the hundreds
 const costOf = k => { const [base, share] = PRICE[k]; return Math.max(5, Math.round(Math.max(base * Math.pow(1.5, stage()), share * (S.coins || 0)) / 5) * 5); };
 const freeTracks = () => S.grid.filter(c => c.length < ROWS).length;
 const mass = (T) => S.grid.reduce((a, c) => a + c.reduce((b, t) => b + (t.v < PRISM && t.v >= T / 8 && t.v < T ? t.v : 0), 0), 0);   // material within 3 merges of target T
@@ -450,6 +452,17 @@ function mergePlan(g, t){
   const { c, i } = p, v = t.v;
   const N = [[c, i - 1], [c - 1, i], [c + 1, i], [c, i + 1]]
     .map(([cc, ii]) => ({ c: cc, i: ii, t: (cc >= 0 && cc < COLS && ii >= 0) ? g[cc][ii] : undefined })).filter(o => o.t && o.t.v === v);
+  const near = [[c, i - 1], [c - 1, i], [c + 1, i], [c, i + 1]].map(([cc, ii]) => ({ c: cc, i: ii, t: (cc >= 0 && cc < COLS && ii >= 0) ? g[cc][ii] : undefined })).filter(o => o.t);
+  if (v === INF && N.length){          // ∞ + ∞: side by side → their row goes; one on the other → the lower row goes (the upper ∞ stays)
+    const rows = new Set(N.map(o => o.i === i ? i : Math.min(i, o.i))), gone = [];
+    for (let cc = 0; cc < COLS; cc++) for (const r of rows) if (g[cc][r]) gone.push(g[cc][r]);
+    return { kind: "inf", group: [{ c, i, t }, ...N], target: { c, i, t }, rows: [...rows], gone };
+  }
+  const eat = v === INF ? near.filter(o => o.t.v >= PRISM) : v >= PRISM ? near.filter(o => o.t.v === INF) : [];
+  if (eat.length){                     // ∞ touching a Prism: the Prism goes, ∞ stays
+    if (v === INF) return { kind: "eat", group: [{ c, i, t }, ...eat], target: { c, i, t }, gone: eat.map(o => o.t) };
+    return { kind: "eat", group: [{ c, i, t }, eat[0]], target: eat[0], gone: [t] };
+  }
   if (!N.length) return null;
   const group = [{ c, i, t }, ...N];
   if (v >= PRISM){                     // Prism + Prism: the newest one stays, the older ones burst and take their whole tracks with them
@@ -459,7 +472,7 @@ function mergePlan(g, t){
     return { kind: "burst", group, target: keep, gone: [...gone] };
   }
   let target = group[0]; for (const o of group) if (o.i < target.i) target = o;
-  let newV = v * Math.pow(2, N.length); if (newV >= 2 * S.thr) newV = PRISM;
+  let newV = v * Math.pow(2, N.length); if (newV >= INF) newV = INF; else if (newV >= 2 * S.thr) newV = PRISM;
   return { kind: "merge", group, target, newV, gone: group.filter(o => o !== target).map(o => o.t) };
 }
 function applyPlan(g, pl){
@@ -471,7 +484,7 @@ function applyPlan(g, pl){
   return { grid, moved };
 }
 function nextDirty(pl, moved, dirty){
-  const lead = pl.kind === "merge" ? [pl.target.t] : [];
+  const lead = (pl.kind === "merge" || pl.kind === "eat") && !pl.target.t.dead ? [pl.target.t] : [];
   return [...lead, ...moved.filter(m => !lead.includes(m)), ...dirty.filter(d => !lead.includes(d) && !moved.includes(d) && !d.dead)];
 }
 /* chain length if ball v drops into track c now (−1 = no room); runs on a copy, no animation */
@@ -574,9 +587,10 @@ const hex = h => [1, 3, 5].map(k => parseInt(h.slice(k, k + 2), 16));
 const rgba = (c, a) => `rgba(${c[0]|0},${c[1]|0},${c[2]|0},${a})`;
 const mix = (a, b, t) => a.map((x, i) => x + (b[i] - x) * t);
 const WHITE = [255, 255, 255], BLACK = [0, 0, 0];
-const colorOf = v => v >= PRISM ? hex("#2f405b") : hex(COLORS[(Math.log2(v) - 1) % COLORS.length]);
+const hsl2rgb = (h, s, l) => { const k = n => (n + h / 30) % 12, a = s * Math.min(l, 1 - l), f = n => l - a * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1)); return [f(0) * 255, f(8) * 255, f(4) * 255]; };
+const colorOf = v => v >= PRISM ? hex("#2f405b") : v >= INF ? hex("#1d1d1d") : (e => e < COLORS.length ? hex(COLORS[e]) : hsl2rgb((e * 47) % 360, .55, .45))(Math.log2(v) - 1);   // 32M+ generated, no repeats
 const textOn = c => (c[0] * .299 + c[1] * .587 + c[2] * .114) > 150 ? INK : "#ffffff";
-const label = v => v >= PRISM ? "Prism" : v >= 1048576 ? (v / 1048576) + "M" : v >= 1024 ? (v / 1024) + "K" : String(v);   // 1K = 1024, 1M = 1024K
+const label = v => v >= PRISM ? "Prism" : v >= INF ? "∞" : v >= 1073741824 ? (v / 1073741824) + "B" : v >= 1048576 ? (v / 1048576) + "M" : v >= 1024 ? (v / 1024) + "K" : String(v);   // 1K = 1024, 1M = 1024K, 1B = 1024M, 1024B = ∞
 
 /* ---------- drawing ---------- */
 /* Layout from the ball size: the tube holds exactly 8 touching balls, the launcher area sits above the band.
@@ -603,7 +617,7 @@ if (window.visualViewport) visualViewport.addEventListener("resize", resize);
    white rim light (radial .75–1 r, overlay 50%), two white glint arcs, 2 px ink outline, white Anton number with a 1.07 px ink
    stroke on top. Number size by length: 1 → .929 r, 2 → .857, 3 → .786, 4 → .714; K/M labels .857 (4 chars .714).
    opt: sq (squash), crack, seed, n (Prism count), alpha, fs (fixed number size in r), sh ([dx, dy] shadow in r), dash (dashed rim) */
-const NUMFS = L => /[KM]/.test(L) ? (L.length <= 3 ? .857 : .714) : [0, .929, .857, .786, .714][L.length] || .6;
+const NUMFS = L => /[KMB]/.test(L) ? (L.length <= 3 ? .857 : .714) : [0, .929, .857, .786, .714][L.length] || .6;
 function glints(g, r, w){
   g.beginPath(); g.arc(0, 0, r * .851, Math.PI * 1.198, Math.PI * 1.5);
   g.moveTo(-r * .851, 0); g.arc(0, 0, r * .851, Math.PI, Math.PI * 1.117);
@@ -624,7 +638,10 @@ function drawGlass(g, x, y, r, v, opt = {}){
   if (isPrism) prismGlyph(g, r, opt.pv || 0);
   g.beginPath(); g.arc(0, 0, r, 0, Math.PI * 2); g.lineWidth = r * .0667; g.strokeStyle = INK;
   if (opt.dash){ g.setLineDash([r * .09, r * .18]); g.lineCap = "round"; } g.stroke(); g.setLineDash([]); g.lineCap = "butt";
-  if (!isPrism){
+  if (v >= INF && !isPrism){                                  // ∞: near-black ball, big yellow sign
+    const fs = r * (opt.fs ? opt.fs * 1.5 : 1.45); g.font = `${fs}px Anton, Impact, sans-serif`; g.textAlign = "center"; g.textBaseline = "alphabetic";
+    g.fillStyle = "#ffd23f"; g.fillText("∞", 0, fs * .36); g.lineWidth = r * .05; g.strokeStyle = INK; g.lineJoin = "round"; g.strokeText("∞", 0, fs * .36);
+  } else if (!isPrism){
     const L = label(v), fs = r * (opt.fs || NUMFS(L));
     g.font = `${fs}px Anton, Impact, "Arial Narrow Bold", sans-serif`; g.textAlign = "center"; g.textBaseline = "alphabetic";
     const ty = fs * .432;
@@ -920,6 +937,8 @@ const VOICE = {
     mark50:  { p: 4, k: ["mark50_halfway_there"] },
     mark75:  { p: 5, k: ["mark75_record_in_sight"] },
     poolgrow:{ p: 6, k: ["poolgrow_more_balls"] },
+    inf:     { p: 9, k: ["inf_infinity", "inf_beyond_numbers", "inf_legendary"] },
+    infburst:{ p: 9, k: ["burst_infinity_burst"] },
     dailystart:{ p: 9, k: ["dailystart_todays_challenge"] },
     dailygoal:{ p: 6, k: ["dailygoal_goal_done"] },
     dailyall:{ p: 8, k: ["dailyall_see_you_tomorrow"] },
@@ -933,8 +952,8 @@ const VOICE = {
 };
 /* Velvet: the same events, each line tagged by "temperature" in its name: _w_ warm (up to 512),
    _h_ hot (1K–64K), _m_ melting (128K+), _a_ any. Hotter levels also keep the level below in rotation. */
-const VELVET = ["prism_a_pure_light", "prism_a_you_made_a_prism", "prism_a_look_at_it_shine", "prismturn_a_wait_for_it", "burst_a_all_that_light", "burst_a_again_please", "mark50_a_halfway", "mark75_a_so_close", "poolgrow_a_more_of_everything", "dailystart_a_just_us", "dailygoal_a_one_for_today", "dailyall_a_come_back_tomorrow", "ball_a_back_for_more", "ball_a_remember", "ball_a_there_again", "best_a_favorite", "best_a_impressed", "best_a_never_this_good", "burst_a_shattered", "burst_a_speechless", "combo2_h_fragile", "combo2_h_keep_it_coming", "combo2_h_my_type", "combo2_h_nice_touch", "combo2_m_dont_stop", "combo2_m_making_me_crack", "combo2_m_yes", "combo2_w_again", "combo2_w_i_like_that", "combo2_w_mmm_nice", "combo2_w_oh_cute", "combo2_w_smooth", "combo3_h_hot_in_here", "combo3_h_how_you_do_it", "combo3_h_warming_up", "combo3_m_melting", "combo3_m_spoil_me", "combo3_w_attention", "combo3_w_show_off", "danger_h_getting_close", "danger_h_tiger", "danger_m_not_yet", "danger_w_easy", "great_h_blush", "great_h_chain_id_wear", "great_m_perfect", "great_m_what_i_like", "great_w_impressive", "great_w_look_at_you", "mega_h_dangerous", "mega_h_felt_that", "mega_h_oh_my", "mega_m_breaking_glass", "mega_m_do_it_again", "mode_easy", "mode_hard", "mode_normal", "newball_h_curious", "newball_h_serious", "newball_m_special", "newball_m_surprising", "newball_w_something_new", "outplay_a_bye_bye", "outplay_a_small_stuff", "outplay_a_you_and_me", "over_h_dont_leave", "over_h_one_more", "over_m_come_back", "over_w_already", "over_w_wanted_more", "revive_a_come_back", "revive_a_one_more_chance", "saved_a_my_hero", "saved_a_smooth_save", "saved_a_worried", "start_a_hey_you", "start_a_those_hands", "start_a_waiting", "unlock_h_heating_up", "unlock_h_higher", "unlock_m_no_turning_back", "unlock_m_take_me_higher", "unlock_w_ready", "unlock_w_turn_it_up"];
-const VELVET_EVENT = { overclose: "over", easy: "mode_easy", normal: "mode_normal", hard: "mode_hard" };
+const VELVET = ["inf_a_breath_away", "inf_a_forever", "inf_a_no_limit", "prism_a_pure_light", "prism_a_you_made_a_prism", "prism_a_look_at_it_shine", "prismturn_a_wait_for_it", "burst_a_all_that_light", "burst_a_again_please", "mark50_a_halfway", "mark75_a_so_close", "poolgrow_a_more_of_everything", "dailystart_a_just_us", "dailygoal_a_one_for_today", "dailyall_a_come_back_tomorrow", "ball_a_back_for_more", "ball_a_remember", "ball_a_there_again", "best_a_favorite", "best_a_impressed", "best_a_never_this_good", "burst_a_shattered", "burst_a_speechless", "combo2_h_fragile", "combo2_h_keep_it_coming", "combo2_h_my_type", "combo2_h_nice_touch", "combo2_m_dont_stop", "combo2_m_making_me_crack", "combo2_m_yes", "combo2_w_again", "combo2_w_i_like_that", "combo2_w_mmm_nice", "combo2_w_oh_cute", "combo2_w_smooth", "combo3_h_hot_in_here", "combo3_h_how_you_do_it", "combo3_h_warming_up", "combo3_m_melting", "combo3_m_spoil_me", "combo3_w_attention", "combo3_w_show_off", "danger_h_getting_close", "danger_h_tiger", "danger_m_not_yet", "danger_w_easy", "great_h_blush", "great_h_chain_id_wear", "great_m_perfect", "great_m_what_i_like", "great_w_impressive", "great_w_look_at_you", "mega_h_dangerous", "mega_h_felt_that", "mega_h_oh_my", "mega_m_breaking_glass", "mega_m_do_it_again", "mode_easy", "mode_hard", "mode_normal", "newball_h_curious", "newball_h_serious", "newball_m_special", "newball_m_surprising", "newball_w_something_new", "outplay_a_bye_bye", "outplay_a_small_stuff", "outplay_a_you_and_me", "over_h_dont_leave", "over_h_one_more", "over_m_come_back", "over_w_already", "over_w_wanted_more", "revive_a_come_back", "revive_a_one_more_chance", "saved_a_my_hero", "saved_a_smooth_save", "saved_a_worried", "start_a_hey_you", "start_a_those_hands", "start_a_waiting", "unlock_h_heating_up", "unlock_h_higher", "unlock_m_no_turning_back", "unlock_m_take_me_higher", "unlock_w_ready", "unlock_w_turn_it_up"];
+const VELVET_EVENT = { overclose: "over", infburst: "burst", easy: "mode_easy", normal: "mode_normal", hard: "mode_hard" };
 const heat = () => (S && S.maxEver >= 131072) ? "m" : (S && S.maxEver >= 1024) ? "h" : "w";
 function packKeys(ev){
   if (VOICE.pack !== "velvet") return (VOICE.lines[ev] || {}).k || [];
@@ -1007,7 +1026,7 @@ function hudExtra(){
   const chips = poolWeights().map(o => `<span class="pc${o.linger ? " lg" : ""}" title="${label(o.v)}${o.linger ? " · leaving: still on the board" : " · in the pool"}"><img alt="${label(o.v)}" src="${chipImg(o.v, o.linger)}">${dots ? `<i>${"•".repeat(inBag(o.v))}</i>` : ""}</span>`).join("");
   if ($("poolBar").dataset.k !== chips){ $("poolBar").innerHTML = chips; $("poolBar").dataset.k = chips; }
   PCHIP = PCHIP || prismChipImg();
-  const pg = `Next Prism<span><img alt="" src="${PCHIP}">${label(2 * S.thr)}</span>`;
+  const pg = `${2 * S.thr >= INF ? "Final ball" : "Next Prism"}<span><img alt="" src="${PCHIP}">${label(2 * S.thr)}</span>`;
   if ($("pGoal").dataset.k !== pg){ $("pGoal").innerHTML = pg; $("pGoal").dataset.k = pg; }
   $("dayTag").hidden = !S.daily;
   if (S.daily){ const n = dailyDone(S.daily).length; $("dayTag").textContent = "Daily " + "★".repeat(n) + "☆".repeat(3 - n); }
@@ -1072,11 +1091,21 @@ async function resolve(dirty){
     if (pl.kind === "burst"){                                  // Prism + Prism → the older ones burst and clear their tracks, the newest stays
       const r = applyPlan(S.grid, pl); S.grid = r.grid;
       S.prisms++; if (tb) tb.pulse = .6;                      // S.prisms = bursts so far
-      S.thr *= 2;
+      S.thr = Math.min(S.thr * 2, INF / 2);                   // the Prism value tops out at ∞ (two 512B make ∞)
       const reward = 25 * S.prisms; addCoins(reward); S.score += 200 * S.prisms; S.relief = Math.max(S.relief, 5);
       if (!BOT) store.set("prismBursts", store.get("prismBursts", 0) + 1);
       celebrate("XXL", `PRISM BURST ×${S.prisms}`, `+${reward} coins · Next Prism ${label(2 * S.thr)}`);
       say("burst"); coinBurst(10, pl.target.c + .5, slotY(pl.target.i)); crash(12);
+      hud(); dirty = nextDirty(pl, r.moved, dirty);
+      continue;
+    }
+    if (pl.kind === "inf" || pl.kind === "eat"){
+      const r = applyPlan(S.grid, pl); S.grid = r.grid;
+      if (pl.kind === "inf"){
+        const reward = 50; addCoins(reward); S.score += 1000; S.relief = Math.max(S.relief, 5);
+        celebrate("XXL", "∞ + ∞", (pl.rows.length > 1 ? "Rows cleared" : pl.group.some(o => o.i !== pl.target.i) ? "Bottom row cleared" : "Row cleared") + ` · +${reward} coins`);
+        say("infburst"); crash(12); board.classList.remove("shake"); void board.offsetWidth; board.classList.add("shake");
+      } else { celebrate("L", "∞ ate the Prism", ""); crash(6); if (tb) tb.pulse = .6; }
       hud(); dirty = nextDirty(pl, r.moved, dirty);
       continue;
     }
@@ -1086,6 +1115,7 @@ async function resolve(dirty){
     if (tb){ tb.v = isP ? ev : newV; tb.pv = isP ? ev : 0; tb.form = 0; tb.seed = Math.random() * 1000; }
     S.score += Math.log2(ev) * chain;                          // score by exponent × chain step (values grow too large for raw sums)
     if (isP){ if (tb) await prismMorph(tb, ev); madePrism(tb || { x: pl.target.c + .5, y: slotY(pl.target.i) }); }
+    else if (newV === INF) madeInf(tb);
     else if (newV > S.maxEver) reachTile(newV, tb);
     hud();
     dirty = nextDirty(pl, r.moved, dirty);
@@ -1140,6 +1170,16 @@ async function prismMorph(b, v){            // the merged ball shows its value f
   await sleep(350);
   b.v = PRISM; b.pulse = .6; crash(8); coinBurst(6, b.x, b.y);
   await sleep(300);
+}
+// ∞, the final ball: banner, and from now on the pool stays as it is
+function madeInf(b){
+  const first = !S.infMade; S.infMade = (S.infMade || 0) + 1; S.maxEver = Math.max(S.maxEver, INF);
+  if (!S.poolFreeze){ const r = poolRange(); S.poolFreeze = { lower: r.lower, upper: r.upper }; }
+  if (!S.reached.includes(INF)){ S.reached.push(INF); albumAdd(INF); }
+  if (!BOT) store.set("infMade", store.get("infMade", 0) + 1);
+  addCoins(100); S.relief = Math.max(S.relief, 5);
+  celebrate("XXL", first ? "∞ INFINITY!" : "∞ AGAIN!", first ? "The final ball · ∞ + ∞ clears a row · ∞ eats Prisms" : "Put two ∞ together to clear a row");
+  say("inf"); if (b && b.id) b.pulse = .6;
 }
 function madePrism(b){
   // the merged ball (2 × threshold) turns into the Prism without passing reachTile: record it as reached here
@@ -1288,7 +1328,7 @@ function revive(){
   S.revives++; $("over").hidden = true; S.over = false; undoSnap = null; lastOverAt = 0;
   S.grid.forEach(col => {
     while (col.length > ROWS - 2){
-      let i = col.length - 1; while (i >= 0 && col[i].v >= PRISM) i--;
+      let i = col.length - 1; while (i >= 0 && col[i].v >= INF) i--;
       if (i < 0) break;
       const t = col.splice(i, 1)[0], b = balls.get(t.id); if (b){ shatter(b, 1.2); balls.delete(t.id); }
     }
@@ -1299,7 +1339,7 @@ function revive(){
 }
 async function hammerAt(c, i){
   const t = at(c, i); if (!t) return;
-  if (t.v >= PRISM){ sfx("reject"); floatText("Prism can't be smashed"); hammer = false; hud(); return; }
+  if (t.v >= INF){ sfx("reject"); floatText((t.v >= PRISM ? "Prism" : "∞") + " can't be smashed"); hammer = false; hud(); return; }
   const k = costOf("hammer"); if (S.coins < k){ hammer = false; hud(); return; }
   snapUndo(); S.coins -= k; S.spent += k; S.used.hammer++; hammer = false; busy = true; hud();
   const b = balls.get(t.id); if (b){ b.crack = 1; await sleep(90); shatter(b, 1.4); balls.delete(t.id); }
@@ -1512,7 +1552,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.14.0";
+const APP_VERSION = "0.15.0";
 $("verTxt").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
