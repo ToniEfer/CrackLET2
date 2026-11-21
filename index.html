@@ -993,12 +993,19 @@ const VOICE = {
     danger:  { p: 5, k: ["danger_careful", "danger_getting_tight", "danger_watch_it"] },
     saved:   { p: 5, k: ["saved_saved", "saved_phew"] },
     revive:  { p: 9, k: ["revive_second_chance", "revive_back_in_game"] },
+    tut_pool:{ p: 9, k: ["tut_pool_bigger_balls"] },
+    tut_prism:{ p: 9, k: ["tut_prism_two_of_these"] },
+    tut_burst:{ p: 9, k: ["tut_burst_side_by_side"] },
+    tut_boost:{ p: 9, k: ["tut_boost_boosters"] },
+    tut_inf:{ p: 9, k: ["tut_inf_needs_three"] },
+    tut_death:{ p: 9, k: ["tut_death_only_infinity"] },
+    tut_revive:{ p: 9, k: ["tut_revive_one_more"] },
     start:   { p: 9, k: ["start_drop_it", "start_lets_smash"] }
   }
 };
 /* Velvet: the same events, each line tagged by "temperature" in its name: _w_ warm (up to 512),
    _h_ hot (1K–64K), _m_ melting (128K+), _a_ any. Hotter levels also keep the level below in rotation. */
-const VELVET = ["inf_a_breath_away", "inf_a_forever", "inf_a_no_limit", "prism_a_pure_light", "prism_a_you_made_a_prism", "prism_a_look_at_it_shine", "prismturn_a_wait_for_it", "burst_a_all_that_light", "burst_a_again_please", "mark50_a_halfway", "mark75_a_so_close", "poolgrow_a_more_of_everything", "dailystart_a_just_us", "dailygoal_a_one_for_today", "dailyall_a_come_back_tomorrow", "ball_a_back_for_more", "ball_a_remember", "ball_a_there_again", "best_a_favorite", "best_a_impressed", "best_a_never_this_good", "burst_a_shattered", "burst_a_speechless", "combo2_h_fragile", "combo2_h_keep_it_coming", "combo2_h_my_type", "combo2_h_nice_touch", "combo2_m_dont_stop", "combo2_m_making_me_crack", "combo2_m_yes", "combo2_w_again", "combo2_w_i_like_that", "combo2_w_mmm_nice", "combo2_w_oh_cute", "combo2_w_smooth", "combo3_h_hot_in_here", "combo3_h_how_you_do_it", "combo3_h_warming_up", "combo3_m_melting", "combo3_m_spoil_me", "combo3_w_attention", "combo3_w_show_off", "danger_h_getting_close", "danger_h_tiger", "danger_m_not_yet", "danger_w_easy", "great_h_blush", "great_h_chain_id_wear", "great_m_perfect", "great_m_what_i_like", "great_w_impressive", "great_w_look_at_you", "mega_h_dangerous", "mega_h_felt_that", "mega_h_oh_my", "mega_m_breaking_glass", "mega_m_do_it_again", "mode_easy", "mode_hard", "mode_normal", "newball_h_curious", "newball_h_serious", "newball_m_special", "newball_m_surprising", "newball_w_something_new", "outplay_a_bye_bye", "outplay_a_small_stuff", "outplay_a_you_and_me", "over_h_dont_leave", "over_h_one_more", "over_m_come_back", "over_w_already", "over_w_wanted_more", "revive_a_come_back", "revive_a_one_more_chance", "saved_a_my_hero", "saved_a_smooth_save", "saved_a_worried", "start_a_hey_you", "start_a_those_hands", "start_a_waiting", "unlock_h_heating_up", "unlock_h_higher", "unlock_m_no_turning_back", "unlock_m_take_me_higher", "unlock_w_ready", "unlock_w_turn_it_up"];
+const VELVET = ["tut_pool_a_small_stuff", "tut_prism_a_something_special", "tut_burst_a_shatter", "tut_boost_a_little_help", "tut_inf_a_everything_goes", "tut_death_a_save_you", "tut_revive_a_one_more", "inf_a_breath_away", "inf_a_forever", "inf_a_no_limit", "prism_a_pure_light", "prism_a_you_made_a_prism", "prism_a_look_at_it_shine", "prismturn_a_wait_for_it", "burst_a_all_that_light", "burst_a_again_please", "mark50_a_halfway", "mark75_a_so_close", "poolgrow_a_more_of_everything", "dailystart_a_just_us", "dailygoal_a_one_for_today", "dailyall_a_come_back_tomorrow", "ball_a_back_for_more", "ball_a_remember", "ball_a_there_again", "best_a_favorite", "best_a_impressed", "best_a_never_this_good", "burst_a_shattered", "burst_a_speechless", "combo2_h_fragile", "combo2_h_keep_it_coming", "combo2_h_my_type", "combo2_h_nice_touch", "combo2_m_dont_stop", "combo2_m_making_me_crack", "combo2_m_yes", "combo2_w_again", "combo2_w_i_like_that", "combo2_w_mmm_nice", "combo2_w_oh_cute", "combo2_w_smooth", "combo3_h_hot_in_here", "combo3_h_how_you_do_it", "combo3_h_warming_up", "combo3_m_melting", "combo3_m_spoil_me", "combo3_w_attention", "combo3_w_show_off", "danger_h_getting_close", "danger_h_tiger", "danger_m_not_yet", "danger_w_easy", "great_h_blush", "great_h_chain_id_wear", "great_m_perfect", "great_m_what_i_like", "great_w_impressive", "great_w_look_at_you", "mega_h_dangerous", "mega_h_felt_that", "mega_h_oh_my", "mega_m_breaking_glass", "mega_m_do_it_again", "mode_easy", "mode_hard", "mode_normal", "newball_h_curious", "newball_h_serious", "newball_m_special", "newball_m_surprising", "newball_w_something_new", "outplay_a_bye_bye", "outplay_a_small_stuff", "outplay_a_you_and_me", "over_h_dont_leave", "over_h_one_more", "over_m_come_back", "over_w_already", "over_w_wanted_more", "revive_a_come_back", "revive_a_one_more_chance", "saved_a_my_hero", "saved_a_smooth_save", "saved_a_worried", "start_a_hey_you", "start_a_those_hands", "start_a_waiting", "unlock_h_heating_up", "unlock_h_higher", "unlock_m_no_turning_back", "unlock_m_take_me_higher", "unlock_w_ready", "unlock_w_turn_it_up"];
 const VELVET_EVENT = { overclose: "over", infburst: "burst", easy: "mode_easy", normal: "mode_normal", hard: "mode_hard" };
 const heat = () => (S && S.maxEver >= 131072) ? "m" : (S && S.maxEver >= 1024) ? "h" : "w";
 function packKeys(ev){
@@ -1681,7 +1688,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.16.0";
+const APP_VERSION = "0.16.1";
 $("verTxt").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
