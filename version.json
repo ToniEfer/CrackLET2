@@ -1,1 +1,1 @@
-{"version": "0.15.0", "notes": "B labels, final ball ∞ (1024B): ∞+∞ clears a row, ∞ eats Prisms, pool stops growing"}
+{"version": "0.15.1", "notes": "∞ needs three to join; Records dim only balls that left the pool"}

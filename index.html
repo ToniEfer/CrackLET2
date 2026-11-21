@@ -326,7 +326,7 @@ body{
   <div class="card tune album">
     <div class="head"><b>Records</b><button class="btn ghost" id="bAlbumClose" type="button">Close</button></div>
     <div class="row r1"><b>Top scores</b></div><ol class="top3" id="alTop"></ol>
-    <div class="row r2"><b>Balls</b><small>dimmed: earlier games</small></div><div class="balls" id="alBalls"></div>
+    <div class="row r2"><b>Balls</b><small>dimmed: out of the pool</small></div><div class="balls" id="alBalls"></div>
     <button class="btn danger" id="bReset" type="button">Reset records</button>
   </div>
 </div>
@@ -453,10 +453,18 @@ function mergePlan(g, t){
   const N = [[c, i - 1], [c - 1, i], [c + 1, i], [c, i + 1]]
     .map(([cc, ii]) => ({ c: cc, i: ii, t: (cc >= 0 && cc < COLS && ii >= 0) ? g[cc][ii] : undefined })).filter(o => o.t && o.t.v === v);
   const near = [[c, i - 1], [c - 1, i], [c + 1, i], [c, i + 1]].map(([cc, ii]) => ({ c: cc, i: ii, t: (cc >= 0 && cc < COLS && ii >= 0) ? g[cc][ii] : undefined })).filter(o => o.t);
-  if (v === INF && N.length){          // ∞ + ∞: side by side → their row goes; one on the other → the lower row goes (the upper ∞ stays)
-    const rows = new Set(N.map(o => o.i === i ? i : Math.min(i, o.i))), gone = [];
+  if (v === INF && N.length){          // three ∞ touching (a connected group of 3+): side by side → their row goes; one on another → the lower row goes
+    const comp = [{ c, i, t }], seen = new Set([t]);
+    for (let k = 0; k < comp.length; k++){ const q = comp[k];
+      for (const [cc, ii] of [[q.c, q.i - 1], [q.c - 1, q.i], [q.c + 1, q.i], [q.c, q.i + 1]]){ const x = cc >= 0 && cc < COLS && ii >= 0 ? g[cc][ii] : null;
+        if (x && x.v === INF && !seen.has(x)){ seen.add(x); comp.push({ c: cc, i: ii, t: x }); } } }
+    if (comp.length < 3) N.length = 0;    // two ∞ do not join (a Prism next to them is still eaten below)
+    else {
+    const rows = new Set(), gone = [];
+    for (const a of comp) for (const b2 of comp) if (a !== b2 && a.i === b2.i && Math.abs(a.c - b2.c) === 1) rows.add(a.i);   // rows with ∞ side by side
+    if (!rows.size) rows.add(Math.min(...comp.map(o => o.i)));     // only stacked: the lowest level goes, the ∞ above fall
     for (let cc = 0; cc < COLS; cc++) for (const r of rows) if (g[cc][r]) gone.push(g[cc][r]);
-    return { kind: "inf", group: [{ c, i, t }, ...N], target: { c, i, t }, rows: [...rows], gone };
+    return { kind: "inf", group: comp, target: { c, i, t }, rows: [...rows], gone }; }
   }
   const eat = v === INF ? near.filter(o => o.t.v >= PRISM) : v >= PRISM ? near.filter(o => o.t.v === INF) : [];
   if (eat.length){                     // ∞ touching a Prism: the Prism goes, ∞ stays
@@ -1103,7 +1111,7 @@ async function resolve(dirty){
       const r = applyPlan(S.grid, pl); S.grid = r.grid;
       if (pl.kind === "inf"){
         const reward = 50; addCoins(reward); S.score += 1000; S.relief = Math.max(S.relief, 5);
-        celebrate("XXL", "∞ + ∞", (pl.rows.length > 1 ? "Rows cleared" : pl.group.some(o => o.i !== pl.target.i) ? "Bottom row cleared" : "Row cleared") + ` · +${reward} coins`);
+        celebrate("XXL", "∞ + ∞ + ∞", (pl.rows.length > 1 ? "Rows cleared" : pl.group.some(o => o.i !== pl.group[0].i) ? "Bottom row cleared" : "Row cleared") + ` · +${reward} coins`);
         say("infburst"); crash(12); board.classList.remove("shake"); void board.offsetWidth; board.classList.add("shake");
       } else { celebrate("L", "∞ ate the Prism", ""); crash(6); if (tb) tb.pulse = .6; }
       hud(); dirty = nextDirty(pl, r.moved, dirty);
@@ -1178,7 +1186,7 @@ function madeInf(b){
   if (!S.reached.includes(INF)){ S.reached.push(INF); albumAdd(INF); }
   if (!BOT) store.set("infMade", store.get("infMade", 0) + 1);
   addCoins(100); S.relief = Math.max(S.relief, 5);
-  celebrate("XXL", first ? "∞ INFINITY!" : "∞ AGAIN!", first ? "The final ball · ∞ + ∞ clears a row · ∞ eats Prisms" : "Put two ∞ together to clear a row");
+  celebrate("XXL", first ? "∞ INFINITY!" : "∞ AGAIN!", first ? "The final ball · three ∞ clear a row · ∞ eats Prisms" : "Three ∞ together clear a row");
   say("inf"); if (b && b.id) b.pulse = .6;
 }
 function madePrism(b){
@@ -1419,10 +1427,12 @@ function openAlbum(){
   const al = store.get("album", {}), T = store.get("top", []);
   if (!T.length && S.best) T.push({ s: S.best, d: "—" });
   $("alTop").innerHTML = [0, 1, 2].map(i => T[i] ? `<li><i>${i + 1}.</i><b>${fmt(T[i].s)}</b><small>${T[i].d}</small></li>` : `<li><i>${i + 1}.</i><b>—</b><small></small></li>`).join("");
-  // balls: every value collected so far; the ones in this game (pool, board, made this game) bright, earlier games dimmed
+  // balls: every value collected so far; dimmed only the ones that have left the pool in this game (no ball of it left on the board)
   seeBalls();
-  const now = inGameBalls(), all = [...new Set([...Object.keys(store.get("album", {})).map(Number), ...now])].filter(v => v < PRISM).sort((a, b) => a - b);
-  $("alBalls").innerHTML = all.map(v => `<img class="${now.has(v) ? "" : "dim"}" alt="${label(v)}" title="${label(v)}${now.has(v) ? "" : " · earlier game"}" src="${ballImg(v, 19, { size: 43 })}">`).join("");
+  const now = inGameBalls(), low = poolRange().lower, onBoard = new Set(S.grid.flat().map(t => t.v));
+  const all = [...new Set([...Object.keys(store.get("album", {})).map(Number), ...now])].filter(v => v < PRISM).sort((a, b) => a - b);
+  const out = v => v < low && !onBoard.has(v);
+  $("alBalls").innerHTML = all.map(v => `<img class="${out(v) ? "dim" : ""}" alt="${label(v)}" title="${label(v)}${out(v) ? " · out of the pool" : ""}" src="${ballImg(v, 19, { size: 43 })}">`).join("");
   $("bReset").textContent = "Reset records"; resetArm = 0;
   $("album").hidden = false;
 }
@@ -1552,7 +1562,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.15.0";
+const APP_VERSION = "0.15.1";
 $("verTxt").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
