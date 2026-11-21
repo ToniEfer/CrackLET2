@@ -184,6 +184,14 @@ body{
 .balls{display:grid;grid-template-columns:repeat(6,38px);justify-content:space-between;row-gap:11px;margin-top:8.2px;padding:0 1.1px}
 .balls img{display:block;width:43px;height:43px;margin:-1px -4px -4px -1px;transition:opacity .2s}
 .balls img.dim{opacity:.28;filter:grayscale(.7)}
+/* tutorial cards: a looping mini board, title, one line, Got it */
+.card.tutc{width:min(340px,calc(100vw - 32px));align-items:center;text-align:center;gap:0;padding:20px 20px 22px}
+.tutc canvas{width:296px;height:180px;max-width:100%;border:2px solid var(--ink);border-radius:12px;background:var(--card);box-shadow:3px 3px 0 var(--ink)}
+.tutc .tt{font-family:var(--display);font-weight:400;font-size:26px;line-height:1;margin-top:18px;letter-spacing:.5px}
+.tutc p{margin:8px 0 16px;font-size:14px;line-height:1.35;color:var(--ink)}
+.tutc .btn{min-width:140px}
+.howto #howBtns{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}
+.howto #howBtns .btn{padding:3px 8px;font-size:11px;box-shadow:2px 2px 0 var(--ink)}
 .album #bReset{margin-top:21.8px;height:37px;padding:0;border:2px solid var(--ink);border-radius:13px;box-shadow:3px 3px 0 var(--ink);font-size:12px;font-weight:700}
 .btn.danger{background:var(--coral);color:#fff}
 .goals{list-style:none;margin:6px 0;padding:0;display:grid;gap:6px;text-align:left}
@@ -301,6 +309,7 @@ body{
     <div class="row"><span>Move: <b id="moves">0</b></span><span>Values in pool: <b id="kval"></b></span></div>
     <div class="row"><span>Seed: <b id="seed"></b></span><span>Fill: <b id="fill"></b></span><span>Help chance: <b id="pity"></b></span></div>
     <table id="pool"></table>
+    <div class="row howto"><span>How to play</span><span id="howBtns"></span></div>
     <div class="row"><span>Version: <b id="verTxt2"></b> · <span id="updState">—</span></span><button class="btn ghost" id="bCheck" type="button" style="padding:6px 10px;font-size:12px;box-shadow:3px 3px 0 var(--ink)">Check for update</button></div>
     <div class="row"><span>Last ball: <b id="lastsrc">random</b></span><button class="btn ghost" id="bNew" type="button" style="padding:6px 10px;font-size:12px;box-shadow:3px 3px 0 var(--ink)">New game</button></div>
   </div>
@@ -331,6 +340,14 @@ body{
   </div>
 </div>
 
+<div class="overlay" id="tut" hidden>
+  <div class="card tutc">
+    <canvas id="tutCv" width="592" height="360"></canvas>
+    <b class="tt" id="tutT"></b>
+    <p id="tutP"></p>
+    <button class="btn y" id="tutOk" type="button">Got it</button>
+  </div>
+</div>
 <div class="overlay" id="dayCard" hidden>
   <div class="card">
     <h2>Daily challenge</h2>
@@ -363,6 +380,7 @@ const PRESETS = {
 };
 const POOL_SIZE = 4;
 const PRISM = Math.pow(2, 48);             // special ball: two balls of S.thr make a Prism; two Prisms burst
+const DEATH = Math.pow(2, 46);             // Death: dealt after the first ∞ + ∞ + ∞; no points, never merges, only ∞ removes it
 const INF = Math.pow(2, 40);               // the final ball ∞ (would be 1024B): ∞ + ∞ clears a row, ∞ eats Prisms, the pool stops growing
 const BOT = window.__BOT__ || null;        // headless test bot (tools/bot.mjs)
 let diff = "normal";
@@ -453,6 +471,7 @@ function mergePlan(g, t){
   const N = [[c, i - 1], [c - 1, i], [c + 1, i], [c, i + 1]]
     .map(([cc, ii]) => ({ c: cc, i: ii, t: (cc >= 0 && cc < COLS && ii >= 0) ? g[cc][ii] : undefined })).filter(o => o.t && o.t.v === v);
   const near = [[c, i - 1], [c - 1, i], [c + 1, i], [c, i + 1]].map(([cc, ii]) => ({ c: cc, i: ii, t: (cc >= 0 && cc < COLS && ii >= 0) ? g[cc][ii] : undefined })).filter(o => o.t);
+  if (v === DEATH){ const inf = near.find(o => o.t.v === INF); return inf ? { kind: "eat", group: [{ c, i, t }, inf], target: inf, gone: [t] } : null; }   // Death never merges; ∞ takes it
   if (v === INF && N.length){          // three ∞ touching (a connected group of 3+): side by side → their row goes; one on another → the lower row goes
     const comp = [{ c, i, t }], seen = new Set([t]);
     for (let k = 0; k < comp.length; k++){ const q = comp[k];
@@ -466,7 +485,7 @@ function mergePlan(g, t){
     for (let cc = 0; cc < COLS; cc++) for (const r of rows) if (g[cc][r]) gone.push(g[cc][r]);
     return { kind: "inf", group: comp, target: { c, i, t }, rows: [...rows], gone }; }
   }
-  const eat = v === INF ? near.filter(o => o.t.v >= PRISM) : v >= PRISM ? near.filter(o => o.t.v === INF) : [];
+  const eat = v === INF ? near.filter(o => o.t.v >= PRISM || o.t.v === DEATH) : v >= PRISM ? near.filter(o => o.t.v === INF) : [];
   if (eat.length){                     // ∞ touching a Prism: the Prism goes, ∞ stays
     if (v === INF) return { kind: "eat", group: [{ c, i, t }, ...eat], target: { c, i, t }, gone: eat.map(o => o.t) };
     return { kind: "eat", group: [{ c, i, t }, eat[0]], target: eat[0], gone: [t] };
@@ -498,7 +517,7 @@ function nextDirty(pl, moved, dirty){
 /* chain length if ball v drops into track c now (−1 = no room); runs on a copy, no animation */
 function simChain(c, v, grid = S.grid){
   let g = grid.map(col => col.map(t => ({ v: t.v, id: t.id, pid: t.pid })));
-  if (g[c].length >= ROWS && g[c][ROWS - 1].v !== v) return -1;
+  if (g[c].length >= ROWS && (g[c][ROWS - 1].v !== v || v === DEATH)) return -1;
   const o = { v, id: 1e15 }; g[c].push(o);
   let dirty = [o], chain = 0, n = 0;
   while (dirty.length && n++ < 400){
@@ -543,7 +562,8 @@ function director(exclude){
   if (pick == null){ S.lastSrc = "bag"; return plain(); }
   S.dirN = (S.dirN || 0) + 1; S.lastSrc = src; return take(pick);
 }
-function gen(){ return director(); }
+// after the first ∞ + ∞ + ∞ some deals are Death (1 in 12; Hard 1 in 8)
+function gen(){ const v = director(); return S && S.deathOn && Math.random() < (diff === "hard" ? 1 / 8 : 1 / 12) ? DEATH : v; }
 
 /* ---------- state ---------- */
 const clone = o => JSON.parse(JSON.stringify(o));
@@ -596,9 +616,9 @@ const rgba = (c, a) => `rgba(${c[0]|0},${c[1]|0},${c[2]|0},${a})`;
 const mix = (a, b, t) => a.map((x, i) => x + (b[i] - x) * t);
 const WHITE = [255, 255, 255], BLACK = [0, 0, 0];
 const hsl2rgb = (h, s, l) => { const k = n => (n + h / 30) % 12, a = s * Math.min(l, 1 - l), f = n => l - a * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1)); return [f(0) * 255, f(8) * 255, f(4) * 255]; };
-const colorOf = v => v >= PRISM ? hex("#2f405b") : v >= INF ? hex("#1d1d1d") : (e => e < COLORS.length ? hex(COLORS[e]) : hsl2rgb((e * 47) % 360, .55, .45))(Math.log2(v) - 1);   // 32M+ generated, no repeats
+const colorOf = v => v >= PRISM ? hex("#2f405b") : v === DEATH ? hex("#433b4a") : v >= INF ? hex("#1d1d1d") : (e => e < COLORS.length ? hex(COLORS[e]) : hsl2rgb((e * 47) % 360, .55, .45))(Math.log2(v) - 1);   // 32M+ generated, no repeats
 const textOn = c => (c[0] * .299 + c[1] * .587 + c[2] * .114) > 150 ? INK : "#ffffff";
-const label = v => v >= PRISM ? "Prism" : v >= INF ? "∞" : v >= 1073741824 ? (v / 1073741824) + "B" : v >= 1048576 ? (v / 1048576) + "M" : v >= 1024 ? (v / 1024) + "K" : String(v);   // 1K = 1024, 1M = 1024K, 1B = 1024M, 1024B = ∞
+const label = v => v >= PRISM ? "Prism" : v === DEATH ? "Death" : v >= INF ? "∞" : v >= 1073741824 ? (v / 1073741824) + "B" : v >= 1048576 ? (v / 1048576) + "M" : v >= 1024 ? (v / 1024) + "K" : String(v);   // 1K = 1024, 1M = 1024K, 1B = 1024M, 1024B = ∞
 
 /* ---------- drawing ---------- */
 /* Layout from the ball size: the tube holds exactly 8 touching balls, the launcher area sits above the band.
@@ -620,12 +640,29 @@ function resize(){
 new ResizeObserver(resize).observe(board);
 addEventListener("resize", resize); addEventListener("orientationchange", () => setTimeout(resize, 120));
 if (window.visualViewport) visualViewport.addEventListener("resize", resize);
+// the board size follows the screen's proportions: re-measure whenever they may have changed (fonts in, app back from the
+// background, page restored after an update, screen rotated, window or safe areas changed)
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(resize);
+addEventListener("pageshow", () => { resize(); requestAnimationFrame(resize); });
+document.addEventListener("visibilitychange", () => { if (!document.hidden) requestAnimationFrame(resize); });
+if (screen.orientation) screen.orientation.addEventListener("change", () => setTimeout(resize, 120));
+new ResizeObserver(() => resize()).observe(document.documentElement);
 
 /* ball, layout v0.13 (balls layer of CrackLET2_layout_v0.12.5_edit.svg, r 30): hard ink shadow (+3.9, +4.5), flat colour,
    white rim light (radial .75–1 r, overlay 50%), two white glint arcs, 2 px ink outline, white Anton number with a 1.07 px ink
    stroke on top. Number size by length: 1 → .929 r, 2 → .857, 3 → .786, 4 → .714; K/M labels .857 (4 chars .714).
    opt: sq (squash), crack, seed, n (Prism count), alpha, fs (fixed number size in r), sh ([dx, dy] shadow in r), dash (dashed rim) */
 const NUMFS = L => /[KMB]/.test(L) ? (L.length <= 3 ? .857 : .714) : [0, .929, .857, .786, .714][L.length] || .6;
+// Death: a plain skull — round cranium, two eye holes, a nose, a jaw with teeth
+function skull(g, r){
+  g.save(); g.fillStyle = "#f4efe6"; g.strokeStyle = INK; g.lineWidth = r * .05; g.lineJoin = "round";
+  g.beginPath(); g.arc(0, -r * .12, r * .48, Math.PI * .85, Math.PI * .15); g.lineTo(r * .3, r * .3); g.lineTo(r * .3, r * .5); g.lineTo(-r * .3, r * .5); g.lineTo(-r * .3, r * .3); g.closePath(); g.fill(); g.stroke();
+  g.fillStyle = INK;
+  for (const sx of [-1, 1]){ g.beginPath(); g.ellipse(sx * r * .19, -r * .1, r * .13, r * .15, 0, 0, Math.PI * 2); g.fill(); }
+  g.beginPath(); g.moveTo(0, r * .1); g.lineTo(r * .07, r * .22); g.lineTo(-r * .07, r * .22); g.closePath(); g.fill();
+  g.lineWidth = r * .04; g.beginPath(); for (const x of [-.15, 0, .15]){ g.moveTo(x * r, r * .32); g.lineTo(x * r, r * .5); } g.stroke();
+  g.restore();
+}
 function glints(g, r, w){
   g.beginPath(); g.arc(0, 0, r * .851, Math.PI * 1.198, Math.PI * 1.5);
   g.moveTo(-r * .851, 0); g.arc(0, 0, r * .851, Math.PI, Math.PI * 1.117);
@@ -646,7 +683,8 @@ function drawGlass(g, x, y, r, v, opt = {}){
   if (isPrism) prismGlyph(g, r, opt.pv || 0);
   g.beginPath(); g.arc(0, 0, r, 0, Math.PI * 2); g.lineWidth = r * .0667; g.strokeStyle = INK;
   if (opt.dash){ g.setLineDash([r * .09, r * .18]); g.lineCap = "round"; } g.stroke(); g.setLineDash([]); g.lineCap = "butt";
-  if (v >= INF && !isPrism){                                  // ∞: near-black ball, big yellow sign
+  if (v === DEATH) skull(g, r);
+  else if (v >= INF && !isPrism){                             // ∞: near-black ball, big yellow sign
     const fs = r * (opt.fs ? opt.fs * 1.5 : 1.45); g.font = `${fs}px Anton, Impact, sans-serif`; g.textAlign = "center"; g.textBaseline = "alphabetic";
     g.fillStyle = "#ffd23f"; g.fillText("∞", 0, fs * .36); g.lineWidth = r * .05; g.strokeStyle = INK; g.lineJoin = "round"; g.strokeText("∞", 0, fs * .36);
   } else if (!isPrism){
@@ -1111,9 +1149,10 @@ async function resolve(dirty){
       const r = applyPlan(S.grid, pl); S.grid = r.grid;
       if (pl.kind === "inf"){
         const reward = 50; addCoins(reward); S.score += 1000; S.relief = Math.max(S.relief, 5);
+        if (!S.deathOn){ S.deathOn = true; }                     // from now on Death can be dealt
         celebrate("XXL", "∞ + ∞ + ∞", (pl.rows.length > 1 ? "Rows cleared" : pl.group.some(o => o.i !== pl.group[0].i) ? "Bottom row cleared" : "Row cleared") + ` · +${reward} coins`);
         say("infburst"); crash(12); board.classList.remove("shake"); void board.offsetWidth; board.classList.add("shake");
-      } else { celebrate("L", "∞ ate the Prism", ""); crash(6); if (tb) tb.pulse = .6; }
+      } else { celebrate("L", pl.gone.some(x => x.v === DEATH) ? "∞ took Death" : "∞ ate the Prism", ""); crash(6); if (tb) tb.pulse = .6; }
       hud(); dirty = nextDirty(pl, r.moved, dirty);
       continue;
     }
@@ -1142,6 +1181,7 @@ async function purgeLocked(){
     const grew = up && !low;                          // the pool got longer (5 or 6 values)
     S.upperPrev = upper; S.lowerPrev = lower; S.relief = Math.max(S.relief, 5);
     celebrate("XL", "UNLOCKED " + label(upper), grew ? `Pool: ${poolK()} values` : label(lower / 2) + " is leaving the pool"); say(grew ? "poolgrow" : "unlock");
+    if (!grew) tut("pool");
   }
   const now = lingering(), before = S.linger || [];
   const gone = before.filter(v => !now.includes(v));
@@ -1168,7 +1208,7 @@ function reachTile(v, b){
     celebrate(v >= 1024 ? "XL" : "L", "NEW BALL", label(v)); say("newball");
   } else if (v >= 512){ addCoins(Math.log2(v) * 2); if (b){ tagAt(label(v) + "!", b); coinBurst(4, b.x, b.y); } say("ball"); }
   else if (v >= 16 && b) tagAt(label(v), b);
-  if (v === S.thr && store.get("prismMade", 0) < 3) celebrate("L", `${label(v)} + ${label(v)} = Prism ${label(2 * v)}`, `or three ${label(v / 2)} side by side`);
+  if (v === S.thr) tut("prism");
 }
 async function prismMorph(b, v){            // the merged ball shows its value first, then turns into a Prism
   celebrate("L", label(v) + "!", "turning into a Prism…"); b.pulse = .6; crash(4);
@@ -1187,9 +1227,10 @@ function madeInf(b){
   if (!BOT) store.set("infMade", store.get("infMade", 0) + 1);
   addCoins(100); S.relief = Math.max(S.relief, 5);
   celebrate("XXL", first ? "∞ INFINITY!" : "∞ AGAIN!", first ? "The final ball · three ∞ clear a row · ∞ eats Prisms" : "Three ∞ together clear a row");
-  say("inf"); if (b && b.id) b.pulse = .6;
+  say("inf"); if (b && b.id) b.pulse = .6; tut("inf");
 }
 function madePrism(b){
+  tut("burst");
   // the merged ball (2 × threshold) turns into the Prism without passing reachTile: record it as reached here
   const pv = 2 * S.thr; S.maxEver = Math.max(S.maxEver, pv);
   if (!S.reached.includes(pv)){ S.reached.push(pv); albumAdd(pv); }
@@ -1204,7 +1245,7 @@ function dangerCheck(){
   if (S.danger && f < .6 && free >= 2){
     S.danger = false; S.savedN++; S.relief = Math.max(S.relief, 5); say("saved"); celebrate("XL", "SAVED!");
     board.classList.remove("saved"); void board.offsetWidth; board.classList.add("saved");
-  } else if (!S.danger && (f >= .8 || free <= 1)){ S.danger = true; S.dangerN = (S.dangerN || 0) + 1; say("danger"); }
+  } else if (!S.danger && (f >= .8 || free <= 1)){ S.danger = true; S.dangerN = (S.dangerN || 0) + 1; say("danger"); tut("boost"); }
 }
 /* record marks during a game: 25% (sound) · 50% · 75% (bar pulses) · 100% NEW BEST · +10/+25/+50% */
 function checkMarks(){
@@ -1224,14 +1265,14 @@ function checkMarks(){
 }
 
 /* ---------- actions ---------- */
-const canPlace = v => S.grid.some(col => col.length < ROWS || col[ROWS - 1].v === v);
+const canPlace = v => S.grid.some(col => col.length < ROWS || (col[ROWS - 1].v === v && v !== DEATH));
 async function drop(c){
   if (busy || S.over) return;
   audio();
   if (hammer){ hammer = false; hud(); }
   const col = S.grid[c], v = S.cur, full = col.length >= ROWS;
   aim = c;
-  if (full && col[ROWS - 1].v !== v){ sfx("reject"); buzz(30); board.classList.remove("shake"); void board.offsetWidth; board.classList.add("shake"); return; }
+  if (full && (col[ROWS - 1].v !== v || v === DEATH)){ sfx("reject"); buzz(30); board.classList.remove("shake"); void board.offsetWidth; board.classList.add("shake"); return; }
   busy = true; snapUndo();
   const sc0 = S.score;
   const t = { id: ++uid, v }; col.push(t);
@@ -1257,10 +1298,11 @@ async function drop(c){
   checkMarks();
   checkDailyGoals();
   dangerCheck();
-  S.cur = gen();
+  S.cur = gen(); if (S.cur === DEATH) tut("death");
   busy = false; hud();
   if (!canPlace(S.cur)){ vpending = []; gameOver(); } else sayFlush();
   save();
+  tutFlush(banUntil > performance.now() ? banUntil - performance.now() + 200 : 300);
 }
 const reviveCost = () => S.revives === 0 ? 0 : COST.revive;
 const canRevive = () => !S.daily && S.revives < 2 && S.coins >= reviveCost();
@@ -1270,7 +1312,7 @@ function dayKey(d = new Date()){ return d.getFullYear() + "-" + String(d.getMont
 function nearestGoal(r){
   const c = [], pv = 2 * S.thr;
   if (S.startBest > 0 && r < 1) c.push([r, `${Math.round(r * 100)}% of your best score`]);
-  let big = 0, nThr = 0; S.grid.forEach(col => col.forEach(t => { if (t.v < PRISM){ big = Math.max(big, t.v); if (t.v >= S.thr) nThr++; } }));
+  let big = 0, nThr = 0; S.grid.forEach(col => col.forEach(t => { if (t.v < INF){ big = Math.max(big, t.v); if (t.v >= S.thr) nThr++; } }));
   if (nThr) c.push([.95, `A ${label(S.thr)} on the board: one more makes Prism ${label(pv)}`]);
   else if (big) c.push([Math.log2(big) / Math.log2(S.thr), `Biggest ball ${label(big)} · Prism ${label(pv)} needs two ${label(S.thr)}`]);
   c.sort((a, b) => b[0] - a[0]);
@@ -1343,11 +1385,11 @@ function revive(){
   });
   crash(5); buzz([30, 40, 30]); S.danger = false; S.relief = Math.max(S.relief, 5); speakNow("revive");
   if (!canPlace(S.cur)) S.cur = gen();
-  hud(); save();
+  hud(); save(); tut("revive"); tutFlush(900);
 }
 async function hammerAt(c, i){
   const t = at(c, i); if (!t) return;
-  if (t.v >= INF){ sfx("reject"); floatText((t.v >= PRISM ? "Prism" : "∞") + " can't be smashed"); hammer = false; hud(); return; }
+  if (t.v >= INF){ sfx("reject"); floatText(label(t.v) + " can't be smashed"); hammer = false; hud(); return; }
   const k = costOf("hammer"); if (S.coins < k){ hammer = false; hud(); return; }
   snapUndo(); S.coins -= k; S.spent += k; S.used.hammer++; hammer = false; busy = true; hud();
   const b = balls.get(t.id); if (b){ b.crack = 1; await sleep(90); shatter(b, 1.4); balls.delete(t.id); }
@@ -1430,7 +1472,7 @@ function openAlbum(){
   // balls: every value collected so far; dimmed only the ones that have left the pool in this game (no ball of it left on the board)
   seeBalls();
   const now = inGameBalls(), low = poolRange().lower, onBoard = new Set(S.grid.flat().map(t => t.v));
-  const all = [...new Set([...Object.keys(store.get("album", {})).map(Number), ...now])].filter(v => v < PRISM).sort((a, b) => a - b);
+  const all = [...new Set([...Object.keys(store.get("album", {})).map(Number), ...now])].filter(v => v < PRISM && v !== DEATH).sort((a, b) => a - b);
   const out = v => v < low && !onBoard.has(v);
   $("alBalls").innerHTML = all.map(v => `<img class="${out(v) ? "dim" : ""}" alt="${label(v)}" title="${label(v)}${out(v) ? " · out of the pool" : ""}" src="${ballImg(v, 19, { size: 43 })}">`).join("");
   $("bReset").textContent = "Reset records"; resetArm = 0;
@@ -1439,7 +1481,7 @@ function openAlbum(){
 // balls "in the game" right now: the pool (also values on their way out), the board, and every value made this game
 function inGameBalls(){
   const set = new Set(poolCounts().map(o => o.v));
-  S.grid.forEach(col => col.forEach(t => { if (t.v < PRISM) set.add(t.v); }));
+  S.grid.forEach(col => col.forEach(t => { if (t.v < PRISM && t.v !== DEATH) set.add(t.v); }));
   (S.reached || []).forEach(v => { if (v < PRISM) set.add(v); });
   return set;
 }
@@ -1450,6 +1492,83 @@ function seeBalls(){
   for (const v of inGameBalls()) if (!a[v]){ a[v] = { d: dayKey(), n: 1 }; ch = true; }
   if (ch) store.set("album", a);
 }
+/* ---------- tutorial cards (first time an important thing happens; replay in Settings) ---------- */
+const TUT_R = 17, TY = i => 160 - TUT_R - 2 - i * TUT_R * 2;          // mini board: tubes 180 px tall, slot i from the bottom
+const ease = x => x < 0 ? 0 : x > 1 ? 1 : 1 - Math.pow(1 - x, 3);
+const seg = (t, a, b) => Math.max(0, Math.min(1, (t - a) / (b - a)));
+function tTubes(g, xs){ for (const x of xs){ roundRect(g, x - 22 + 2, 22, 44, 142, 22); g.fillStyle = INK; g.fill(); roundRect(g, x - 22, 20, 44, 142, 22); g.fillStyle = "#fff"; g.fill(); g.lineWidth = 2; g.strokeStyle = INK; g.stroke(); } }
+function tBall(g, x, y, v, a = 1, k = 1, opt = {}){ if (a <= 0) return; drawGlass(g, x, y, TUT_R * k, v, { alpha: a, ...opt }); }
+function tPop(g, x, y, p){ if (p <= 0 || p >= 1) return; g.save(); g.globalAlpha = 1 - p; g.strokeStyle = "#ffd23f"; g.lineWidth = 4; g.beginPath(); g.arc(x, y, TUT_R * (1 + p * 1.4), 0, Math.PI * 2); g.stroke(); g.restore(); }
+const fall = (t, a, b, i) => 8 + (TY(i) - 8) * ease(seg(t, a, b));
+const TUTS = {
+  pool: { title: "BIGGER BALLS", text: () => "New values come in. Small ones leave the pool once none is left on the board.", dur: 4, anim(g, t){
+    const vals = [2, 4, 8, 16, 32, 64], out = ease(seg(t, .25, .45)), slide = ease(seg(t, .45, .65)), pop = ease(seg(t, .6, .8));
+    vals.forEach((v, k) => { if (k === 0){ tBall(g, 58 - out * 20, 90, v, 1 - out, .9, { dash: out > 0 }); return; }
+      if (k === 5){ tBall(g, 58 + 36 * 4 + 36 * (1 - slide), 90, v, pop, .9 * (.6 + .4 * pop)); tPop(g, 58 + 36 * 4, 90, seg(t, .62, .85)); return; }
+      tBall(g, 58 + 36 * k - 36 * slide, 90, v, 1, .9); }); } },
+  prism: { title: "MAKE A PRISM", text: () => `Two ${label(S.thr)} make Prism ${label(2 * S.thr)}. Three ${label(S.thr / 2)} side by side do it too.`, dur: 6, anim(g, t){
+    const v = S.thr, pv = 2 * S.thr;
+    if (t < .5){ const u = t / .5; tTubes(g, [118, 178]);
+      const m = u > .34; tBall(g, 118, TY(0), m ? (u > .55 ? PRISM : pv) : v, 1, 1, { pv });
+      if (!m) tBall(g, 118, 8 + (TY(1) - 8) * ease(seg(u, .05, .3)), v); tPop(g, 118, TY(0), seg(u, .34, .55)); tPop(g, 118, TY(0), seg(u, .55, .8));
+      tBall(g, 178, TY(0), 8); }
+    else { const u = (t - .5) / .5; tTubes(g, [88, 148, 208]); const m = u > .3;
+      if (!m){ tBall(g, 88, TY(0), v / 2); tBall(g, 208, TY(0), v / 2); tBall(g, 148, fall(u, .05, .28, 0), v / 2); }
+      else tBall(g, 148, TY(0), PRISM, 1, 1, { pv }); tPop(g, 148, TY(0), seg(u, .3, .55)); } } },
+  burst: { title: "PRISM BURST", text: () => "Put two Prisms side by side: the older one bursts and clears its tracks, the newer one stays.", dur: 4.5, anim(g, t){
+    tTubes(g, [118, 178]); const hit = t > .3, gone = ease(seg(t, .3, .45));
+    tBall(g, 118, TY(0), PRISM, 1 - gone, 1 + gone * .3, { pv: 4096 }); tBall(g, 118, TY(1), 32, 1 - gone); tBall(g, 118, TY(2), 8, 1 - gone);
+    tBall(g, 178, hit ? TY(0) : fall(t, .05, .28, 0), PRISM, 1, 1, { pv: 4096 }); tPop(g, 118, TY(0), seg(t, .3, .55)); tPop(g, 118, TY(1), seg(t, .32, .57)); } },
+  boost: { title: "NEED A HAND?", text: () => "Back undoes a move · Swap changes the ball · Smash breaks one ball.", dur: 6, anim(g, t){
+    const k = Math.floor(t * 3), u = (t * 3) % 1, names = ["BACK", "SWAP", "SMASH"], cols = ["#ffd23f", "#3cc5b4", "#f2675c"];
+    names.forEach((n, j) => { roundRect(g, 30 + j * 82, 14, 72, 30, 6); g.fillStyle = j === k ? cols[j] : "#efe7d8"; g.fill(); g.lineWidth = j === k ? 2.4 : 1.2; g.strokeStyle = INK; g.stroke();
+      g.fillStyle = INK; g.font = "700 12px Arial, sans-serif"; g.textAlign = "center"; g.fillText(n, 66 + j * 82, 34); });
+    g.save(); g.translate(148 * .3, 50); g.scale(.7, .7); tTubes(g, [148]);
+    if (k === 0){ tBall(g, 148, TY(1) - 70 * ease(seg(u, .25, .6)), 64); tBall(g, 148, TY(0), 16); }
+    if (k === 1){ tBall(g, 148, TY(0), 16); tBall(g, 148, 20, u < .4 ? 64 : 4, 1, u < .4 ? 1 - seg(u, .3, .4) : seg(u, .4, .5) + .001); }
+    if (k === 2){ tBall(g, 148, TY(0), 16); tBall(g, 148, TY(1), 64, 1 - seg(u, .35, .5)); tPop(g, 148, TY(1), seg(u, .35, .7)); }
+    g.restore(); } },
+  inf: { title: "THREE TO CLEAR", text: () => "∞ joins only in threes and clears their row. ∞ also wipes out any Prism it touches.", dur: 6.5, anim(g, t){
+    if (t < .58){ const u = t / .58; tTubes(g, [88, 148, 208]); const hit = u > .32, gone = ease(seg(u, .32, .46)), drop = ease(seg(u, .5, .62));
+      tBall(g, 88, TY(0), INF, 1 - gone); tBall(g, 208, TY(0), INF, 1 - gone); tBall(g, 148, hit ? TY(0) : fall(u, .05, .3, 0), INF, 1 - gone);
+      tBall(g, 88, TY(1) + (TY(0) - TY(1)) * drop, 16); tBall(g, 208, TY(1) + (TY(0) - TY(1)) * drop, 4);
+      [88, 148, 208].forEach(x => tPop(g, x, TY(0), seg(u, .32, .58))); }
+    else { const u = (t - .58) / .42; tTubes(g, [118, 178]); const hit = u > .35, gone = ease(seg(u, .35, .5));
+      tBall(g, 118, TY(0), PRISM, 1 - gone, 1, { pv: 8192 }); tBall(g, 178, hit ? TY(0) : fall(u, .05, .33, 0), INF); tPop(g, 118, TY(0), seg(u, .35, .65)); } } },
+  death: { title: "DEATH", text: () => "Death scores nothing and can't be smashed. Only ∞ can take it away.", dur: 5, anim(g, t){
+    tTubes(g, [118, 178]); const hit = t > .38, gone = ease(seg(t, .38, .52));
+    tBall(g, 118, TY(0), DEATH, 1 - gone, 1 + gone * .2); tBall(g, 118, TY(1) + (TY(0) - TY(1)) * ease(seg(t, .52, .64)), 32);
+    tBall(g, 178, hit ? TY(0) : fall(t, .1, .36, 0), INF); tPop(g, 118, TY(0), seg(t, .38, .68)); } },
+  revive: { title: "SECOND CHANCE", text: () => "Revive clears the top of the full tracks. The first one is free.", dur: 4.5, anim(g, t){
+    tTubes(g, [88, 148, 208]); const gone = ease(seg(t, .3, .45)), V = [[2, 8, 32, 4], [16, 64, 2, 8], [4, 128, 16, 32]];
+    V.forEach((col, k) => col.forEach((v, i) => tBall(g, 88 + k * 60, TY(i), v, i >= 2 ? 1 - gone : 1, i >= 2 ? 1 + gone * .3 : 1)));
+    [88, 148, 208].forEach(x => { tPop(g, x, TY(2), seg(t, .3, .6)); tPop(g, x, TY(3), seg(t, .32, .62)); }); } },
+};
+let tutQ = [], tutOn = null, tutT0 = 0;
+function tut(id){ if (BOT || !TUTS[id]) return; const seen = store.get("tutSeen", {}); if (seen[id] || tutQ.includes(id) || tutOn === id) return; tutQ.push(id); }
+function tutFlush(delay = 0){
+  if (!tutQ.length || tutOn) return;
+  setTimeout(() => {
+    if (tutOn || !tutQ.length) return;
+    const open = ["over", "tuneSheet", "album", "dayCard"].some(k => !$(k).hidden);
+    if (open || busy){ setTimeout(() => tutFlush(), 600); return; }
+    showTut(tutQ.shift());
+  }, delay);
+}
+function showTut(id, replay = false){
+  const T = TUTS[id]; tutOn = id; tutT0 = performance.now();
+  $("tutT").textContent = T.title; $("tutP").textContent = T.text(); $("tut").hidden = false;
+  if (!replay){ const seen = store.get("tutSeen", {}); seen[id] = dayKey(); store.set("tutSeen", seen); }
+  if (VOICE.on && !muted){ loadVoice(); stopVoice(); playLine("tut_" + id); }
+  const cvT = $("tutCv"), g = cvT.getContext("2d");
+  const loop = now => { if (tutOn !== id) return;
+    const t = ((now - tutT0) / 1000 / T.dur) % 1; g.setTransform(2, 0, 0, 2, 0, 0); g.clearRect(0, 0, 296, 180);
+    g.save(); try { T.anim(g, t); } catch(e){ console.warn(e); } g.restore(); requestAnimationFrame(loop); };
+  requestAnimationFrame(loop);
+}
+$("tutOk").onclick = () => { $("tut").hidden = true; tutOn = null; tutFlush(250); };
+$("howBtns").innerHTML = Object.keys(TUTS).map(k => `<button class="btn ghost" type="button" data-tut="${k}">${TUTS[k].title.replace(/[?!]/g, "").toLowerCase()}</button>`).join("");
+$("howBtns").onclick = e => { const b = e.target.closest("[data-tut]"); if (b){ $("tuneSheet").hidden = true; showTut(b.dataset.tut, true); } };
 let resetArm = 0;
 function resetRecords(){
   if (Date.now() - resetArm > 3000){ resetArm = Date.now(); $("bReset").textContent = "Tap again to delete all records"; return; }
@@ -1510,7 +1629,7 @@ $("bUndo").onclick = () => {
 $("bSwap").onclick = () => {                 // the ball goes back into the bag, another value comes out (price doubles per use)
   const k = costOf("swap"); if (busy || S.over || S.daily || S.coins < k) return;
   S.coins -= k; S.spent += k; S.used.swap++;
-  const old = S.cur; S.bag.push(old); S.cur = director(old); sfx("swap"); hud(); save();
+  const old = S.cur; if (old !== DEATH) S.bag.push(old); S.cur = director(old === DEATH ? undefined : old); sfx("swap"); hud(); save();
 };
 $("bHammer").onclick = () => { if (busy || S.daily) return; if (!hammer && S.coins < costOf("hammer")) return; hammer = !hammer; hud(); };
 $("bRevive").onclick = revive;
@@ -1562,7 +1681,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.15.1";
+const APP_VERSION = "0.16.0";
 $("verTxt").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
