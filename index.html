@@ -13,10 +13,6 @@
 /* fonts shipped with the game (SIL OFL, see fonts/), so it looks right offline */
 @font-face{font-family:"Anton";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/anton-latin-ext-400-normal.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
 @font-face{font-family:"Anton";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/anton-latin-400-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-@font-face{font-family:"Kalam";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/kalam-latin-ext-400-normal.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
-@font-face{font-family:"Kalam";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/kalam-latin-400-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-@font-face{font-family:"Kalam";font-style:normal;font-weight:700;font-display:swap;src:url(fonts/kalam-latin-ext-700-normal.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
-@font-face{font-family:"Kalam";font-style:normal;font-weight:700;font-display:swap;src:url(fonts/kalam-latin-700-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 /* CrackLET 2 · layout v0.13 from layout/CrackLET2_layout_v0.12.5_edit.svg (Toni, 2026-11-15), designed at 412 × 892.
    Neo-brutalist toy box: cream paper, rounded blocks (r 6–18) with ink outlines and hard 3px shadows, Arial UI type, Anton numbers.
    HUD (logo · score · coins) → progress → pool chips + Prism goal → boosters / icon buttons → full-width 5-tube board.
@@ -125,11 +121,11 @@ body{
 
 /* Overlays */
 .overlay{position:fixed;inset:0;background:rgba(20,20,20,.55);display:grid;place-items:center;z-index:20;padding:20px}
-.card{background:var(--paper);border:var(--bwb) solid var(--ink);border-radius:18px;box-shadow:8px 8px 0 var(--ink);padding:22px;width:min(340px,100%);display:flex;flex-direction:column;gap:12px;text-align:center}
+.card{background:var(--paper);border:3px solid var(--ink);border-radius:18px;box-shadow:none;padding:22px;width:min(340px,100%);display:flex;flex-direction:column;gap:12px;text-align:center}
 .card h2{font-family:var(--display);font-size:34px;letter-spacing:.5px;text-transform:uppercase;margin:0;text-wrap:balance;line-height:1.05}
 .card p{margin:0;color:var(--muted);font-size:13px;line-height:1.45}
-.card .big{font-family:var(--display);font-size:48px;line-height:1;font-variant-numeric:tabular-nums;background:var(--card);border:var(--bw) solid var(--ink);border-radius:12px;box-shadow:var(--sh);padding:6px 0}
-.btn{font:inherit;font-weight:700;border:var(--bw) solid var(--ink);border-radius:12px;box-shadow:var(--sh);padding:12px;cursor:pointer;font-size:15px;color:var(--ink);transition:transform .08s,box-shadow .08s}
+.card .big{font-family:var(--display);font-size:48px;line-height:1;font-variant-numeric:tabular-nums;background:var(--card);border:2px solid var(--ink);border-radius:12px;box-shadow:3px 3px 0 var(--ink);padding:6px 0}
+.btn{font:inherit;font-weight:700;border:2px solid var(--ink);border-radius:12px;box-shadow:3px 3px 0 var(--ink);padding:12px;cursor:pointer;font-size:15px;color:var(--ink);transition:transform .08s,box-shadow .08s}
 .btn.primary{background:var(--yellow);color:#fff;text-transform:uppercase;letter-spacing:.04em}
 .btn.primary small{color:var(--ink)}
 .btn.ghost{background:var(--card)}
@@ -179,23 +175,16 @@ body{
 .album .row{margin-top:0;height:12px;line-height:12px;align-items:flex-end;flex-wrap:nowrap}
 .album .row b{font-size:12px;font-weight:700}
 .album .row small{font-size:10px;color:var(--muted);font-weight:400}
-.album .r1{margin-top:13.8px}.album .r2{margin-top:21.8px}.album .r3{margin-top:17.7px}
+.album .r1{margin-top:13.8px}.album .r2{margin-top:21.8px}
 .top3{list-style:none;margin:7.2px 0 0;padding:0;display:grid;gap:5px}
 .top3 li{position:relative;display:flex;justify-content:space-between;align-items:center;height:43px;background:var(--card);border:2px solid var(--ink);border-radius:11px;box-shadow:3px 3px 0 var(--ink);padding:0 6px 0 10px}
 .top3 b{position:absolute;left:0;right:0;text-align:center;font-family:var(--display);font-weight:400;font-size:18px;color:var(--ink);top:9.5px;line-height:22px}
 .top3 i{font-style:normal;font-family:var(--display);font-size:14px;color:var(--muted);margin-top:1px}
 .top3 small{font-size:10px;color:var(--muted);margin-top:-1px}
 .balls{display:grid;grid-template-columns:repeat(6,38px);justify-content:space-between;row-gap:11px;margin-top:8.2px;padding:0 1.1px}
-.balls img{display:block;width:43px;height:43px;margin:-1px -4px -4px -1px}
-.troph{display:grid;grid-template-columns:repeat(3,92px);gap:6px;margin-top:7.9px;padding:0 1px}
-.troph div{position:relative;height:92px;border:2px solid var(--ink);border-radius:11px;box-shadow:3px 3px 0 var(--ink);background:var(--card)}
-.troph img{position:absolute;left:19px;top:5px;width:54px;height:54px}
-.troph small{position:absolute;left:0;right:0;top:61px;text-align:center;font-size:9px;line-height:11px;color:var(--muted)}
-.troph small b{display:block;font-size:10px;color:var(--ink);font-weight:700}
-.troph .no{background:#e9e2d6}
-.troph .no svg{position:absolute;left:15.8px;top:15.8px;width:56.5px;height:56.5px}
-.troph .no b{position:absolute;left:0;right:0;top:34px;text-align:center;font-family:var(--display);font-weight:400;font-size:20px;line-height:20px;color:var(--ink)}
-.album #bReset{margin-top:15.7px;height:37px;padding:0;border:2px solid var(--ink);border-radius:13px;box-shadow:3px 3px 0 var(--ink);font-size:12px;font-weight:700}
+.balls img{display:block;width:43px;height:43px;margin:-1px -4px -4px -1px;transition:opacity .2s}
+.balls img.dim{opacity:.28;filter:grayscale(.7)}
+.album #bReset{margin-top:21.8px;height:37px;padding:0;border:2px solid var(--ink);border-radius:13px;box-shadow:3px 3px 0 var(--ink);font-size:12px;font-weight:700}
 .btn.danger{background:var(--coral);color:#fff}
 .goals{list-style:none;margin:6px 0;padding:0;display:grid;gap:6px;text-align:left}
 .goals li{display:flex;gap:8px;align-items:center;background:var(--card);border:2px solid var(--ink);border-radius:10px;padding:6px 10px;font-weight:700;font-size:13px;color:var(--ink)}
@@ -337,8 +326,7 @@ body{
   <div class="card tune album">
     <div class="head"><b>Records</b><button class="btn ghost" id="bAlbumClose" type="button">Close</button></div>
     <div class="row r1"><b>Top scores</b></div><ol class="top3" id="alTop"></ol>
-    <div class="row r2"><b>Balls</b></div><div class="balls" id="alBalls"></div>
-    <div class="row r3"><b>Trophies</b><small id="alTrophHint">Prism 4096 and up</small></div><div class="troph" id="alTroph"></div>
+    <div class="row r2"><b>Balls</b><small>dimmed: earlier games</small></div><div class="balls" id="alBalls"></div>
     <button class="btn danger" id="bReset" type="button">Reset records</button>
   </div>
 </div>
@@ -360,9 +348,9 @@ body{
 const COLS = 5, ROWS = 8, H = ROWS + 1;           // board is 5 × 9 cells: 1 spawn row + 8 rows
 const BALL_R = 0.42;                               // radius in cells
 const COST = { revive: 60 };                                     // second Revive; Back / Swap / Smash: see costOf()
-const MILESTONES = [128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536];
-/* flat candy palette (neo-brutalist): 2 teal · 4 yellow · 8 coral · 16 purple · 32 blue · 64 orange · 128 green · 256 pink · 512 cobalt · 1024 red · 2048 emerald · 4096 lilac · 8K gold · 16K sky · 32K brick · 64K violet */
-const COLORS = ["#3cc5b4","#ffd23f","#f2675c","#9a7cf0","#4aa3f0","#f39a4b","#6cc24a","#f27ab0","#2f5bd9","#e5484d","#1fa37a","#c2a3f7","#f0b429","#7fd3ee","#c2553f","#6d4ff0"];
+/* flat candy palette (neo-brutalist): 2 teal · 4 yellow · 8 coral · 16 purple · 32 blue · 64 orange · 128 green · 256 pink · 512 cobalt · 1K red · 2K emerald · 4K lilac · 8K gold · 16K sky · 32K brick · 64K violet · 128K+ darker set */
+const COLORS = ["#3cc5b4","#ffd23f","#f2675c","#9a7cf0","#4aa3f0","#f39a4b","#6cc24a","#f27ab0","#2f5bd9","#e5484d","#1fa37a","#c2a3f7","#f0b429","#7fd3ee","#c2553f","#6d4ff0",
+                "#0e8a7d","#c98a00","#b23a5b","#4a5bd0","#1f7ac2","#cc5a1e","#3d8b2f","#a8336f"];   // 128K … 16M: darker set, no repeats before 32M
 const INK = "#141414", PAPER = "#fffaf1";
 const PHYS = { g: 60, rest: 0.34, shards: 16 };     // cells/s², bounce, shards per ball
 /* v0.11 generator: the v0.6 bag (4 neighbouring values, each twice per bag, the pool climbs with the biggest ball)
@@ -382,7 +370,7 @@ const D = () => PRESETS[diff];
 const $ = id => document.getElementById(id);
 const board = $("board"), cv = $("cv"), ctx = cv.getContext("2d");
 
-let S, undoSnap = null, busy = false, aim = 2, hammer = false, uid = 0;
+let S, undoSnap = null, undoStore = null, busy = false, aim = 2, hammer = false, uid = 0;
 const balls = new Map();      // id → visual ball {id,v,x,y,vy,form,crack,sq}
 let shards = [], sparks = [], coinsFx = [];
 let W = 0, Hpx = 0, cell = 1, cellX = 1, bc = 1, dpr = 1, time = 0;
@@ -409,12 +397,15 @@ function rnd(){
 
 /* ---------- generator ---------- */
 function poolK(){ return POOL_SIZE + (S.maxEver >= 512 ? 1 : 0) + (S.prisms >= 1 ? 1 : 0); }   // 4 → 5 → 6
+/* v0.14: progress = biggest ball + one step per Prism burst, so every burst moves the pool; the top never comes
+   closer than two merges to the Prism threshold (upper ≤ thr / 4) */
 function poolRange(){
-  const L = Math.floor(Math.log2(Math.max(8, Math.min(S.maxEver, PRISM / 2))));
+  const L = Math.floor(Math.log2(Math.max(8, Math.min(S.maxEver, PRISM / 2)))) + (S.prisms || 0);
   const topExp = Math.max(4, 4 + Math.floor((L - 8) * D().rate));
-  const upper = Math.pow(2, topExp);
-  const lower = Math.max(2, upper / 8);              // the bottom follows the v0.6 curve…
-  return { lower, upper: lower * Math.pow(2, poolK() - 1) };   // …and the pool grows upward with progress
+  let lower = Math.max(2, Math.pow(2, topExp) / 8), upper = lower * Math.pow(2, poolK() - 1);   // bottom: v0.6 curve; the pool grows upward
+  const cap = Math.max(16, (S.thr || D().prism) / 4);
+  while (upper > cap && lower > 2){ upper /= 2; lower /= 2; }
+  return { lower, upper };
 }
 /* Lingering values: when the pool moves up, smaller values that are still on the board stay in the pool
    (1 per bag instead of D().bag) until the last ball of that value is gone, so no ball is ever stranded. */
@@ -576,7 +567,7 @@ function rebuild(){
   balls.clear();
   S.grid.forEach((col, c) => col.forEach((t, i) => { uid = Math.max(uid, t.id); balls.set(t.id, mkBall(t, c + .5, slotY(i))); }));
 }
-function mkBall(t, x, y){ return { id: t.id, v: t.v, n: t.n || 0, x, y, vy: 0, form: 1, crack: 0, sq: 0, pulse: 0, seed: Math.random() * 1000 }; }
+function mkBall(t, x, y){ return { id: t.id, v: t.v, pv: t.pv || 0, x, y, vy: 0, form: 1, crack: 0, sq: 0, pulse: 0, seed: Math.random() * 1000 }; }
 
 /* ---------- colour helpers ---------- */
 const hex = h => [1, 3, 5].map(k => parseInt(h.slice(k, k + 2), 16));
@@ -585,7 +576,7 @@ const mix = (a, b, t) => a.map((x, i) => x + (b[i] - x) * t);
 const WHITE = [255, 255, 255], BLACK = [0, 0, 0];
 const colorOf = v => v >= PRISM ? hex("#2f405b") : hex(COLORS[(Math.log2(v) - 1) % COLORS.length]);
 const textOn = c => (c[0] * .299 + c[1] * .587 + c[2] * .114) > 150 ? INK : "#ffffff";
-const label = v => v >= PRISM ? "Prism" : v >= 4194304 ? (v / 1048576) + "M" : v >= 8192 ? (v / 1024) + "K" : String(v);
+const label = v => v >= PRISM ? "Prism" : v >= 1048576 ? (v / 1048576) + "M" : v >= 1024 ? (v / 1024) + "K" : String(v);   // 1K = 1024, 1M = 1024K
 
 /* ---------- drawing ---------- */
 /* Layout from the ball size: the tube holds exactly 8 touching balls, the launcher area sits above the band.
@@ -630,7 +621,7 @@ function drawGlass(g, x, y, r, v, opt = {}){
   g.beginPath(); g.arc(0, 0, r, 0, Math.PI * 2); g.fillStyle = rgba(c, 1); g.fill();
   rimLight(g, r);
   glints(g, r, r * .06);
-  if (isPrism) prismGlyph(g, r, opt.n || 0);
+  if (isPrism) prismGlyph(g, r, opt.pv || 0);
   g.beginPath(); g.arc(0, 0, r, 0, Math.PI * 2); g.lineWidth = r * .0667; g.strokeStyle = INK;
   if (opt.dash){ g.setLineDash([r * .09, r * .18]); g.lineCap = "round"; } g.stroke(); g.setLineDash([]); g.lineCap = "butt";
   if (!isPrism){
@@ -655,10 +646,10 @@ function drawGlass(g, x, y, r, v, opt = {}){
 }
 
 /* Prism glyph in ball units (r = 30 in the layout): white triangle, four rainbow rays out to the right, white light beam in from the left.
-   Paths copied from the layout file; with a count n the glyph shrinks and "×n" sits under it. */
+   Paths copied from the layout file; with the Prism's value pv the glyph shrinks and the value (4K, 8K…) sits under it. */
 const PRAYS = [["#f2675c", 16.3, -11.8, 21.75, -15.71, 1.51, -1.07, 2.08, -3.33, 2.08, -3.33], ["#ffd23f", 18.18, -8.12, 24.23, -10.85, 1.72, -.78, 3.03, -2.25, 3.03, -2.25],
                ["#3cc5b4", 19.25, -4.08, 25.67, -5.42, 1.72, -.36, 3.47, -1.22, 3.47, -1.22], ["#4aa3f0", 19.42, .08, 25.9, .14, 1.97, 0, 3.64, -.27, 3.64, -.27]];
-function prismGlyph(g, r, n){
+function prismGlyph(g, r, pv){ const n = pv;
   g.save(); const k = r / 30 * (n ? .72 : 1); g.translate(0, n ? -r * .17 : 0); g.scale(k, k);
   g.beginPath(); g.moveTo(0, -16.8); g.lineTo(16.56, 12.36); g.lineTo(-16.56, 12.36); g.closePath();
   g.fillStyle = "#ffffff"; g.fill(); g.lineWidth = 2.24; g.strokeStyle = INK; g.lineJoin = "round"; g.lineCap = "round"; g.stroke();
@@ -672,7 +663,7 @@ function prismGlyph(g, r, n){
   g.restore();
   if (n){
     const fs = r * .42; g.font = `${fs}px Anton, Impact, sans-serif`; g.textAlign = "center"; g.textBaseline = "alphabetic";
-    g.fillStyle = "#ffd23f"; g.fillText("×" + n, 0, r * .72); g.lineWidth = r * .0357; g.strokeStyle = INK; g.strokeText("×" + n, 0, r * .72);
+    g.fillStyle = "#ffd23f"; g.fillText(label(pv), 0, r * .72); g.lineWidth = r * .0357; g.strokeStyle = INK; g.strokeText(label(pv), 0, r * .72);
   }
 }
 function drawBoard(){
@@ -714,11 +705,15 @@ function drawBoard(){
       g.beginPath(); g.arc(gx, gy, GEO.ghost * k, 0, Math.PI * 2); g.stroke(); g.restore();
     }
   }
+  // Prism progress: a soft yellow halo under every ball of the threshold value (two of them make the next Prism)
+  if (!S.over){ g.save(); g.globalAlpha = .45 + .25 * Math.sin(time * 4); g.fillStyle = "#ffd23f";
+    for (const b of balls.values()) if (b.v === S.thr && b.form >= 1){ g.beginPath(); g.arc(X(b.x), b.y * cell, RPX * 1.16, 0, Math.PI * 2); g.fill(); }
+    g.restore(); }
   // balls: top ones first, so lower balls are drawn over the shadows of the balls above them
   for (const b of [...balls.values()].sort((p, q) => p.y - q.y)){
     const mo = b.morph > 0 ? Math.sin(Math.PI * (1 - b.morph / .7)) : 0;
     const s = easeOutBack(Math.min(1, b.form)) * (b.pulse > 0 ? 1 + .28 * Math.sin(Math.PI * (1 - b.pulse / .6)) : 1) * (1 + .3 * mo);
-    drawGlass(g, X(b.x), b.y * cell, RPX * s, b.v, { sq: b.sq, crack: b.crack, seed: b.seed, n: b.n });
+    drawGlass(g, X(b.x), b.y * cell, RPX * s, b.v, { sq: b.sq, crack: b.crack, seed: b.seed, pv: b.pv });
     if (mo > 0){ g.beginPath(); g.arc(X(b.x), b.y * cell, RPX * s * 1.05, 0, Math.PI * 2); g.fillStyle = `rgba(255,255,255,${mo * .95})`; g.fill(); }
   }
   // launcher
@@ -1012,7 +1007,7 @@ function hudExtra(){
   const chips = poolWeights().map(o => `<span class="pc${o.linger ? " lg" : ""}" title="${label(o.v)}${o.linger ? " · leaving: still on the board" : " · in the pool"}"><img alt="${label(o.v)}" src="${chipImg(o.v, o.linger)}">${dots ? `<i>${"•".repeat(inBag(o.v))}</i>` : ""}</span>`).join("");
   if ($("poolBar").dataset.k !== chips){ $("poolBar").innerHTML = chips; $("poolBar").dataset.k = chips; }
   PCHIP = PCHIP || prismChipImg();
-  const pg = `Next Prism<span><img alt="" src="${PCHIP}">${label(2 * S.thr)}${S.prisms > 1 ? `<small>×${S.prisms}</small>` : ""}</span>`;
+  const pg = `Next Prism<span><img alt="" src="${PCHIP}">${label(2 * S.thr)}</span>`;
   if ($("pGoal").dataset.k !== pg){ $("pGoal").innerHTML = pg; $("pGoal").dataset.k = pg; }
   $("dayTag").hidden = !S.daily;
   if (S.daily){ const n = dailyDone(S.daily).length; $("dayTag").textContent = "Daily " + "★".repeat(n) + "☆".repeat(3 - n); }
@@ -1022,7 +1017,6 @@ const fmt = n => Math.round(n).toLocaleString("en-US");
 // pool chip: ball r 11, number .955 r, shadow +2/+2, leaving values with a dashed rim (cached per value)
 const chipCache = {};
 function chipImg(v, lg){ const k = v + (lg ? "l" : ""); return chipCache[k] || (chipCache[k] = ballImg(v, 11, { size: 26, m: .36, fs: .955, sh: [2 / 11, 2 / 11], dash: lg })); }
-const TRI = '<svg viewBox="0 0 14 12" width="14" height="12"><path d="M7 1.2 12.8 10.8H1.2Z" fill="#fff" stroke="#141414" stroke-width="1.5" stroke-linejoin="round"/></svg>';
 function addCoins(n){ S.coins += n; S.earned = (S.earned || 0) + n; }
 function tagAt(txt, b){
   if (BOT) return;
@@ -1032,15 +1026,21 @@ function tagAt(txt, b){
 /* one celebration at a time; a bigger one cuts in. S = tiny, M = float text, L/XL/XXL = banner (XL slows time 300 ms, XXL 500 ms + flash) */
 const LV = { S: 0, M: 1, L: 2, XL: 3, XXL: 4 };
 let banUntil = 0, banLv = -1, slowUntil = 0, banTimer = 0, beatAt = 0;
-function celebrate(lv, title, sub = ""){
+/* banners never cut each other: while one is up, a banner of the same or lower level waits (max 2, dropped after 4 s);
+   XXL (Prism, burst) always shows at once */
+let banQ = [];
+function celebrate(lv, title, sub = "", fromQ = false){
   if (BOT) return;
   const l = LV[lv], now = performance.now();
-  if (now < banUntil && l < banLv) return;
   if (l <= 1){ if (now >= banUntil) floatText(title); return; }
+  if (now < banUntil && l <= banLv && l < 4){ if (banQ.length < 2) banQ.push({ lv, title, sub, t: now }); return; }
   const bn = $("banner"); bn.className = "banner l" + l; $("banT").textContent = title; $("banS").textContent = sub; bn.hidden = false;
   void bn.offsetWidth; bn.classList.add("go");
   const dur = [0, 0, 1100, 1500, 2100][l]; banLv = l; banUntil = now + dur;
-  clearTimeout(banTimer); banTimer = setTimeout(() => { bn.hidden = true; banLv = -1; }, dur);
+  clearTimeout(banTimer); banTimer = setTimeout(() => {
+    bn.hidden = true; banLv = -1; banUntil = 0;
+    banQ = banQ.filter(q => performance.now() - q.t < 4000); const q = banQ.shift(); if (q) setTimeout(() => celebrate(q.lv, q.title, q.sub, true), 120);
+  }, dur);
   if (l >= 3){ slowUntil = now + (l === 4 ? 500 : 300); buzz(l === 4 ? [40, 50, 40, 50, 60] : [30, 40, 30]); }
   if (l === 4){ board.classList.remove("flash"); void board.offsetWidth; board.classList.add("flash"); }
 }
@@ -1071,18 +1071,19 @@ async function resolve(dirty){
     if (tb){ tb.crack = 0; shatter(tb, pl.kind === "burst" ? .5 : .7); }
     if (pl.kind === "burst"){                                  // Prism + Prism → the older ones burst and clear their tracks, the newest stays
       const r = applyPlan(S.grid, pl); S.grid = r.grid;
-      S.prisms++; pl.target.t.n = S.prisms; if (tb){ tb.n = S.prisms; tb.pulse = .6; }
+      S.prisms++; if (tb) tb.pulse = .6;                      // S.prisms = bursts so far
       S.thr *= 2;
       const reward = 25 * S.prisms; addCoins(reward); S.score += 200 * S.prisms; S.relief = Math.max(S.relief, 5);
       if (!BOT) store.set("prismBursts", store.get("prismBursts", 0) + 1);
-      celebrate("XXL", `PRISM BURST ×${S.prisms}`, `+${reward} coins · next: two ${label(S.thr)}`);
+      celebrate("XXL", `PRISM BURST ×${S.prisms}`, `+${reward} coins · Next Prism ${label(2 * S.thr)}`);
       say("burst"); coinBurst(10, pl.target.c + .5, slotY(pl.target.i)); crash(12);
       hud(); dirty = nextDirty(pl, r.moved, dirty);
       continue;
     }
     const newV = pl.newV, isP = newV >= PRISM, ev = isP ? 2 * S.thr : newV;
     const r = applyPlan(S.grid, pl); S.grid = r.grid;
-    if (tb){ tb.v = isP ? ev : newV; tb.form = 0; tb.seed = Math.random() * 1000; }
+    if (isP) pl.target.t.pv = ev;                              // the Prism keeps its value (2 × threshold) for the label
+    if (tb){ tb.v = isP ? ev : newV; tb.pv = isP ? ev : 0; tb.form = 0; tb.seed = Math.random() * 1000; }
     S.score += Math.log2(ev) * chain;                          // score by exponent × chain step (values grow too large for raw sums)
     if (isP){ if (tb) await prismMorph(tb, ev); madePrism(tb || { x: pl.target.c + .5, y: slotY(pl.target.i) }); }
     else if (newV > S.maxEver) reachTile(newV, tb);
@@ -1095,6 +1096,7 @@ async function resolve(dirty){
 /* Pool shift without a purge: the new top value unlocks at once; a smaller value leaves the pool
    only after its last ball has left the board (merged up or smashed). */
 async function purgeLocked(){
+  seeBalls();
   const { lower, upper } = poolRange();
   if (S.upperPrev == null) S.upperPrev = upper;
   const up = upper > S.upperPrev, low = lower > (S.lowerPrev || 2);
@@ -1128,9 +1130,11 @@ function reachTile(v, b){
     celebrate(v >= 1024 ? "XL" : "L", "NEW BALL", label(v)); say("newball");
   } else if (v >= 512){ addCoins(Math.log2(v) * 2); if (b){ tagAt(label(v) + "!", b); coinBurst(4, b.x, b.y); } say("ball"); }
   else if (v >= 16 && b) tagAt(label(v), b);
+  if (v === S.thr && store.get("prismMade", 0) < 3) celebrate("L", `${label(v)} + ${label(v)} = Prism ${label(2 * v)}`, `or three ${label(v / 2)} side by side`);
 }
 async function prismMorph(b, v){            // the merged ball shows its value first, then turns into a Prism
-  celebrate("L", label(v) + "!", "turning into a Prism…"); b.pulse = .6; crash(4); speakNow("prismturn");
+  celebrate("L", label(v) + "!", "turning into a Prism…"); b.pulse = .6; crash(4);
+  if (VOICE.on && !muted){ loadVoice(); stopVoice(); playLine("prismturn"); }   // now, but keep the lines already collected this move
   await sleep(850);
   b.morph = .7; buzz([20, 30, 20]);
   await sleep(350);
@@ -1142,7 +1146,6 @@ function madePrism(b){
   const pv = 2 * S.thr; S.maxEver = Math.max(S.maxEver, pv);
   if (!S.reached.includes(pv)){ S.reached.push(pv); albumAdd(pv); }
   if (!BOT && pv > store.get("bestTile", 0)) store.set("bestTile", pv);
-  if (!BOT){ const pa = store.get("prismAlbum", {}), e = pa[pv] || { d: dayKey(), n: 0 }; e.n++; pa[pv] = e; store.set("prismAlbum", pa); }   // trophy: Prism of this value
   const life = BOT ? 1 : store.get("prismMade", 0); if (!BOT) store.set("prismMade", life + 1);
   albumAdd(PRISM); addCoins(20); S.prismMade = (S.prismMade || 0) + 1;
   celebrate(life ? "XL" : "XXL", life ? "PRISM!" : "FIRST PRISM!", S.prisms ? "Put it next to your Prism" : "Make another, put them side by side");
@@ -1181,7 +1184,7 @@ async function drop(c){
   const col = S.grid[c], v = S.cur, full = col.length >= ROWS;
   aim = c;
   if (full && col[ROWS - 1].v !== v){ sfx("reject"); buzz(30); board.classList.remove("shake"); void board.offsetWidth; board.classList.add("shake"); return; }
-  busy = true; undoSnap = clone(S);
+  busy = true; snapUndo();
   const sc0 = S.score;
   const t = { id: ++uid, v }; col.push(t);
   const b = mkBall(t, c + .5, launchY()); b.vy = 1.5; balls.set(t.id, b);
@@ -1217,15 +1220,13 @@ const niceUp = x => { const p = Math.pow(10, Math.max(0, Math.floor(Math.log10(M
 function dayKey(d = new Date()){ return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
 /* the closest real goal (largest progress below 100%) for the end screen */
 function nearestGoal(r){
-  const c = [], life = store.get("bestTile", 0), pT = 2 * S.thr;
+  const c = [], pv = 2 * S.thr;
   if (S.startBest > 0 && r < 1) c.push([r, `${Math.round(r * 100)}% of your best score`]);
-  if (life > 0){                                             // only literal facts: "one merge from" or the ratio of real values
-    const nx = life * 2;
-    if (S.maxEver >= life) c.push([.9, nx >= pT ? "One merge from a Prism" : `One merge from a new ball: ${label(nx)}`]);
-    else c.push([S.maxEver / life, `Biggest ball ${label(S.maxEver)} · your record ${label(life)}`]);
-  }
+  let big = 0, nThr = 0; S.grid.forEach(col => col.forEach(t => { if (t.v < PRISM){ big = Math.max(big, t.v); if (t.v >= S.thr) nThr++; } }));
+  if (nThr) c.push([.95, `A ${label(S.thr)} on the board: one more makes Prism ${label(pv)}`]);
+  else if (big) c.push([Math.log2(big) / Math.log2(S.thr), `Biggest ball ${label(big)} · Prism ${label(pv)} needs two ${label(S.thr)}`]);
   c.sort((a, b) => b[0] - a[0]);
-  return (c.find(x => x[0] < 1) || c[0])[1];
+  return (c.find(x => x[0] < 1) || c[0] || [0, ""])[1];
 }
 function gameOver(){
   S.over = true; hud(); lastOverAt = performance.now();
@@ -1300,7 +1301,7 @@ async function hammerAt(c, i){
   const t = at(c, i); if (!t) return;
   if (t.v >= PRISM){ sfx("reject"); floatText("Prism can't be smashed"); hammer = false; hud(); return; }
   const k = costOf("hammer"); if (S.coins < k){ hammer = false; hud(); return; }
-  undoSnap = clone(S); S.coins -= k; S.spent += k; S.used.hammer++; hammer = false; busy = true; hud();
+  snapUndo(); S.coins -= k; S.spent += k; S.used.hammer++; hammer = false; busy = true; hud();
   const b = balls.get(t.id); if (b){ b.crack = 1; await sleep(90); shatter(b, 1.4); balls.delete(t.id); }
   crash(2); buzz(25);
   t.dead = true; const moved = compact();
@@ -1374,34 +1375,35 @@ function prismChipImg(){
 let PCHIP = "";
 // pictures drawn before Anton has loaded would keep the fallback font: redraw once the fonts are in
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { for (const k in chipCache) delete chipCache[k]; PCHIP = ""; if (S){ $("poolBar").dataset.k = ""; $("pGoal").dataset.k = ""; hud(); } });
-const LOCK = '<svg viewBox="0 0 56.5 56.5"><circle cx="28.25" cy="28.25" r="27.23" fill="none" stroke="#b7ae9f" stroke-width="2" stroke-linecap="round" stroke-dasharray="6.11 6.11"/></svg>';
 function openAlbum(){
   const al = store.get("album", {}), T = store.get("top", []);
   if (!T.length && S.best) T.push({ s: S.best, d: "—" });
   $("alTop").innerHTML = [0, 1, 2].map(i => T[i] ? `<li><i>${i + 1}.</i><b>${fmt(T[i].s)}</b><small>${T[i].d}</small></li>` : `<li><i>${i + 1}.</i><b>—</b><small></small></li>`).join("");
-  let h = ""; for (let e = 1; e <= 12; e++) h += `<img alt="${label(2 ** e)}" src="${ballImg(2 ** e, 19, { size: 43 })}">`;
-  $("alBalls").innerHTML = h;
-  // trophies: Prisms by value (Normal: first Prism 4096, then ×2 after every burst); 9 cells from the first one up
-  const pa = prismAlbum(), keys = Object.keys(pa).map(Number), lo = Math.min(4096, ...keys);
-  $("alTrophHint").textContent = `Prism ${label(lo)} and up`;
-  const PIMG = ballImg(PRISM, 24, { size: 54 });
-  let t = "";
-  for (let k = 0; k < 9; k++){ const v = lo * 2 ** k, a = pa[v];
-    t += a ? `<div title="Prism ${label(v)} ×${a.n}"><img alt="Prism" src="${PIMG}"><small><b>Prism ${label(v)}</b>${a.d}</small></div>` : `<div class="no" title="Prism ${label(v)}">${LOCK}<b>?</b></div>`; }
-  $("alTroph").innerHTML = t;
+  // balls: every value collected so far; the ones in this game (pool, board, made this game) bright, earlier games dimmed
+  seeBalls();
+  const now = inGameBalls(), all = [...new Set([...Object.keys(store.get("album", {})).map(Number), ...now])].filter(v => v < PRISM).sort((a, b) => a - b);
+  $("alBalls").innerHTML = all.map(v => `<img class="${now.has(v) ? "" : "dim"}" alt="${label(v)}" title="${label(v)}${now.has(v) ? "" : " · earlier game"}" src="${ballImg(v, 19, { size: 43 })}">`).join("");
   $("bReset").textContent = "Reset records"; resetArm = 0;
   $("album").hidden = false;
 }
-// Prism trophies by value; older saves only counted Prisms: their first one becomes the difficulty's first Prism
-function prismAlbum(){
-  let pa = store.get("prismAlbum", null);
-  if (!pa){ pa = {}; const old = store.get("album", {})[PRISM]; if (old) pa[2 * D().prism] = old; store.set("prismAlbum", pa); }
-  return pa;
+// balls "in the game" right now: the pool (also values on their way out), the board, and every value made this game
+function inGameBalls(){
+  const set = new Set(poolCounts().map(o => o.v));
+  S.grid.forEach(col => col.forEach(t => { if (t.v < PRISM) set.add(t.v); }));
+  (S.reached || []).forEach(v => { if (v < PRISM) set.add(v); });
+  return set;
+}
+// remember every ball that has been in a game (Records → Balls); Reset records forgets them
+function seeBalls(){
+  if (BOT) return;
+  const a = store.get("album", {}); let ch = false;
+  for (const v of inGameBalls()) if (!a[v]){ a[v] = { d: dayKey(), n: 1 }; ch = true; }
+  if (ch) store.set("album", a);
 }
 let resetArm = 0;
 function resetRecords(){
   if (Date.now() - resetArm > 3000){ resetArm = Date.now(); $("bReset").textContent = "Tap again to delete all records"; return; }
-  ["best", "top", "records", "album", "prismAlbum", "bestTile", "prismMade", "prismBursts", "daily", "dailyGoals", "gold"].forEach(k => { try { localStorage.removeItem("pew2:" + k); } catch(e){} });
+  ["best", "top", "records", "album", "bestTile", "prismMade", "prismBursts", "gold"].forEach(k => { try { localStorage.removeItem("pew2:" + k); } catch(e){} });
   S.best = 0; S.startBest = 0; S.marks = []; S.gold = false; S.reached = []; save(); hud(); openAlbum(); floatText("Records reset");
 }
 
@@ -1444,11 +1446,15 @@ document.addEventListener("keydown", e => {
   if (e.key >= "1" && e.key <= "5") drop(+e.key - 1);
   else if (e.key.toLowerCase() === "z") $("bUndo").click();
 });
+// Back must also take back what the move wrote to the records (balls seen, Prism counts), or a replay counts it twice
+const UNDO_KEYS = ["album", "bestTile", "prismMade", "prismBursts"];
+function snapUndo(){ undoSnap = clone(S); undoStore = {}; for (const k of UNDO_KEYS) undoStore[k] = localStorage.getItem("pew2:" + k); }
 $("bUndo").onclick = () => {
   const k = costOf("undo");
   if (!undoSnap || S.daily || S.coins < k || busy) return;
   const coins = S.coins - k, used = { ...S.used, undo: S.used.undo + 1 }, spent = S.spent + k, earned = S.earned;
   S = undoSnap; S.coins = coins; S.used = used; S.spent = spent; S.earned = earned; undoSnap = null; S.over = false; $("over").hidden = true;
+  if (undoStore) for (const k of UNDO_KEYS){ try { undoStore[k] == null ? localStorage.removeItem("pew2:" + k) : localStorage.setItem("pew2:" + k, undoStore[k]); } catch(e){} }
   rebuild(); hud(); save();
 };
 $("bSwap").onclick = () => {                 // the ball goes back into the bag, another value comes out (price doubles per use)
@@ -1506,7 +1512,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.13.3";
+const APP_VERSION = "0.14.0";
 $("verTxt").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;

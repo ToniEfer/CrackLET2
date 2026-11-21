@@ -11,7 +11,7 @@ HTML5 prototype, installable on Android as an app (PWA), works offline.
 | `manifest.webmanifest`, `sw.js` | app install + offline cache |
 | `version.json` | current version; the game checks it and offers **Update** |
 | `icons/` | app icons |
-| `fonts/` | Anton and Kalam (SIL Open Font License) |
+| `fonts/` | Anton (SIL Open Font License) |
 | `voice/` | announcer lines (ElevenLabs v4 via Magnific) |
 | `sfx/` | glass sounds (ElevenLabs SFX via Magnific) |
 | `tools/bot.mjs` | test bot: plays the real game headless and prints balance stats (`node tools/bot.mjs 40 director normal 3000`, needs Playwright) |
