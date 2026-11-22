@@ -949,7 +949,7 @@ const SFX = {
   reject: { src: null, freq: 220, vol: .08, dur: .15, type: "square" },             // full track
   swap:   { src: null, freq: 1200, vol: .05, dur: .08, type: "sine" },              // swap booster
   // special balls (v0.16.3, Magnific SFX): first landing of a Prism / ∞ / Death, Prism burst, ∞ + ∞ + ∞, ∞ takes Death
-  prismLand: { src: "sfx/prism_land.mp3", vol: .75 }, infLand: { src: "sfx/inf_land.mp3", vol: .8 }, deathLand: { src: "sfx/death_land.mp3", vol: .8 },
+  prismLand: { src: "sfx/prism_land.mp3", vol: .75 }, infLand: { src: "sfx/inf_land.mp3", vol: .8 }, deathLand: { src: "sfx/death_land.mp3", vol: 1 },
   prismBurst: { src: "sfx/prism_burst.mp3", vol: .9 }, infBurst: { src: "sfx/inf_burst.mp3", vol: .9 }, deathGone: { src: "sfx/death_gone.mp3", vol: .85 }
 };
 const LAND = v => v >= PRISM ? "prismLand" : v === DEATH ? "deathLand" : v >= INF ? "infLand" : null;
@@ -1795,7 +1795,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.16.4";
+const APP_VERSION = "0.16.5";
 $("verTxt").textContent = APP_VERSION; $("verTxt3").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
