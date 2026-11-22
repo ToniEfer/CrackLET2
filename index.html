@@ -163,9 +163,9 @@ body{
 .pc i{position:absolute;left:0;right:4px;bottom:-3px;font-style:normal;font-size:8px;line-height:6px;color:var(--ink);letter-spacing:-1px;text-align:center}
 .pc.lg{opacity:.45}
 .pgoal{flex:none;display:flex;align-items:center;font-size:9px;font-weight:700;letter-spacing:.13em;color:var(--muted);white-space:nowrap;margin:1.42px 1px 0 0;gap:4.4px}
-.pgoal span{position:relative;display:flex;align-items:center;height:23px;min-width:61px;padding:0 12.5px 0 23px;background:var(--navy);border:1px solid var(--ink);border-radius:99px;box-shadow:2px 2px 0 var(--ink);font-family:var(--display);font-size:12px;letter-spacing:0;color:var(--yellow);overflow:hidden}
+.pgoal span{position:relative;display:flex;align-items:center;height:23px;min-width:61px;padding:0 29px 0 12.5px;justify-content:flex-end;background:var(--navy);border:1px solid var(--ink);border-radius:99px;box-shadow:2px 2px 0 var(--ink);font-family:var(--display);font-size:12px;letter-spacing:0;color:var(--yellow);overflow:hidden}
 .pgoal span::before{content:"";position:absolute;inset:0;background:radial-gradient(30px 14.4px at 50% 50%,rgba(255,255,255,0) 75%,#fff 100%);mix-blend-mode:overlay;opacity:.5;pointer-events:none}
-.pgoal img{position:absolute;left:0;top:-1px;width:24px;height:24px}
+.pgoal img{position:absolute;right:0;top:-1px;width:24px;height:24px}
 .pgoal small{font-family:var(--display);font-size:10px;color:#fff;margin-left:3px;letter-spacing:0;font-weight:400}
 /* Records — layout v0.13: rounded cells (r 10–12), 2px outlines, 3px shadows, no card shadow */
 .card.album{box-shadow:none;gap:0;padding:22px;font-size:12px}
@@ -1144,7 +1144,9 @@ function hudExtra(){
   const chips = poolWeights().map(o => `<span class="pc${o.linger ? " lg" : ""}" title="${label(o.v)}${o.linger ? " · leaving: still on the board" : " · in the pool"}"><img alt="${label(o.v)}" src="${chipImg(o.v, o.linger)}">${dots ? `<i>${"•".repeat(inBag(o.v))}</i>` : ""}</span>`).join("");
   if ($("poolBar").dataset.k !== chips){ $("poolBar").innerHTML = chips; $("poolBar").dataset.k = chips; }
   PCHIP = PCHIP || prismChipImg();
-  const pg = `${2 * S.thr >= INF ? "Final ball" : "Next Prism"}<span><img alt="" src="${PCHIP}">${label(2 * S.thr)}</span>`;
+  const fin = 2 * S.thr >= INF;   // value on the left, target ball on the right (Prism, at the end ∞)
+  const pg = `<span>${fin ? "" : label(2 * S.thr)}<img alt="${fin ? "∞" : "Prism"}" src="${fin ? chipImg(INF) : PCHIP}"></span>`;
+  $("pGoal").title = fin ? "Next: the final ball ∞" : `Next Prism: ${label(2 * S.thr)}`;
   if ($("pGoal").dataset.k !== pg){ $("pGoal").innerHTML = pg; $("pGoal").dataset.k = pg; }
   $("dayTag").hidden = !S.daily; $("testTag").hidden = !TEST.on;
   if (S.daily){ const n = dailyDone(S.daily).length; $("dayTag").textContent = "Daily " + "★".repeat(n) + "☆".repeat(3 - n); }
@@ -1795,7 +1797,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.16.6";
+const APP_VERSION = "0.16.7";
 $("verTxt").textContent = APP_VERSION; $("verTxt3").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
