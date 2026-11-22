@@ -873,12 +873,12 @@ function step(dt){
       // phones play sound 20–150 ms late: start the clink that much before the ball touches down
       if (b.vy > 0 && !b.pre){
         const d = ty - b.y, g = PHYS.g, tHit = (-b.vy + Math.sqrt(b.vy * b.vy + 2 * g * d)) / g;
-        if (tHit <= audioLead() + dt){ const v = b.vy + g * tHit; b.pre = true; if (v > 4) clink(v); }
+        if (tHit <= audioLead() + dt){ const v = b.vy + g * tHit; b.pre = true; if (v > 4) landSfx(b, v); }
       }
       b.vy += PHYS.g * dt; b.y += b.vy * dt;
       if (b.y >= ty){
         b.y = ty; const impact = b.vy;
-        if (!b.pre && impact > 4) clink(impact);
+        if (!b.pre && impact > 4) landSfx(b, impact);
         b.pre = false;
         if (impact > 2.2){ b.vy = -impact * PHYS.rest; b.sq = Math.min(.22, impact * .018); }
         else b.vy = 0;
@@ -947,8 +947,15 @@ const SFX = {
             bigFrom: 4, sampleStep: 1.045, sampleVol: .9, noiseDur: .32, noiseDecay: 3, highpass: 2200, noiseVol: .22,   // glass breaking
             shards: 5, shardVol: .035, baseFreq: 900, chainStep: 1.12, bodyVol: .06, bodyDur: .25 },
   reject: { src: null, freq: 220, vol: .08, dur: .15, type: "square" },             // full track
-  swap:   { src: null, freq: 1200, vol: .05, dur: .08, type: "sine" }               // swap booster
+  swap:   { src: null, freq: 1200, vol: .05, dur: .08, type: "sine" },              // swap booster
+  // special balls (v0.16.3, Magnific SFX): first landing of a Prism / ∞ / Death, Prism burst, ∞ + ∞ + ∞, ∞ takes Death
+  prismLand: { src: "sfx/prism_land.mp3", vol: .75 }, infLand: { src: "sfx/inf_land.mp3", vol: .8 }, deathLand: { src: "sfx/death_land.mp3", vol: .8 },
+  prismBurst: { src: "sfx/prism_burst.mp3", vol: .9 }, infBurst: { src: "sfx/inf_burst.mp3", vol: .9 }, deathGone: { src: "sfx/death_gone.mp3", vol: .85 }
 };
+const LAND = v => v >= PRISM ? "prismLand" : v === DEATH ? "deathLand" : v >= INF ? "infLand" : null;
+const special = k => playSample(k, SFX[k].vol);
+// a special ball plays its own sound on its first real touchdown, later bounces fall back to the clink
+function landSfx(b, impact){ const k = LAND(b.v); if (k && !b.landed && impact > 6){ b.landed = true; if (special(k)) return; } clink(impact); }
 let actx = null, master = null, muted = store.get("muted", false);
 const samples = {};
 function audio(){
@@ -1206,7 +1213,7 @@ async function resolve(dirty){
       const reward = 25 * S.prisms; addCoins(reward); S.score += 200 * S.prisms; S.relief = Math.max(S.relief, 5);
       if (!BOT) store.set("prismBursts", store.get("prismBursts", 0) + 1);
       celebrate("XXL", `PRISM BURST ×${S.prisms}`, `+${reward} coins · Next Prism ${label(2 * S.thr)}`);
-      say("burst"); coinBurst(10, pl.target.c + .5, slotY(pl.target.i)); crash(12);
+      say("burst"); coinBurst(10, pl.target.c + .5, slotY(pl.target.i)); crash(12); special("prismBurst");
       hud(); dirty = nextDirty(pl, r.moved, dirty);
       continue;
     }
@@ -1216,8 +1223,8 @@ async function resolve(dirty){
         const reward = 50; addCoins(reward); S.score += 1000; S.relief = Math.max(S.relief, 5);
         if (!S.deathOn){ S.deathOn = true; }                     // from now on Death can be dealt
         celebrate("XXL", "∞ + ∞ + ∞", (pl.rows.length > 1 ? "Rows cleared" : pl.group.some(o => o.i !== pl.group[0].i) ? "Bottom row cleared" : "Row cleared") + ` · +${reward} coins`);
-        say("infburst"); crash(12); board.classList.remove("shake"); void board.offsetWidth; board.classList.add("shake");
-      } else { celebrate("L", pl.gone.some(x => x.v === DEATH) ? "∞ took Death" : "∞ ate the Prism", ""); crash(6); if (tb) tb.pulse = .6; }
+        say("infburst"); crash(12); special("infBurst"); board.classList.remove("shake"); void board.offsetWidth; board.classList.add("shake");
+      } else { const dg = pl.gone.some(x => x.v === DEATH); celebrate("L", dg ? "∞ took Death" : "∞ ate the Prism", ""); crash(6); dg ? special("deathGone") : playSample("prismBurst", .6); if (tb) tb.pulse = .6; }
       hud(); dirty = nextDirty(pl, r.moved, dirty);
       continue;
     }
@@ -1783,7 +1790,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.16.2";
+const APP_VERSION = "0.16.3";
 $("verTxt").textContent = APP_VERSION; $("verTxt3").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
