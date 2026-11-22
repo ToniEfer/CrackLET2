@@ -1190,8 +1190,10 @@ const sleep = ms => BOT ? Promise.resolve() : new Promise(r => setTimeout(r, ms)
 
 /* ---------- merge resolution (gravity down: result stays in the lowest slot) ---------- */
 async function resolve(dirty){
-  let chain = 0;
-  while (dirty.length){
+  let chain = 0, sweeps = 0;
+  // safety net: when the queue is empty, any ball that can still react (∞ next to Death, …) is queued again
+  const sweep = () => sweeps++ < 6 ? S.grid.flat().filter(t => mergePlan(S.grid, t)) : [];
+  while (dirty.length || (dirty = sweep()).length){
     await settle();
     const t0 = dirty.shift(); if (t0.dead) continue;
     const pl = mergePlan(S.grid, t0); if (!pl) continue;
@@ -1206,6 +1208,7 @@ async function resolve(dirty){
     for (const t of pl.gone){ const b = balls.get(t.id); if (b){ shatter(b, pl.kind === "burst" ? 1.3 : 1); balls.delete(t.id); } }
     const tb = balls.get(pl.target.t.id);
     if (tb){ tb.crack = 0; shatter(tb, pl.kind === "burst" ? .5 : .7); }
+    for (const t of parts){ const b = balls.get(t.id); if (b) b.crack = 0; }   // survivors (e.g. ∞ above a cleared row) lose the crack overlay
     if (pl.kind === "burst"){                                  // Prism + Prism → the older ones burst and clear their tracks, the newest stays
       const r = applyPlan(S.grid, pl); S.grid = r.grid;
       S.prisms++; if (tb) tb.pulse = .6;                      // S.prisms = bursts so far
@@ -1448,6 +1451,7 @@ function revive(){
   if (!canRevive()) return;
   const k = reviveCost(); S.coins -= k; S.spent += k;
   S.revives++; $("over").hidden = true; S.over = false; undoSnap = null; lastOverAt = 0;
+  const pos0 = new Map(); S.grid.forEach((col, c) => col.forEach((t, i) => pos0.set(t, c * 16 + i)));
   S.grid.forEach(col => {
     while (col.length > ROWS - 2){
       let i = col.length - 1; while (i >= 0 && col[i].v >= INF) i--;
@@ -1456,8 +1460,9 @@ function revive(){
     }
   });
   crash(5); buzz([30, 40, 30]); S.danger = false; S.relief = Math.max(S.relief, 5); speakNow("revive");
-  if (!canPlace(S.cur)) S.cur = gen();
-  hud(); save(); tut("revive"); tutFlush(900);
+  const moved = []; S.grid.forEach((col, c) => col.forEach((t, i) => { if (pos0.get(t) !== c * 16 + i) moved.push(t); }));
+  const after = () => { if (!canPlace(S.cur)) S.cur = gen(); hud(); save(); tut("revive"); tutFlush(900); };
+  if (moved.length){ busy = true; resolve(moved).then(() => { busy = false; after(); sayFlush(); }); } else after();
 }
 async function hammerAt(c, i){
   const t = at(c, i); if (!t) return;
@@ -1790,7 +1795,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.16.3";
+const APP_VERSION = "0.16.4";
 $("verTxt").textContent = APP_VERSION; $("verTxt3").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
