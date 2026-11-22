@@ -38,7 +38,7 @@
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-html,body{height:100%;height:100dvh}
+html,body{height:100%;height:100dvh;height:var(--app-h,100dvh)}
 body{
   margin:0;background:var(--paper);color:var(--ink);font-family:var(--ui);
   padding-left:max(18.5px,env(safe-area-inset-left,0px));
@@ -55,7 +55,7 @@ body{
 @media (min-width:700px) and (min-height:720px){
   body{background-color:var(--desk);background-image:radial-gradient(rgba(20,20,20,.28) 1.4px,transparent 1.6px);background-size:18px 18px}
   .app{
-    width:auto;height:min(844px, calc(100vh - 48px));height:min(844px, calc(100dvh - 48px));aspect-ratio:390/844;max-width:none;
+    width:auto;height:min(844px, calc(100vh - 48px));height:min(844px, calc(var(--app-h,100dvh) - 48px));aspect-ratio:390/844;max-width:none;
     background:var(--paper);border:var(--bwb) solid var(--ink);border-radius:46px;
     padding:24px 18px 20px;box-shadow:10px 10px 0 var(--ink);
   }
@@ -203,6 +203,11 @@ body{
 .next b{font-family:var(--display);font-weight:400;font-size:13px}
 .nbar{width:54px;height:10px;border:1.6px solid var(--ink);border-radius:99px;background:var(--card);overflow:hidden}
 .nbar i{display:block;height:100%;width:0;background:var(--teal);transition:width .3s}
+.testtag{font-size:10px;font-weight:700;text-transform:uppercase;background:var(--coral);color:#fff;border:1.6px solid var(--ink);border-radius:6px;padding:1px 6px;white-space:nowrap}
+.tune .stepper{display:flex;align-items:center;gap:6px}.tune .stepper b{min-width:64px;text-align:center}
+.tune .sm2{padding:5px 10px;font-size:12px;box-shadow:3px 3px 0 var(--ink)}
+.tune h4{margin:12px 0 0;font-family:var(--display);font-weight:400;font-size:15px;color:var(--ink);text-transform:uppercase}
+.tune .kv{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;margin-top:6px}.tune .kv b{text-align:right}
 .daytag{font-size:10px;font-weight:700;text-transform:uppercase;background:var(--purple);color:#fff;border:1.6px solid var(--ink);border-radius:6px;padding:1px 6px;white-space:nowrap}
 .banner{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);z-index:6;pointer-events:none;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px}
 .banner b{font-family:var(--display);font-weight:400;color:var(--yellow);-webkit-text-stroke:2.5px var(--ink);paint-order:stroke fill;text-shadow:4px 4px 0 var(--ink);white-space:nowrap;line-height:1}
@@ -259,7 +264,7 @@ body{
   <div class="progress" id="prog" title="Progress to your best score"><i></i><s style="left:25%"></s><s style="left:50%"></s><s style="left:75%"></s></div>
 
   <div class="strip">
-    <span class="daytag" id="dayTag" hidden></span>
+    <span class="daytag" id="dayTag" hidden></span><span class="testtag" id="testTag" hidden>Test</span>
     <span class="poolbar" id="poolBar" title="Balls in play · Prism at the end"></span>
     <span class="pgoal" id="pGoal" title="Next Prism: its value (two balls of half this value make it)"></span>
   </div>
@@ -286,32 +291,58 @@ body{
 
 <div class="overlay" id="tuneSheet" hidden>
   <div class="card tune">
-    <div class="head"><b>Tuning (prototype)</b><span class="ver">v<span id="verTxt"></span></span><button class="btn ghost" id="bTuneClose" type="button" style="padding:6px 12px;font-size:12px;box-shadow:3px 3px 0 var(--ink)">Close</button></div>
+    <div class="head"><b>Settings</b><span class="ver">v<span id="verTxt"></span></span><button class="btn ghost" id="bTuneClose" type="button" style="padding:6px 12px;font-size:12px;box-shadow:3px 3px 0 var(--ink)">Close</button></div>
     <div class="update" id="updBar" role="status" hidden><span id="updTxt">New version available</span><button class="btn" id="bUpd" type="button">Update</button></div>
+    <div class="row">
+      <label for="dIn"><span>Difficulty</span><select id="dIn" class="chip" style="flex:1"><option value="easy">Easy</option><option value="normal" selected>Normal</option><option value="hard">Hard</option></select></label>
+    </div>
+    <div class="row">
+      <label for="vIn"><span>Announcer</span><select id="vIn" class="chip" style="flex:1"><option value="classic">Classic · Noah</option><option value="velvet">Velvet · Harper</option></select></label>
+    </div>
+    <div class="row">
+      <label for="bdIn"><span>Bag dots</span><input id="bdIn" type="checkbox"><small>show balls left in the bag</small></label>
+    </div>
+    <div class="row2"><button class="btn ghost sm" id="bDaily2" type="button">Daily challenge</button><button class="btn ghost sm" id="bAlbum2" type="button">Records</button></div>
+    <div class="row howto"><span>How to play</span><span id="howBtns"></span></div>
+    <div class="row"><span>Version: <b id="verTxt2"></b> · <span id="updState">—</span></span><button class="btn ghost" id="bCheck" type="button" style="padding:6px 10px;font-size:12px;box-shadow:3px 3px 0 var(--ink)">Check for update</button></div>
+    <div class="row"><button class="btn ghost" id="bTest" type="button" style="padding:6px 10px;font-size:12px;box-shadow:3px 3px 0 var(--ink)">TEST</button><button class="btn ghost" id="bNew" type="button" style="padding:6px 10px;font-size:12px;box-shadow:3px 3px 0 var(--ink)">New game</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="testSheet" hidden>
+  <div class="card tune">
+    <div class="head"><b>Test</b><span class="ver">v<span id="verTxt3"></span></span><button class="btn ghost" id="bTestClose" type="button" style="padding:6px 12px;font-size:12px;box-shadow:3px 3px 0 var(--ink)">Close</button></div>
+    <div class="row">
+      <label for="tmIn"><span>Test mode</span><input id="tmIn" type="checkbox"><small>records, coins and stats are not saved; the controls below work only in test mode</small></label>
+      <label for="tfIn"><span>Free boosters</span><input id="tfIn" type="checkbox"><small>Back, Swap, Smash cost 0</small></label>
+    </div>
+    <h4>Pool &amp; Prism</h4>
+    <div class="row"><span>Pool shift</span><span class="stepper"><button class="btn ghost sm2" data-t="shift-" type="button">−</button><b id="tShift">0</b><button class="btn ghost sm2" data-t="shift+" type="button">+</button></span></div>
+    <div class="row"><span>Pool size</span><span class="stepper"><button class="btn ghost sm2" data-t="k-" type="button">−</button><b id="tK">auto</b><button class="btn ghost sm2" data-t="k+" type="button">+</button></span></div>
+    <div class="row"><span>Next Prism</span><span class="stepper"><button class="btn ghost sm2" data-t="thr-" type="button">÷2</button><b id="tThr">—</b><button class="btn ghost sm2" data-t="thr+" type="button">×2</button></span></div>
+    <div class="row"><span>Next ball</span><span class="stepper"><button class="btn ghost sm2" data-t="cur-top" type="button">pool top</button><button class="btn ghost sm2" data-t="cur-thr" type="button">thr</button><button class="btn ghost sm2" data-t="cur-prism" type="button">Prism</button><button class="btn ghost sm2" data-t="cur-inf" type="button">∞</button><button class="btn ghost sm2" data-t="cur-death" type="button">Death</button></span></div>
+    <div class="row"><button class="btn ghost sm2" data-t="coins" type="button">+1000 coins</button><button class="btn ghost sm2" data-t="deathon" type="button">Death on/off</button><button class="btn ghost sm2" data-t="tuts" type="button">Reset tutorials</button></div>
+    <h4>Difficulty</h4>
+    <div class="row">
+      <label for="clIn"><span>Classic</span><input id="clIn" type="checkbox"><small>pure random order, no Director</small></label>
+    </div>
+    <div class="row" id="tDiff"></div>
+    <div class="row"><button class="btn ghost sm2" data-t="dreset" type="button">Reset to difficulty preset</button></div>
+    <h4>Physics</h4>
     <div class="row">
       <label for="gIn"><span>Gravity</span><input id="gIn" type="range" min="15" max="140" step="1" value="60"><output id="gOut">60</output></label>
       <label for="eIn"><span>Bounce</span><input id="eIn" type="range" min="0" max="0.7" step="0.02" value="0.34"><output id="eOut">0.34</output></label>
       <label for="sIn"><span>Shards</span><input id="sIn" type="range" min="4" max="40" step="1" value="16"><output id="sOut">16</output></label>
     </div>
-    <div class="row">
-      <label for="dIn"><span>Difficulty</span><select id="dIn" class="chip" style="flex:1"><option value="easy">Easy</option><option value="normal" selected>Normal</option><option value="hard">Hard</option></select></label>
-    </div>
-    <div class="row">
-      <label for="clIn"><span>Classic</span><input id="clIn" type="checkbox"><small>pure random order, no Director</small></label>
-      <label for="bdIn"><span>Bag dots</span><input id="bdIn" type="checkbox"><small>show balls left in the bag</small></label>
-    </div>
-    <div class="row2"><button class="btn ghost sm" id="bDaily2" type="button">Daily challenge</button><button class="btn ghost sm" id="bAlbum2" type="button">Records</button></div>
+    <h4>This game</h4>
     <div class="row"><span>Director this game: <b id="dirTxt">—</b></span></div>
-    <div class="row"><span>Last games (median): <b id="teleTxt">—</b></span></div>
-    <div class="row">
-      <label for="vIn"><span>Announcer</span><select id="vIn" class="chip" style="flex:1"><option value="classic">Classic · Noah</option><option value="velvet">Velvet · Harper</option></select></label>
-    </div>
     <div class="row"><span>Move: <b id="moves">0</b></span><span>Values in pool: <b id="kval"></b></span></div>
     <div class="row"><span>Seed: <b id="seed"></b></span><span>Fill: <b id="fill"></b></span><span>Help chance: <b id="pity"></b></span></div>
+    <div class="row"><span>Last ball: <b id="lastsrc">random</b></span></div>
+    <div class="kv" id="tData"></div>
     <table id="pool"></table>
-    <div class="row howto"><span>How to play</span><span id="howBtns"></span></div>
-    <div class="row"><span>Version: <b id="verTxt2"></b> · <span id="updState">—</span></span><button class="btn ghost" id="bCheck" type="button" style="padding:6px 10px;font-size:12px;box-shadow:3px 3px 0 var(--ink)">Check for update</button></div>
-    <div class="row"><span>Last ball: <b id="lastsrc">random</b></span><button class="btn ghost" id="bNew" type="button" style="padding:6px 10px;font-size:12px;box-shadow:3px 3px 0 var(--ink)">New game</button></div>
+    <h4>Last games</h4>
+    <div class="row"><span>Median: <b id="teleTxt">—</b></span></div>
   </div>
 </div>
 
@@ -403,8 +434,13 @@ const X = x => W / 2 + (x - 2.5) * PXC;                 // column units (centre 
 /* ---------- storage ---------- */
 const store = {
   get(k, d){ try { const v = localStorage.getItem("pew2:" + k); return v == null ? d : JSON.parse(v); } catch(e){ return d; } },
-  set(k, v){ try { localStorage.setItem("pew2:" + k, JSON.stringify(v)); } catch(e){} }
+  set(k, v){ if (TEST.on && TEST_NOSAVE.includes(k)) return; try { localStorage.setItem("pew2:" + k, JSON.stringify(v)); } catch(e){} }
 };
+/* Test mode (Settings → TEST): nothing below is saved while it is on, and its knobs (pool shift, pool size, Director
+   chances, pool growth, Death chance, free boosters) only act in test mode */
+const TEST_NOSAVE = ["best", "top", "album", "bestTile", "prismMade", "prismBursts", "tele", "daily", "dailyGoals", "coins", "fr", "frP", "gold"];
+const TEST = Object.assign({ on: false, free: false, shift: 0, k: 0, d: {} }, (() => { try { return JSON.parse(localStorage.getItem("pew2:test")) || {}; } catch(e){ return {}; } })());
+const DX = () => TEST.on ? { ...D(), ...TEST.d } : D();
 
 /* ---------- RNG ---------- */
 function rnd(){
@@ -415,13 +451,20 @@ function rnd(){
 }
 
 /* ---------- generator ---------- */
-function poolK(){ return POOL_SIZE + (S.maxEver >= 512 ? 1 : 0) + (S.prisms >= 1 ? 1 : 0); }   // 4 → 5 → 6
+function poolK(){ if (TEST.on && TEST.k) return TEST.k; return POOL_SIZE + (S.maxEver >= 512 ? 1 : 0) + (S.prisms >= 1 ? 1 : 0); }   // 4 → 5 → 6
 /* v0.14: progress = biggest ball + one step per Prism burst, so every burst moves the pool; the top never comes
    closer than two merges to the Prism threshold (upper ≤ thr / 4) */
 function poolRange(){
+  const r = poolBase(); if (!TEST.on || !TEST.shift) return r;
+  let { lower, upper } = r;                               // test: move the whole pool up / down by whole steps
+  for (let k = 0; k < TEST.shift && upper * 2 <= INF / 2; k++){ lower *= 2; upper *= 2; }
+  for (let k = 0; k > TEST.shift && lower > 2; k--){ lower /= 2; upper /= 2; }
+  return { lower, upper };
+}
+function poolBase(){
   if (S.poolFreeze) return S.poolFreeze;               // after ∞ the pool does not grow any more
   const L = Math.floor(Math.log2(Math.max(8, Math.min(S.maxEver, PRISM / 2)))) + (S.prisms || 0);
-  const topExp = Math.max(4, 4 + Math.floor((L - 8) * D().rate));
+  const topExp = Math.max(4, 4 + Math.floor((L - 8) * DX().rate));
   let lower = Math.max(2, Math.pow(2, topExp) / 8), upper = lower * Math.pow(2, poolK() - 1);   // bottom: v0.6 curve; the pool grows upward
   const cap = Math.max(16, (S.thr || D().prism) / 4);
   while (upper > cap && lower > 2){ upper /= 2; lower /= 2; }
@@ -437,7 +480,7 @@ function lingering(){
 function poolCounts(){
   const { lower, upper } = poolRange(), out = [];
   for (const v of lingering()) out.push({ v, n: 1, linger: true });
-  for (let v = lower; v <= upper; v *= 2) out.push({ v, n: D().bag });
+  for (let v = lower; v <= upper; v *= 2) out.push({ v, n: DX().bag });
   return out;
 }
 function poolWeights(){
@@ -459,7 +502,7 @@ const dirOn = () => !S.daily && !store.get("classic", false) && !(BOT && BOT.cla
    so they stay a real decision even with a big balance. Using a booster does not raise its price. */
 const PRICE = { undo: [15, .08], swap: [10, .05], hammer: [40, .20] };
 const stage = () => Math.min(10, Math.max(0, Math.log2(poolRange().upper) - 4));   // capped: late-game prices stay in the hundreds
-const costOf = k => { const [base, share] = PRICE[k]; return Math.max(5, Math.round(Math.max(base * Math.pow(1.5, stage()), share * (S.coins || 0)) / 5) * 5); };
+const costOf = k => { if (TEST.on && TEST.free) return 0; const [base, share] = PRICE[k]; return Math.max(5, Math.round(Math.max(base * Math.pow(1.5, stage()), share * (S.coins || 0)) / 5) * 5); };
 const freeTracks = () => S.grid.filter(c => c.length < ROWS).length;
 const mass = (T) => S.grid.reduce((a, c) => a + c.reduce((b, t) => b + (t.v < PRISM && t.v >= T / 8 && t.v < T ? t.v : 0), 0), 0);   // material within 3 merges of target T
 
@@ -548,9 +591,9 @@ function director(exclude){
   for (const v of vals){ let b = -1; for (let c = 0; c < COLS; c++) b = Math.max(b, simChain(c, v)); best[v] = b; if (b >= 1) M++; }
   const F = fillRatio(), Hh = Math.max(...S.grid.map(c => c.length)) / ROWS, free = freeTracks();
   const T = .5 * F + .3 * (1 - M / vals.length) + .2 * Hh;
-  const P = D(), m = S.frMod || {}, top = Math.max(...vals.map(v => best[v]));
+  const P = DX(), m = S.frMod || {}, top = Math.max(...vals.map(v => best[v]));
   const any = f => { const ok = vals.filter(f); return ok.length ? ok[Math.floor(rnd() * ok.length)] : null; };
-  const crisis = T >= .8 || free <= 1;
+  const crisis = T >= .8 || free <= 1; S.lastT = T;
   let pick = null, src = "bag";
   if (S.drought >= 6 && top >= 4){ S.lastP = Math.min(.6, .05 * S.drought); if (rnd() < S.lastP){ pick = any(v => best[v] === top); src = "jackpot"; } }
   if (pick != null){}
@@ -563,7 +606,8 @@ function director(exclude){
   S.dirN = (S.dirN || 0) + 1; S.lastSrc = src; return take(pick);
 }
 // after the first ∞ + ∞ + ∞ some deals are Death (1 in 12; Hard 1 in 8)
-function gen(){ const v = director(); return S && S.deathOn && Math.random() < (diff === "hard" ? 1 / 8 : 1 / 12) ? DEATH : v; }
+function gen(){ const v = director(); return S && S.deathOn && Math.random() < deathP() ? DEATH : v; }
+const deathP = () => TEST.on && TEST.d.death != null ? TEST.d.death : diff === "hard" ? 1 / 8 : 1 / 12;
 
 /* ---------- state ---------- */
 const clone = o => JSON.parse(JSON.stringify(o));
@@ -647,6 +691,19 @@ addEventListener("pageshow", () => { resize(); requestAnimationFrame(resize); })
 document.addEventListener("visibilitychange", () => { if (!document.hidden) requestAnimationFrame(resize); });
 if (screen.orientation) screen.orientation.addEventListener("change", () => setTimeout(resize, 120));
 new ResizeObserver(() => resize()).observe(document.documentElement);
+/* v0.16.2: after an update the installed app restarts with a stale 100dvh / safe area until it is backgrounded once.
+   The app height is now measured in JS (--app-h) and re-measured several times while the page settles. */
+function fitView(){
+  const h = Math.round((window.visualViewport && visualViewport.height) || innerHeight || 0);
+  if (h > 0 && document.documentElement.style.getPropertyValue("--app-h") !== h + "px") document.documentElement.style.setProperty("--app-h", h + "px");
+  resize();
+}
+const reFit = () => [0, 60, 160, 350, 700, 1200, 2000, 3500].forEach(t => setTimeout(fitView, t));
+reFit();
+addEventListener("resize", fitView); addEventListener("load", reFit); addEventListener("pageshow", reFit); addEventListener("focus", reFit);
+if (window.visualViewport) visualViewport.addEventListener("resize", fitView);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) reFit(); });
+if (screen.orientation) screen.orientation.addEventListener("change", reFit);
 
 /* ball, layout v0.13 (balls layer of CrackLET2_layout_v0.12.5_edit.svg, r 30): hard ink shadow (+3.9, +4.5), flat colour,
    white rim light (radial .75–1 r, overlay 50%), two white glint arcs, 2 px ink outline, white Anton number with a 1.07 px ink
@@ -1070,6 +1127,7 @@ function hud(){
   $("moves").textContent = S.moves || 0; $("kval").textContent = poolK();
   $("seed").textContent = S.seed; $("fill").textContent = Math.round(fillRatio() * 100) + "%";
   $("pity").textContent = Math.round(pityChance() * 100) + "%"; $("lastsrc").textContent = S.lastSrc;
+  testData();
   $("pool").innerHTML = poolWeights().map(o => `<tr><td>${label(o.v)}${o.linger ? " · leaving (still on board)" : ""}</td><td>${Math.round(o.p * 100)}%</td></tr>`).join("");
 }
 function hudExtra(){
@@ -1081,7 +1139,7 @@ function hudExtra(){
   PCHIP = PCHIP || prismChipImg();
   const pg = `${2 * S.thr >= INF ? "Final ball" : "Next Prism"}<span><img alt="" src="${PCHIP}">${label(2 * S.thr)}</span>`;
   if ($("pGoal").dataset.k !== pg){ $("pGoal").innerHTML = pg; $("pGoal").dataset.k = pg; }
-  $("dayTag").hidden = !S.daily;
+  $("dayTag").hidden = !S.daily; $("testTag").hidden = !TEST.on;
   if (S.daily){ const n = dailyDone(S.daily).length; $("dayTag").textContent = "Daily " + "★".repeat(n) + "☆".repeat(3 - n); }
   $("dirTxt").textContent = dirOn() ? `${S.dealN ? Math.round(S.dirN / S.dealN * 100) : 0}% of deals changed · last: ${S.lastSrc}` : "off (Classic or Daily)";
 }
@@ -1282,7 +1340,7 @@ async function drop(c){
   if (full && (col[ROWS - 1].v !== v || v === DEATH)){ sfx("reject"); buzz(30); board.classList.remove("shake"); void board.offsetWidth; board.classList.add("shake"); return; }
   busy = true; snapUndo();
   const sc0 = S.score;
-  const t = { id: ++uid, v }; col.push(t);
+  const t = { id: ++uid, v }; if (v === PRISM){ t.pv = S.curPv || 2 * S.thr; S.curPv = 0; } col.push(t);
   const b = mkBall(t, c + .5, launchY()); b.vy = 1.5; balls.set(t.id, b);
   hud();
   const chain = await resolve([t]);
@@ -1409,7 +1467,7 @@ async function hammerAt(c, i){
 
 /* ---------- daily challenge, album, share ---------- */
 const valid = s => s && s.grid && !s.over && s.grid.every(c => c.every(t => typeof t.v === "number"));
-function closeSheets(){ $("over").hidden = true; $("tuneSheet").hidden = true; $("album").hidden = true; $("dayCard").hidden = true; }
+function closeSheets(){ $("over").hidden = true; $("tuneSheet").hidden = true; $("testSheet").hidden = true; $("album").hidden = true; $("dayCard").hidden = true; }
 function dailyGoals(k){
   const n = +k.replace(/-/g, ""), pick = (a, i) => a[(n * 7 + i * 13) % a.length];
   return [{ id: "ball", v: pick([256, 512, 512, 1024], 1) }, { id: "score", v: pick([1500, 2000, 2500, 3000], 2) }, { id: "chain", v: pick([3, 4, 4, 5], 3) }];
@@ -1654,7 +1712,44 @@ $("clIn").addEventListener("change", e => { store.set("classic", e.target.checke
 $("bdIn").checked = store.get("bagDots", false);
 $("bdIn").addEventListener("change", e => { store.set("bagDots", e.target.checked); hud(); });
 $("bNew").onclick = () => { closeSheets(); newGame(); audio(); speakNow("start"); };
-$("bTune").onclick = () => { $("teleTxt").textContent = teleSummary(); hud(); $("tuneSheet").hidden = false; };
+$("bTune").onclick = () => { hud(); $("tuneSheet").hidden = false; };
+$("bTest").onclick = () => { $("tuneSheet").hidden = true; $("teleTxt").textContent = teleSummary(); testUI(); hud(); $("testSheet").hidden = false; };
+$("bTestClose").onclick = () => { $("testSheet").hidden = true; };
+$("testSheet").addEventListener("click", e => { if (e.target.id === "testSheet") $("testSheet").hidden = true; });
+const TKNOB = [["rate", "Pool growth", 0.3, 1.2, .05], ["intro", "Director intro", 0, 1, .05], ["awk", "Director awkward", 0, 1, .05], ["rescue", "Director rescue", 0, 1, .05], ["bag", "Each value ×", 1, 4, 1], ["death", "Death chance", 0, .5, .01]];
+const saveTest = () => { try { localStorage.setItem("pew2:test", JSON.stringify(TEST)); } catch(e){} };
+function testUI(){
+  $("tmIn").checked = TEST.on; $("tfIn").checked = TEST.free;
+  const P = { ...D(), death: deathP() }, cur = { ...P, ...TEST.d };
+  $("tDiff").innerHTML = TKNOB.map(([k, n, lo, hi, st]) => `<label for="tk_${k}"><span>${n}</span><input id="tk_${k}" data-k="${k}" type="range" min="${lo}" max="${hi}" step="${st}" value="${cur[k]}"><output>${k === "death" ? Math.round(cur[k] * 100) + "%" : cur[k]}</output></label>`).join("");
+}
+function testData(){
+  if (!$("testSheet") || $("testSheet").hidden) return;
+  const { lower, upper } = poolRange(), on = TEST.on;
+  $("tShift").textContent = (TEST.shift > 0 ? "+" : "") + TEST.shift; $("tK").textContent = TEST.k || "auto (" + (POOL_SIZE + (S.maxEver >= 512 ? 1 : 0) + (S.prisms >= 1 ? 1 : 0)) + ")"; $("tThr").textContent = label(2 * S.thr);
+  const kv = [["Mode", (on ? "TEST" : "normal") + " · " + D().name + (S.daily ? " · Daily" : "")], ["Pool", label(lower) + " – " + label(upper) + (S.poolFreeze ? " (frozen after ∞)" : "")],
+    ["Prism threshold", label(S.thr) + " → Prism " + label(2 * S.thr)], ["Prism bursts", S.prisms || 0], ["Biggest ball", label(S.maxEver)], ["Death", S.deathOn ? "on · " + Math.round(deathP() * 100) + "% of deals" : "off"],
+    ["Bag left", (S.bag || []).length + " balls"], ["Board tension", S.lastT != null ? Math.round(S.lastT * 100) + "%" : "—"], ["Drought", (S.drought || 0) + " moves"], ["Free tracks", freeTracks() + " / " + COLS],
+    ["Prices", `Back ${costOf("undo")} · Swap ${costOf("swap")} · Smash ${costOf("hammer")}`], ["Used", `Back ${S.used.undo} · Swap ${S.used.swap} · Smash ${S.used.hammer} · Revive ${S.revives}`],
+    ["Coins", `${S.coins} (+${S.earned || 0} / −${S.spent || 0})`], ["Frustration", store.get("fr", 0) + (S.frMod ? " · " + JSON.stringify(S.frMod) : "")], ["Combos", `best ×${S.bestChain} · big ${S.ch4}`]];
+  $("tData").innerHTML = kv.map(([k, v]) => `<span>${k}</span><b>${v}</b>`).join("");
+}
+$("tmIn").addEventListener("change", e => { TEST.on = e.target.checked; saveTest(); if (!TEST.on){ S.coins = store.get("coins", 100); S.best = store.get("best", 0); } floatText(TEST.on ? "Test mode on" : "Test mode off"); testUI(); hud(); });
+$("tfIn").addEventListener("change", e => { TEST.free = e.target.checked; saveTest(); hud(); });
+$("tDiff").addEventListener("input", e => { const k = e.target.dataset.k; if (!k) return; TEST.d[k] = +e.target.value; saveTest(); const o = e.target.nextElementSibling; o.textContent = k === "death" ? Math.round(TEST.d[k] * 100) + "%" : TEST.d[k]; hud(); });
+$("testSheet").addEventListener("click", e => {
+  const b = e.target.closest("[data-t]"); if (!b) return; const t = b.dataset.t;
+  if (!TEST.on && t !== "tuts"){ floatText("Turn test mode on first"); return; }
+  if (t === "shift+") TEST.shift++; else if (t === "shift-") TEST.shift--;
+  else if (t === "k+") TEST.k = Math.min(10, (TEST.k || poolK()) + 1); else if (t === "k-") TEST.k = Math.max(2, (TEST.k || poolK()) - 1);
+  else if (t === "thr+") S.thr = Math.min(INF / 2, S.thr * 2); else if (t === "thr-") S.thr = Math.max(8, S.thr / 2);
+  else if (t === "cur-top") S.cur = poolRange().upper; else if (t === "cur-thr") S.cur = S.thr; else if (t === "cur-prism"){ S.cur = PRISM; S.curPv = 2 * S.thr; }
+  else if (t === "cur-inf") S.cur = INF; else if (t === "cur-death") S.cur = DEATH;
+  else if (t === "coins") S.coins += 1000; else if (t === "deathon") S.deathOn = !S.deathOn;
+  else if (t === "tuts"){ try { localStorage.removeItem("pew2:tutSeen"); } catch(e){} floatText("Tutorials will show again"); }
+  else if (t === "dreset"){ TEST.d = {}; testUI(); }
+  saveTest(); hud(); save();
+});
 $("bTuneClose").onclick = () => { $("tuneSheet").hidden = true; };
 $("tuneSheet").addEventListener("click", e => { if (e.target.id === "tuneSheet") $("tuneSheet").hidden = true; });
 $("vIn").value = VOICE.pack;
@@ -1688,8 +1783,8 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.16.1";
-$("verTxt").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
+const APP_VERSION = "0.16.2";
+$("verTxt").textContent = APP_VERSION; $("verTxt3").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
 const vnum = v => String(v).split(".").map(n => parseInt(n, 10) || 0);
