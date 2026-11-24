@@ -1641,11 +1641,14 @@ const TUTS = {
 };
 let tutQ = [], tutOn = null, tutT0 = 0;
 const animsOn = () => store.get("anims", true);                  // Settings → Animations on/off (replay in How to play still works)
+const tutMem = new Set();                                        // v0.17.1: also remembered for the session, marked when queued
+function markSeen(id){ tutMem.add(id); const seen = store.get("tutSeen", {}); if (!seen[id]){ seen[id] = dayKey(); store.set("tutSeen", seen); }
+  if (store.get("tutSeen", {})[id] == null) console.warn("tutSeen not saved", id); }
 function tut(id, v){ if (BOT || !TUTS[id] || !animsOn()) return; const key = v ? id + ":" + v : id;
-  if (!v){ const seen = store.get("tutSeen", {}); if (seen[id]) return; }
+  if (!v){ if (tutMem.has(id) || store.get("tutSeen", {})[id]) return; markSeen(id); }
   if (tutQ.includes(key) || tutOn === key) return; tutQ.push(key); }
 // first time ever a value enters the pool: its own card (remembered in poolSeen, cleared by Reset records)
-function newInPool(v){ const seen = store.get("poolSeen", []); if (seen.includes(v)) return; seen.push(v); store.set("poolSeen", seen); tut("ball", v); }
+function newInPool(v){ const seen = store.get("poolSeen", []); if (seen.includes(v) || tutMem.has("ball:" + v)) return; tutMem.add("ball:" + v); seen.push(v); store.set("poolSeen", seen); tut("ball", v); }
 function tutFlush(delay = 0){
   if (!tutQ.length || tutOn) return;
   setTimeout(() => {
@@ -1658,7 +1661,7 @@ function tutFlush(delay = 0){
 function showTut(key, replay = false){
   const [id, vs] = String(key).split(":"), v = +vs || 0, T = TUTS[id]; tutOn = key; tutT0 = performance.now();
   $("tutT").textContent = T.title; $("tutP").textContent = T.text(v); $("tut").hidden = false;
-  if (!replay && !v){ const seen = store.get("tutSeen", {}); seen[id] = dayKey(); store.set("tutSeen", seen); }
+  if (!replay && !v) markSeen(id);
   if (VOICE.on && !muted && T.voice !== false){ loadVoice(); stopVoice(); playLine("tut_" + id); }
   const cvT = $("tutCv"), g = cvT.getContext("2d");
   const loop = now => { if (tutOn !== key) return;
@@ -1673,7 +1676,7 @@ let resetArm = 0;
 function resetRecords(){
   if (Date.now() - resetArm > 3000){ resetArm = Date.now(); $("bReset").textContent = "Tap again to delete all records"; return; }
   // v0.16.8: reset also zeroes coins and shows the tutorial cards again
-  ["best", "top", "records", "album", "bestTile", "prismMade", "prismBursts", "gold", "tutSeen", "poolSeen"].forEach(k => { try { localStorage.removeItem("pew2:" + k); } catch(e){} });
+  ["best", "top", "records", "album", "bestTile", "prismMade", "prismBursts", "gold", "tutSeen", "poolSeen"].forEach(k => { try { localStorage.removeItem("pew2:" + k); } catch(e){} }); tutMem.clear();
   S.coins = 0; try { localStorage.setItem("pew2:coins", "0"); } catch(e){}
   S.best = 0; S.startBest = 0; S.marks = []; S.gold = false; S.reached = []; save(); hud(); openAlbum(); floatText("Records reset");
 }
@@ -1768,7 +1771,8 @@ function testData(){
     ["Prism threshold", label(S.thr) + " → Prism " + label(2 * S.thr)], ["Prism bursts", S.prisms || 0], ["Biggest ball", label(S.maxEver)], ["Death", S.deathOn ? "on · " + Math.round(deathP() * 100) + "% of deals" : "off"],
     ["Bag left", (S.bag || []).length + " balls"], ["Board tension", S.lastT != null ? Math.round(S.lastT * 100) + "%" : "—"], ["Drought", (S.drought || 0) + " moves"], ["Free tracks", freeTracks() + " / " + COLS],
     ["Prices", `Back ${costOf("undo")} · Swap ${costOf("swap")} · Smash ${costOf("hammer")}`], ["Used", `Back ${S.used.undo} · Swap ${S.used.swap} · Smash ${S.used.hammer} · Revive ${S.revives}`],
-    ["Coins", `${S.coins} (+${S.earned || 0} / −${S.spent || 0})`], ["Frustration", store.get("fr", 0) + (S.frMod ? " · " + JSON.stringify(S.frMod) : "")], ["Combos", `best ×${S.bestChain} · big ${S.ch4}`]];
+    ["Coins", `${S.coins} (+${S.earned || 0} / −${S.spent || 0})`], ["Frustration", store.get("fr", 0) + (S.frMod ? " · " + JSON.stringify(S.frMod) : "")], ["Combos", `best ×${S.bestChain} · big ${S.ch4}`],
+    ["Cards seen", Object.keys(store.get("tutSeen", {})).join(", ") || "none"], ["New-ball cards", store.get("poolSeen", []).map(label).join(", ") || "none"]];
   $("tData").innerHTML = kv.map(([k, v]) => `<span>${k}</span><b>${v}</b>`).join("");
 }
 $("tmIn").addEventListener("change", e => { TEST.on = e.target.checked; saveTest(); if (!TEST.on){ S.coins = store.get("coins", 100); S.best = store.get("best", 0); } floatText(TEST.on ? "Test mode on" : "Test mode off"); testUI(); hud(); });
@@ -1783,7 +1787,7 @@ $("testSheet").addEventListener("click", e => {
   else if (t === "cur-top") S.cur = poolRange().upper; else if (t === "cur-thr") S.cur = S.thr; else if (t === "cur-prism"){ S.cur = PRISM; S.curPv = 2 * S.thr; }
   else if (t === "cur-inf") S.cur = INF; else if (t === "cur-death") S.cur = DEATH;
   else if (t === "coins") S.coins += 1000; else if (t === "deathon") S.deathOn = !S.deathOn;
-  else if (t === "tuts"){ try { localStorage.removeItem("pew2:tutSeen"); } catch(e){} floatText("Tutorials will show again"); }
+  else if (t === "tuts"){ try { localStorage.removeItem("pew2:tutSeen"); localStorage.removeItem("pew2:poolSeen"); } catch(e){} tutMem.clear(); floatText("Tutorials will show again"); }
   else if (t === "dreset"){ TEST.d = {}; testUI(); }
   saveTest(); hud(); save();
 });
@@ -1821,7 +1825,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.17.0";
+const APP_VERSION = "0.17.1";
 $("verTxt").textContent = APP_VERSION; $("verTxt3").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
