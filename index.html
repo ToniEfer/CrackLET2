@@ -81,7 +81,9 @@ body{
 .metabtns{display:flex;gap:4.8px;margin-right:1.32px}
 .ico{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;display:block}
 .ibtn{width:39.2px;height:39.2px;border-radius:6.6px;display:grid;place-items:center;border:1.2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);color:var(--ink);cursor:pointer;padding:0;transition:transform .08s,box-shadow .08s}
-#bVoice{background:var(--yellow)} #bMute{background:var(--teal)} #bVoice.off,#bMute.off{background:var(--card)} #bTune{background:var(--purple)}
+#bVoice{background:var(--yellow)} #bMute{background:var(--teal)} #bAnim{background:var(--coral)} #bVoice.off,#bMute.off,#bAnim.off{background:var(--card)}
+.sndrow{justify-content:flex-start;gap:14px}.sndrow .ib{display:flex;flex-direction:column;align-items:center;gap:5px}.sndrow small{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}.sndrow .ibtn{width:39.2px!important;height:39.2px!important}.sndrow .ibtn .ico{width:23px!important;height:23px!important}
+#tut .card{cursor:pointer} #bTune{background:var(--purple)}
 .ibtn .ico{width:23px;height:23px;stroke-width:1.68}
 .ibtn.off{background:var(--card)}
 .ibtn:active,.bst:active:not(:disabled),.btn:active:not(:disabled){transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
@@ -275,7 +277,7 @@ body{
     <button class="bst" id="bSwap" type="button" aria-label="Swap ball" title="Swap ball"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4 3 8l4 4"/><path d="M3 8h14"/><path d="m17 20 4-4-4-4"/><path d="M21 16H7"/></svg><span><i class="coin"></i><em id="cSwap">15</em></span><b>Swap</b></button>
     <button class="bst" id="bHammer" type="button" aria-label="Smash a ball" title="Smash"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 12-8.5 8.5a2.12 2.12 0 0 1-3-3L12 9"/><path d="M17.64 15 22 10.64"/><path d="m20.91 11.7-1.25-1.25c-.6-.6-.93-1.4-.93-2.25v-.86L16.01 4.6a5.56 5.56 0 0 0-3.94-1.64H9l.92.82A6.18 6.18 0 0 1 12 8.4v1.56l2 2h2.47l2.26 1.91"/></svg><span><i class="coin"></i><em id="cHammer">60</em></span><b>Smash</b></button>
     </span>
-    <span class="metabtns"><button class="ibtn" id="bVoice" type="button" aria-label="Announcer on" title="Announcer on"><svg class="ico" id="voiceIco" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1"/><path d="M12 18v4"/><path d="M8 22h8"/></svg></button><button class="ibtn" id="bMute" type="button" aria-label="Sound on" title="Sound on"><svg class="ico" id="muteIco" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button><button class="ibtn" id="bTune" type="button" aria-label="Tuning" title="Tuning"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21v-7"/><path d="M4 10V3"/><path d="M12 21v-9"/><path d="M12 8V3"/><path d="M20 21v-5"/><path d="M20 12V3"/><path d="M1 14h6"/><path d="M9 8h6"/><path d="M17 16h6"/></svg></button></span>
+    <span class="metabtns"><button class="ibtn" id="bTune" type="button" aria-label="Tuning" title="Tuning"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21v-7"/><path d="M4 10V3"/><path d="M12 21v-9"/><path d="M12 8V3"/><path d="M20 21v-5"/><path d="M20 12V3"/><path d="M1 14h6"/><path d="M9 8h6"/><path d="M17 16h6"/></svg></button></span>
   </div>
 
   <div class="boardwrap">
@@ -293,6 +295,7 @@ body{
   <div class="card tune">
     <div class="head"><b>Settings</b><span class="ver">v<span id="verTxt"></span></span><button class="btn ghost" id="bTuneClose" type="button" style="padding:6px 12px;font-size:12px;box-shadow:3px 3px 0 var(--ink)">Close</button></div>
     <div class="update" id="updBar" role="status" hidden><span id="updTxt">New version available</span><button class="btn" id="bUpd" type="button">Update</button></div>
+    <div class="row sndrow"><span class="ib"><button class="ibtn" id="bMute" type="button" aria-label="Sound on" title="Sound on"><svg class="ico" id="muteIco" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button><small>Sound</small></span><span class="ib"><button class="ibtn" id="bVoice" type="button" aria-label="Announcer on" title="Announcer on"><svg class="ico" id="voiceIco" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1"/><path d="M12 18v4"/><path d="M8 22h8"/></svg></button><small>Announcer</small></span><span class="ib"><button class="ibtn" id="bAnim" type="button" aria-label="Animations on" title="Animations on"><svg class="ico" id="animIco" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3z"/></svg></button><small>Animations</small></span></div>
     <div class="row">
       <label for="dIn"><span>Difficulty</span><select id="dIn" class="chip" style="flex:1"><option value="easy">Easy</option><option value="normal" selected>Normal</option><option value="hard">Hard</option></select></label>
     </div>
@@ -1131,6 +1134,8 @@ function hud(){
   $("bHammer").disabled = (S.coins < costOf("hammer") && !hammer) || busy || S.over || !!S.daily;
   $("bHammer").classList.toggle("on", hammer); board.classList.toggle("hammer", hammer);
   $("muteIco").innerHTML = muted ? '<path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="m23 9-6 6"/><path d="m17 9 6 6"/>' : '<path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>'; $("bMute").classList.toggle("off", muted); $("bVoice").classList.toggle("off", !VOICE.on); $("bVoice").setAttribute("aria-label", VOICE.on ? "Announcer on" : "Announcer off"); $("bVoice").title = VOICE.on ? "Announcer on" : "Announcer off"; $("bMute").setAttribute("aria-label", muted ? "Sound off" : "Sound on"); $("bMute").title = muted ? "Sound off" : "Sound on";
+  const an = animsOn(); $("bAnim").classList.toggle("off", !an); $("bAnim").title = an ? "Animations on" : "Animations off"; $("bAnim").setAttribute("aria-label", $("bAnim").title);
+  $("animIco").innerHTML = '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3z"/>' + (an ? "" : '<path d="M2 2l20 20"/>');
   $("moves").textContent = S.moves || 0; $("kval").textContent = poolK();
   $("seed").textContent = S.seed; $("fill").textContent = Math.round(fillRatio() * 100) + "%";
   $("pity").textContent = Math.round(pityChance() * 100) + "%"; $("lastsrc").textContent = S.lastSrc;
@@ -1259,6 +1264,7 @@ async function purgeLocked(){
     S.upperPrev = upper; S.lowerPrev = lower; S.relief = Math.max(S.relief, 5);
     celebrate("XL", "UNLOCKED " + label(upper), grew ? `Pool: ${poolK()} values` : label(lower / 2) + " is leaving the pool"); say(grew ? "poolgrow" : "unlock");
     if (!grew) tut("pool");
+    if (up) newInPool(upper);
   }
   const now = lingering(), before = S.linger || [];
   const gone = before.filter(v => !now.includes(v));
@@ -1618,13 +1624,26 @@ const TUTS = {
     tTubes(g, [118, 178]); const hit = t > .38, gone = ease(seg(t, .38, .52));
     tBall(g, 118, TY(0), DEATH, 1 - gone, 1 + gone * .2); tBall(g, 118, TY(1) + (TY(0) - TY(1)) * ease(seg(t, .52, .64)), 32);
     tBall(g, 178, hit ? TY(0) : fall(t, .1, .36, 0), INF); tPop(g, 118, TY(0), seg(t, .38, .68)); } },
+  ball: { title: "NEW BALL", voice: false, text: v => `${label(v)} joins the pool and now drops from the launcher. Two ${label(v)} make ${label(2 * v)}.`, dur: 4.5, anim(g, t, v){
+    v = v || 32; const vals = [v / 16, v / 8, v / 4, v / 2].filter(x => x >= 2);
+    if (t < .5){ const u = t / .5, x0 = 148 - (vals.length) * 22, slide = ease(seg(u, .15, .5));
+      vals.forEach((w, k) => tBall(g, x0 + k * 44, 90, w, 1, .8));
+      const xn = x0 + vals.length * 44; tBall(g, xn + 90 * (1 - slide), 90, v, slide, .8 + .5 * (1 - Math.abs(seg(u, .5, .9) - .5) * 2) * (u > .5 ? 1 : 0));
+      tPop(g, xn, 90, seg(u, .5, .9)); }
+    else { const u = (t - .5) / .5; tTubes(g, [148]); const m = u > .4;
+      if (!m){ tBall(g, 148, TY(0), v); tBall(g, 148, fall(u, .05, .4, 1), v); } else tBall(g, 148, TY(0), 2 * v); tPop(g, 148, TY(0), seg(u, .4, .7)); } } },
   revive: { title: "SECOND CHANCE", text: () => "Revive clears the top of the full tracks. The first one is free.", dur: 4.5, anim(g, t){
     tTubes(g, [88, 148, 208]); const gone = ease(seg(t, .3, .45)), V = [[2, 8, 32, 4], [16, 64, 2, 8], [4, 128, 16, 32]];
     V.forEach((col, k) => col.forEach((v, i) => tBall(g, 88 + k * 60, TY(i), v, i >= 2 ? 1 - gone : 1, i >= 2 ? 1 + gone * .3 : 1)));
     [88, 148, 208].forEach(x => { tPop(g, x, TY(2), seg(t, .3, .6)); tPop(g, x, TY(3), seg(t, .32, .62)); }); } },
 };
 let tutQ = [], tutOn = null, tutT0 = 0;
-function tut(id){ if (BOT || !TUTS[id]) return; const seen = store.get("tutSeen", {}); if (seen[id] || tutQ.includes(id) || tutOn === id) return; tutQ.push(id); }
+const animsOn = () => store.get("anims", true);                  // Settings → Animations on/off (replay in How to play still works)
+function tut(id, v){ if (BOT || !TUTS[id] || !animsOn()) return; const key = v ? id + ":" + v : id;
+  if (!v){ const seen = store.get("tutSeen", {}); if (seen[id]) return; }
+  if (tutQ.includes(key) || tutOn === key) return; tutQ.push(key); }
+// first time ever a value enters the pool: its own card (remembered in poolSeen, cleared by Reset records)
+function newInPool(v){ const seen = store.get("poolSeen", []); if (seen.includes(v)) return; seen.push(v); store.set("poolSeen", seen); tut("ball", v); }
 function tutFlush(delay = 0){
   if (!tutQ.length || tutOn) return;
   setTimeout(() => {
@@ -1634,25 +1653,25 @@ function tutFlush(delay = 0){
     showTut(tutQ.shift());
   }, delay);
 }
-function showTut(id, replay = false){
-  const T = TUTS[id]; tutOn = id; tutT0 = performance.now();
-  $("tutT").textContent = T.title; $("tutP").textContent = T.text(); $("tut").hidden = false;
-  if (!replay){ const seen = store.get("tutSeen", {}); seen[id] = dayKey(); store.set("tutSeen", seen); }
-  if (VOICE.on && !muted){ loadVoice(); stopVoice(); playLine("tut_" + id); }
+function showTut(key, replay = false){
+  const [id, vs] = String(key).split(":"), v = +vs || 0, T = TUTS[id]; tutOn = key; tutT0 = performance.now();
+  $("tutT").textContent = T.title; $("tutP").textContent = T.text(v); $("tut").hidden = false;
+  if (!replay && !v){ const seen = store.get("tutSeen", {}); seen[id] = dayKey(); store.set("tutSeen", seen); }
+  if (VOICE.on && !muted && T.voice !== false){ loadVoice(); stopVoice(); playLine("tut_" + id); }
   const cvT = $("tutCv"), g = cvT.getContext("2d");
-  const loop = now => { if (tutOn !== id) return;
+  const loop = now => { if (tutOn !== key) return;
     const t = ((now - tutT0) / 1000 / T.dur) % 1; g.setTransform(2, 0, 0, 2, 0, 0); g.clearRect(0, 0, 296, 180);
-    g.save(); try { T.anim(g, t); } catch(e){ console.warn(e); } g.restore(); requestAnimationFrame(loop); };
+    g.save(); try { T.anim(g, t, v); } catch(e){ console.warn(e); } g.restore(); requestAnimationFrame(loop); };
   requestAnimationFrame(loop);
 }
-$("tutOk").onclick = () => { $("tut").hidden = true; tutOn = null; tutFlush(250); };
-$("howBtns").innerHTML = Object.keys(TUTS).map(k => `<button class="btn ghost" type="button" data-tut="${k}">${TUTS[k].title.replace(/[?!]/g, "").toLowerCase()}</button>`).join("");
+$("tut").onclick = () => { $("tut").hidden = true; tutOn = null; tutFlush(250); };   // a tap anywhere closes the card
+$("howBtns").innerHTML = Object.keys(TUTS).filter(k => k !== "ball").map(k => `<button class="btn ghost" type="button" data-tut="${k}">${TUTS[k].title.replace(/[?!]/g, "").toLowerCase()}</button>`).join("");
 $("howBtns").onclick = e => { const b = e.target.closest("[data-tut]"); if (b){ $("tuneSheet").hidden = true; showTut(b.dataset.tut, true); } };
 let resetArm = 0;
 function resetRecords(){
   if (Date.now() - resetArm > 3000){ resetArm = Date.now(); $("bReset").textContent = "Tap again to delete all records"; return; }
   // v0.16.8: reset also zeroes coins and shows the tutorial cards again
-  ["best", "top", "records", "album", "bestTile", "prismMade", "prismBursts", "gold", "tutSeen"].forEach(k => { try { localStorage.removeItem("pew2:" + k); } catch(e){} });
+  ["best", "top", "records", "album", "bestTile", "prismMade", "prismBursts", "gold", "tutSeen", "poolSeen"].forEach(k => { try { localStorage.removeItem("pew2:" + k); } catch(e){} });
   S.coins = 0; try { localStorage.setItem("pew2:coins", "0"); } catch(e){}
   S.best = 0; S.startBest = 0; S.marks = []; S.gold = false; S.reached = []; save(); hud(); openAlbum(); floatText("Records reset");
 }
@@ -1772,6 +1791,7 @@ $("vIn").value = VOICE.pack;
 $("vIn").addEventListener("change", e => { VOICE.pack = e.target.value; store.set("voicePack", VOICE.pack); VOICE.on = true; store.set("voice", true); audio(); loadVoice(); hud(); setTimeout(() => speakNow("start"), 250); });
 $("bVoice").onclick = () => { VOICE.on = !VOICE.on; store.set("voice", VOICE.on); if (VOICE.on){ audio(); speakNow("start"); } hud(); };
 $("bMute").onclick = () => { muted = !muted; store.set("muted", muted); if (!muted) audio(); hud(); };
+$("bAnim").onclick = () => { store.set("anims", !animsOn()); if (!animsOn()){ tutQ = []; } hud(); };
 [["gIn", "gOut", "g"], ["eIn", "eOut", "rest"], ["sIn", "sOut", "shards"]].forEach(([inp, out, key]) => {
   const el = $(inp), o = $(out);
   const saved = store.get("phys:" + key, null); if (saved != null){ PHYS[key] = saved; el.value = saved; }
@@ -1799,7 +1819,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.16.8";
+const APP_VERSION = "0.16.9";
 $("verTxt").textContent = APP_VERSION; $("verTxt3").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
