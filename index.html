@@ -369,7 +369,7 @@ body{
   <div class="card tune album">
     <div class="head"><b>Records</b><button class="btn ghost" id="bAlbumClose" type="button">Close</button></div>
     <div class="row r1"><b>Top scores</b></div><ol class="top3" id="alTop"></ol>
-    <div class="row r2"><b>Balls</b><small>dimmed: out of the pool</small></div><div class="balls" id="alBalls"></div>
+    <div class="row r2"><b>Balls</b><small>dimmed: not in this game</small></div><div class="balls" id="alBalls"></div>
     <button class="btn danger" id="bReset" type="button">Reset records</button>
   </div>
 </div>
@@ -1556,16 +1556,17 @@ function prismChipImg(){
 let PCHIP = "";
 // pictures drawn before Anton has loaded would keep the fallback font: redraw once the fonts are in
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { for (const k in chipCache) delete chipCache[k]; for (const k in goalCache) delete goalCache[k]; PCHIP = ""; if (S){ $("poolBar").dataset.k = ""; $("pGoal").dataset.k = ""; hud(); } });
-function openAlbum(){
+function openAlbum(fresh){ fresh = fresh === true;
   const al = store.get("album", {}), T = store.get("top", []);
   if (!T.length && S.best) T.push({ s: S.best, d: "—" });
   $("alTop").innerHTML = [0, 1, 2].map(i => T[i] ? `<li><i>${i + 1}.</i><b>${fmt(T[i].s)}</b><small>${T[i].d}</small></li>` : `<li><i>${i + 1}.</i><b>—</b><small></small></li>`).join("");
-  // balls: every value collected so far; dimmed only the ones that have left the pool in this game (no ball of it left on the board)
-  seeBalls();
-  const now = inGameBalls(), low = poolRange().lower, onBoard = new Set(S.grid.flat().map(t => t.v));
-  const all = [...new Set([...Object.keys(store.get("album", {})).map(Number), ...now])].filter(v => v < PRISM && v !== DEATH).sort((a, b) => a - b);
-  const out = v => v < low && !onBoard.has(v);
-  $("alBalls").innerHTML = all.map(v => `<img class="${out(v) ? "dim" : ""}" alt="${label(v)}" title="${label(v)}${out(v) ? " · out of the pool" : ""}" src="${ballImg(v, 19, { size: 43 })}">`).join("");
+  // v0.17.5: balls = every value collected so far; bright only the ones that have been in THIS game, the rest dimmed.
+  // Right after Reset records the list is empty (fresh=true) and fills again from the next move.
+  if (!fresh) seeBalls();
+  const mine = new Set(S.gameBalls || []);
+  const all = Object.keys(store.get("album", {})).map(Number).filter(v => v < PRISM && v !== DEATH).sort((a, b) => a - b);
+  const out = v => !mine.has(v);
+  $("alBalls").innerHTML = all.map(v => `<img class="${out(v) ? "dim" : ""}" alt="${label(v)}" title="${label(v)}${out(v) ? " · not in this game" : ""}" src="${ballImg(v, 19, { size: 43 })}">`).join("");
   $("bReset").textContent = "Reset records"; resetArm = 0;
   $("album").hidden = false;
 }
@@ -1580,7 +1581,9 @@ function inGameBalls(){
 function seeBalls(){
   if (BOT) return;
   const a = store.get("album", {}); let ch = false;
-  for (const v of inGameBalls()) if (!a[v]){ a[v] = { d: dayKey(), n: 1 }; ch = true; }
+  const g = new Set(S.gameBalls || []);
+  for (const v of inGameBalls()){ g.add(v); if (!a[v]){ a[v] = { d: dayKey(), n: 1 }; ch = true; } }
+  S.gameBalls = [...g];
   if (ch) store.set("album", a);
 }
 /* ---------- tutorial cards (first time an important thing happens; replay in Settings) ---------- */
@@ -1679,7 +1682,7 @@ function resetRecords(){
   // v0.16.8: reset also zeroes coins and shows the tutorial cards again
   ["best", "top", "records", "album", "bestTile", "prismMade", "prismBursts", "gold", "tutSeen", "poolSeen"].forEach(k => { try { localStorage.removeItem("pew2:" + k); } catch(e){} });
   S.coins = 0; try { localStorage.setItem("pew2:coins", "0"); localStorage.setItem("pew2:coinsTest", "0"); } catch(e){}
-  S.best = 0; S.startBest = 0; S.marks = []; S.gold = false; S.reached = []; save(); hud(); openAlbum(); floatText("Records reset");
+  S.best = 0; S.startBest = 0; S.marks = []; S.gold = false; S.reached = []; S.gameBalls = []; save(); hud(); openAlbum(true); floatText("Records reset");
 }
 
 /* ---------- telemetry (local only, last 40 games) ---------- */
@@ -1831,7 +1834,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.17.4";
+const APP_VERSION = "0.17.5";
 $("verTxt").textContent = APP_VERSION; $("verTxt3").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
