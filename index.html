@@ -441,8 +441,9 @@ const store = {
 };
 /* Test mode (Settings → TEST): nothing below is saved while it is on, and its knobs (pool shift, pool size, Director
    chances, pool growth, Death chance, free boosters) only act in test mode */
-const TEST_NOSAVE = ["best", "top", "album", "bestTile", "prismMade", "prismBursts", "tele", "daily", "dailyGoals", "coins", "fr", "frP", "gold"];
+const TEST_NOSAVE = ["best", "top", "album", "bestTile", "prismMade", "prismBursts", "tele", "daily", "dailyGoals", "fr", "frP", "gold"];
 const TEST = Object.assign({ on: false, free: false, shift: 0, k: 0, d: {} }, (() => { try { return JSON.parse(localStorage.getItem("pew2:test")) || {}; } catch(e){ return {}; } })());
+const coinKey = () => TEST.on ? "coinsTest" : "coins";   // v0.17.4: test mode keeps its own coin purse, saved between games
 const DX = () => TEST.on ? { ...D(), ...TEST.d } : D();
 
 /* ---------- RNG ---------- */
@@ -628,7 +629,7 @@ function newGame(seed, opt = {}){
   const daily = opt.daily || null;
   const p = store.get("frP", null); if (p){ store.set("fr", Math.max(-5, Math.min(5, store.get("fr", 0) + p.d))); store.set("frP", null); }
   S = norm({ grid: Array.from({ length: COLS }, () => []), score: 0, maxEver: 8, seed, rs: seed, cur: 2,
-        coins: TEST.on && typeof S !== "undefined" && S && S.coins != null ? S.coins : store.get("coins", 100), cards: [], best: store.get("best", 0), revives: 0, over: false, lastSrc: "bag", reached: [], moves: 0, hist: [], lowerPrev: 2, bag: [], bagLower: "", linger: [], daily });
+        coins: store.get(coinKey(), 100), cards: [], best: store.get("best", 0), revives: 0, over: false, lastSrc: "bag", reached: [], moves: 0, hist: [], lowerPrev: 2, bag: [], bagLower: "", linger: [], daily });
   S.startBest = daily ? ((store.get("daily", {})[daily] || {}).score || 0) : S.best;
   const fr = store.get("fr", 0);
   if (!daily && dirOn() && !BOT){ if (fr >= 3){ S.introLen = 45; S.frMod = { rescue: .1 }; } else if (fr <= -3) S.frMod = { awk: .1 }; }
@@ -640,7 +641,7 @@ function newGame(seed, opt = {}){
   rebuild(); hud(); save();
 }
 const saveKey = () => S && S.daily ? "daily7" : "game7";
-function save(){ if (BOT) return; store.set(saveKey(), S.over ? null : S); store.set("coins", S.coins); store.set("best", S.best); }
+function save(){ if (BOT) return; store.set(saveKey(), S.over ? null : S); store.set(coinKey(), S.coins); store.set("best", S.best); }
 
 /* grid[c] is bottom → top. slot i sits at y = H - (i + .5) cells from the top */
 function find(id){
@@ -1677,7 +1678,7 @@ function resetRecords(){
   if (Date.now() - resetArm > 3000){ resetArm = Date.now(); $("bReset").textContent = "Tap again to delete all records"; return; }
   // v0.16.8: reset also zeroes coins and shows the tutorial cards again
   ["best", "top", "records", "album", "bestTile", "prismMade", "prismBursts", "gold", "tutSeen", "poolSeen"].forEach(k => { try { localStorage.removeItem("pew2:" + k); } catch(e){} });
-  S.coins = 0; try { localStorage.setItem("pew2:coins", "0"); } catch(e){}
+  S.coins = 0; try { localStorage.setItem("pew2:coins", "0"); localStorage.setItem("pew2:coinsTest", "0"); } catch(e){}
   S.best = 0; S.startBest = 0; S.marks = []; S.gold = false; S.reached = []; save(); hud(); openAlbum(); floatText("Records reset");
 }
 
@@ -1780,7 +1781,7 @@ function testData(){
     ["Cards this game", (S.cards || []).map(k => k.startsWith("ball:") ? "new " + label(+k.slice(5)) : k).join(", ") || "none"]];
   $("tData").innerHTML = kv.map(([k, v]) => `<span>${k}</span><b>${v}</b>`).join("");
 }
-$("tmIn").addEventListener("change", e => { TEST.on = e.target.checked; saveTest(); if (!TEST.on){ S.coins = store.get("coins", 100); S.best = store.get("best", 0); } floatText(TEST.on ? "Test mode on" : "Test mode off"); testUI(); hud(); });
+$("tmIn").addEventListener("change", e => { TEST.on = e.target.checked; saveTest(); if (TEST.on) store.set("coinsTest", S.coins); else { S.coins = store.get("coins", 100); S.best = store.get("best", 0); } hud(); floatText(TEST.on ? "Test mode on" : "Test mode off"); testUI(); hud(); });
 $("tfIn").addEventListener("change", e => { TEST.free = e.target.checked; saveTest(); hud(); });
 $("tDiff").addEventListener("input", e => { const k = e.target.dataset.k; if (!k) return; TEST.d[k] = +e.target.value; saveTest(); const o = e.target.nextElementSibling; o.textContent = k === "death" ? Math.round(TEST.d[k] * 100) + "%" : TEST.d[k]; hud(); });
 $("testSheet").addEventListener("click", e => {
@@ -1830,7 +1831,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.17.3";
+const APP_VERSION = "0.17.4";
 $("verTxt").textContent = APP_VERSION; $("verTxt3").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
