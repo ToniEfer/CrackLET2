@@ -1155,6 +1155,7 @@ function hudExtra(){
   const pg = `${fin ? "" : `<b>${label(2 * S.thr)}</b>`}<img alt="${fin ? "∞" : "Prism"}" src="${goalImg(fin ? INF : PRISM)}">`;
   $("pGoal").title = fin ? "Next: the final ball ∞" : `Next Prism: ${label(2 * S.thr)}`;
   if ($("pGoal").dataset.k !== pg){ $("pGoal").innerHTML = pg; $("pGoal").dataset.k = pg; }
+  $("pGoal").style.visibility = S.maxEver >= 1024 || S.prisms ? "" : "hidden";   // v0.17.3: the goal appears once the game reaches 1024
   $("dayTag").hidden = !S.daily; $("testTag").hidden = !TEST.on;
   if (S.daily){ const n = dailyDone(S.daily).length; $("dayTag").textContent = "Daily " + "★".repeat(n) + "☆".repeat(3 - n); }
   $("dirTxt").textContent = dirOn() ? `${S.dealN ? Math.round(S.dirN / S.dealN * 100) : 0}% of deals changed · last: ${S.lastSrc}` : "off (Classic or Daily)";
@@ -1829,7 +1830,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.17.2";
+const APP_VERSION = "0.17.3";
 $("verTxt").textContent = APP_VERSION; $("verTxt3").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
