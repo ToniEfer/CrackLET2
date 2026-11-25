@@ -206,6 +206,7 @@ body{
 .testtag{font-size:10px;font-weight:700;text-transform:uppercase;background:var(--coral);color:#fff;border:1.6px solid var(--ink);border-radius:6px;padding:1px 6px;white-space:nowrap}
 .tune .stepper{display:flex;align-items:center;gap:6px}.tune .stepper b{min-width:64px;text-align:center}
 .tune .sm2{padding:5px 10px;font-size:12px;box-shadow:3px 3px 0 var(--ink)}
+.tune .tdesc{margin:-2px 0 8px;font-size:11px;line-height:1.35;color:var(--muted)}
 .tune h4{margin:12px 0 0;font-family:var(--display);font-weight:400;font-size:15px;color:var(--ink);text-transform:uppercase}
 .tune .kv{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;margin-top:6px}.tune .kv b{text-align:right}
 .daytag{font-size:10px;font-weight:700;text-transform:uppercase;background:var(--purple);color:#fff;border:1.6px solid var(--ink);border-radius:6px;padding:1px 6px;white-space:nowrap}
@@ -326,6 +327,7 @@ body{
     <h4>Difficulty</h4>
     <div class="row">
       <label for="clIn"><span>Classic</span><input id="clIn" type="checkbox"><small>pure random order, no Director</small></label>
+      <p class="tdesc">The Director picks the next ball to shape the difficulty (sliders below). Classic switches it off: balls come straight from the shuffled bag.</p>
     </div>
     <div class="row" id="tDiff"></div>
     <div class="row"><button class="btn ghost sm2" data-t="dreset" type="button">Reset to difficulty preset</button></div>
@@ -626,7 +628,7 @@ function newGame(seed, opt = {}){
   const daily = opt.daily || null;
   const p = store.get("frP", null); if (p){ store.set("fr", Math.max(-5, Math.min(5, store.get("fr", 0) + p.d))); store.set("frP", null); }
   S = norm({ grid: Array.from({ length: COLS }, () => []), score: 0, maxEver: 8, seed, rs: seed, cur: 2,
-        coins: store.get("coins", 100), best: store.get("best", 0), revives: 0, over: false, lastSrc: "bag", reached: [], moves: 0, hist: [], lowerPrev: 2, bag: [], bagLower: "", linger: [], daily });
+        coins: TEST.on && typeof S !== "undefined" && S && S.coins != null ? S.coins : store.get("coins", 100), cards: [], best: store.get("best", 0), revives: 0, over: false, lastSrc: "bag", reached: [], moves: 0, hist: [], lowerPrev: 2, bag: [], bagLower: "", linger: [], daily });
   S.startBest = daily ? ((store.get("daily", {})[daily] || {}).score || 0) : S.best;
   const fr = store.get("fr", 0);
   if (!daily && dirOn() && !BOT){ if (fr >= 3){ S.introLen = 45; S.frMod = { rescue: .1 }; } else if (fr <= -3) S.frMod = { awk: .1 }; }
@@ -1641,14 +1643,12 @@ const TUTS = {
 };
 let tutQ = [], tutOn = null, tutT0 = 0;
 const animsOn = () => store.get("anims", true);                  // Settings → Animations on/off (replay in How to play still works)
-const tutMem = new Set();                                        // v0.17.1: also remembered for the session, marked when queued
-function markSeen(id){ tutMem.add(id); const seen = store.get("tutSeen", {}); if (!seen[id]){ seen[id] = dayKey(); store.set("tutSeen", seen); }
-  if (store.get("tutSeen", {})[id] == null) console.warn("tutSeen not saved", id); }
+// v0.17.2: every card shows once per game (S.cards), in every game, unless Animations are off in Settings
 function tut(id, v){ if (BOT || !TUTS[id] || !animsOn()) return; const key = v ? id + ":" + v : id;
-  if (!v){ if (tutMem.has(id) || store.get("tutSeen", {})[id]) return; markSeen(id); }
+  S.cards = S.cards || []; if (S.cards.includes(key)) return; S.cards.push(key);
   if (tutQ.includes(key) || tutOn === key) return; tutQ.push(key); }
 // first time ever a value enters the pool: its own card (remembered in poolSeen, cleared by Reset records)
-function newInPool(v){ const seen = store.get("poolSeen", []); if (seen.includes(v) || tutMem.has("ball:" + v)) return; tutMem.add("ball:" + v); seen.push(v); store.set("poolSeen", seen); tut("ball", v); }
+function newInPool(v){ tut("ball", v); }   // a value enters the pool for the first time in this game
 function tutFlush(delay = 0){
   if (!tutQ.length || tutOn) return;
   setTimeout(() => {
@@ -1661,7 +1661,6 @@ function tutFlush(delay = 0){
 function showTut(key, replay = false){
   const [id, vs] = String(key).split(":"), v = +vs || 0, T = TUTS[id]; tutOn = key; tutT0 = performance.now();
   $("tutT").textContent = T.title; $("tutP").textContent = T.text(v); $("tut").hidden = false;
-  if (!replay && !v) markSeen(id);
   if (VOICE.on && !muted && T.voice !== false){ loadVoice(); stopVoice(); playLine("tut_" + id); }
   const cvT = $("tutCv"), g = cvT.getContext("2d");
   const loop = now => { if (tutOn !== key) return;
@@ -1676,7 +1675,7 @@ let resetArm = 0;
 function resetRecords(){
   if (Date.now() - resetArm > 3000){ resetArm = Date.now(); $("bReset").textContent = "Tap again to delete all records"; return; }
   // v0.16.8: reset also zeroes coins and shows the tutorial cards again
-  ["best", "top", "records", "album", "bestTile", "prismMade", "prismBursts", "gold", "tutSeen", "poolSeen"].forEach(k => { try { localStorage.removeItem("pew2:" + k); } catch(e){} }); tutMem.clear();
+  ["best", "top", "records", "album", "bestTile", "prismMade", "prismBursts", "gold", "tutSeen", "poolSeen"].forEach(k => { try { localStorage.removeItem("pew2:" + k); } catch(e){} });
   S.coins = 0; try { localStorage.setItem("pew2:coins", "0"); } catch(e){}
   S.best = 0; S.startBest = 0; S.marks = []; S.gold = false; S.reached = []; save(); hud(); openAlbum(); floatText("Records reset");
 }
@@ -1753,15 +1752,20 @@ $("bdIn").checked = store.get("bagDots", false);
 $("bdIn").addEventListener("change", e => { store.set("bagDots", e.target.checked); hud(); });
 $("bNew").onclick = () => { closeSheets(); newGame(); audio(); speakNow("start"); };
 $("bTune").onclick = () => { hud(); $("tuneSheet").hidden = false; };
-$("bTest").onclick = () => { $("tuneSheet").hidden = true; $("teleTxt").textContent = teleSummary(); testUI(); hud(); $("testSheet").hidden = false; };
+$("bTest").onclick = () => { $("tuneSheet").hidden = true; $("teleTxt").textContent = teleSummary(); testUI(); $("testSheet").hidden = false; hud(); };   // show first, hud() fills the test data only when the sheet is open
 $("bTestClose").onclick = () => { $("testSheet").hidden = true; };
 $("testSheet").addEventListener("click", e => { if (e.target.id === "testSheet") $("testSheet").hidden = true; });
-const TKNOB = [["rate", "Pool growth", 0.3, 1.2, .05], ["intro", "Director intro", 0, 1, .05], ["awk", "Director awkward", 0, 1, .05], ["rescue", "Director rescue", 0, 1, .05], ["bag", "Each value ×", 1, 4, 1], ["death", "Death chance", 0, .5, .01]];
+const TKNOB = [["rate", "Pool growth", 0.3, 1.2, .05, "How fast the bottom of the pool rises as bigger balls appear. Higher = small values leave sooner, harder game."],
+  ["intro", "Director intro", 0, 1, .05, "First ~30 deals: chance the next ball matches a ball on top of a track (easy merge to start)."],
+  ["awk", "Director awkward", 0, 1, .05, "Calm board (tension < 45 %, 3+ free tracks): chance of a ball that matches no top ball — adds pressure."],
+  ["rescue", "Director rescue", 0, 1, .05, "Board in danger (≥ 80 % or ≤ 1 free track): chance of a ball that merges at once."],
+  ["bag", "Each value ×", 1, 4, 1, "How many balls of each pool value go into the bag before it is refilled."],
+  ["death", "Death chance", 0, .5, .01, "After the first 3×∞: share of deals that are a Death ball."]];
 const saveTest = () => { try { localStorage.setItem("pew2:test", JSON.stringify(TEST)); } catch(e){} };
 function testUI(){
   $("tmIn").checked = TEST.on; $("tfIn").checked = TEST.free;
   const P = { ...D(), death: deathP() }, cur = { ...P, ...TEST.d };
-  $("tDiff").innerHTML = TKNOB.map(([k, n, lo, hi, st]) => `<label for="tk_${k}"><span>${n}</span><input id="tk_${k}" data-k="${k}" type="range" min="${lo}" max="${hi}" step="${st}" value="${cur[k]}"><output>${k === "death" ? Math.round(cur[k] * 100) + "%" : cur[k]}</output></label>`).join("");
+  $("tDiff").innerHTML = TKNOB.map(([k, n, lo, hi, st, ds]) => `<label for="tk_${k}"><span>${n}</span><input id="tk_${k}" data-k="${k}" type="range" min="${lo}" max="${hi}" step="${st}" value="${cur[k]}"><output>${k === "death" ? Math.round(cur[k] * 100) + "%" : cur[k]}</output></label><p class="tdesc">${ds}</p>`).join("");
 }
 function testData(){
   if (!$("testSheet") || $("testSheet").hidden) return;
@@ -1772,7 +1776,7 @@ function testData(){
     ["Bag left", (S.bag || []).length + " balls"], ["Board tension", S.lastT != null ? Math.round(S.lastT * 100) + "%" : "—"], ["Drought", (S.drought || 0) + " moves"], ["Free tracks", freeTracks() + " / " + COLS],
     ["Prices", `Back ${costOf("undo")} · Swap ${costOf("swap")} · Smash ${costOf("hammer")}`], ["Used", `Back ${S.used.undo} · Swap ${S.used.swap} · Smash ${S.used.hammer} · Revive ${S.revives}`],
     ["Coins", `${S.coins} (+${S.earned || 0} / −${S.spent || 0})`], ["Frustration", store.get("fr", 0) + (S.frMod ? " · " + JSON.stringify(S.frMod) : "")], ["Combos", `best ×${S.bestChain} · big ${S.ch4}`],
-    ["Cards seen", Object.keys(store.get("tutSeen", {})).join(", ") || "none"], ["New-ball cards", store.get("poolSeen", []).map(label).join(", ") || "none"]];
+    ["Cards this game", (S.cards || []).map(k => k.startsWith("ball:") ? "new " + label(+k.slice(5)) : k).join(", ") || "none"]];
   $("tData").innerHTML = kv.map(([k, v]) => `<span>${k}</span><b>${v}</b>`).join("");
 }
 $("tmIn").addEventListener("change", e => { TEST.on = e.target.checked; saveTest(); if (!TEST.on){ S.coins = store.get("coins", 100); S.best = store.get("best", 0); } floatText(TEST.on ? "Test mode on" : "Test mode off"); testUI(); hud(); });
@@ -1787,7 +1791,7 @@ $("testSheet").addEventListener("click", e => {
   else if (t === "cur-top") S.cur = poolRange().upper; else if (t === "cur-thr") S.cur = S.thr; else if (t === "cur-prism"){ S.cur = PRISM; S.curPv = 2 * S.thr; }
   else if (t === "cur-inf") S.cur = INF; else if (t === "cur-death") S.cur = DEATH;
   else if (t === "coins") S.coins += 1000; else if (t === "deathon") S.deathOn = !S.deathOn;
-  else if (t === "tuts"){ try { localStorage.removeItem("pew2:tutSeen"); localStorage.removeItem("pew2:poolSeen"); } catch(e){} tutMem.clear(); floatText("Tutorials will show again"); }
+  else if (t === "tuts"){ S.cards = []; floatText("Tutorials will show again"); }
   else if (t === "dreset"){ TEST.d = {}; testUI(); }
   saveTest(); hud(); save();
 });
@@ -1825,7 +1829,7 @@ window.claude?.hot?.snapshot?.(() => ({ S }));
    APP_VERSION here, VERSION in sw.js and version.json must match. On the web build the game asks
    version.json (never cached) at start, every 15 min and when it comes back to the foreground;
    a newer number puts a red dot on the Settings button and an Update panel in the Settings sheet. Update = new service worker + reload (the saved game resumes). */
-const APP_VERSION = "0.17.1";
+const APP_VERSION = "0.17.2";
 $("verTxt").textContent = APP_VERSION; $("verTxt3").textContent = APP_VERSION; $("verTxt2").textContent = APP_VERSION; $("verOver").textContent = "CrackLET 2 · v" + APP_VERSION;
 const WEB = /^https?:$/.test(location.protocol) && !window.claude;
 let swReg = null, newVer = null;
